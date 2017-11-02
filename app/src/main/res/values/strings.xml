@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Mes entretiens moto</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="bike_holder">bike</string>
+    <string name="title_add_bike">Ajout de moto</string>
+    <string name="message_add_bike_fill_name">Veuillez renseigner le nom de la moto à ajouter</string>
+    <string name="text_input_error_message">Saisie invalide</string>
+    <string name="title_add_maintenance">Ajout d\'un entretien</string>
+    <string name="message_add_maintenance_fill_name">Veuillez renseigner le type d\'entretien à ajouter</string>
+    <string name="positive">Ajouter</string>
+    <string name="hint_maintenance_type">Type d\'entretien</string>
+    <string name="hint_maintenance_nb_hours">Nombre d\'heures</string>
+    <string name="text_no_maintenance_to_show">Aucun entretien pour cette moto</string>
+    <string name="title_activity_manage_bikes">Mes motos</string>
+    <string name="title_activity_manage_maintenances">Entretiens</string>
+    <string name="text_delete_maitenance">Entretien supprimé</string>
+    <string name="cancel">Annuler</string>
+    <string name="toast_please_fill_inputs">Veuillez remplir correctement les champs !</string>
+</resources>
