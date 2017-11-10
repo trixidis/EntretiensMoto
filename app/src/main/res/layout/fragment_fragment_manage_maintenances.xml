@@ -10,7 +10,7 @@
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"
+        android:visibility="invisible"
         android:layoutAnimation="@anim/layout_animation_fall_down"
         android:id="@+id/FragmentManageMaintenances_RecyclerView_ListMaintenances"/>
 

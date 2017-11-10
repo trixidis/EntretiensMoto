@@ -18,4 +18,5 @@
     <string name="text_delete_maitenance">Entretien supprimé</string>
     <string name="cancel">Annuler</string>
     <string name="toast_please_fill_inputs">Veuillez remplir correctement les champs !</string>
+    <string name="hint_no_bikes">Vous n\'avez pour l\'instant ajouté aucune moto</string>
 </resources>

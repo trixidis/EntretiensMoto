@@ -5,6 +5,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="fr.nextgear.mesentretiensmoto.mvp.manage_bikes.FragmentManageBikes">
 
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/hint_no_bikes"
+        android:textAlignment="center"
+        android:id="@+id/fragmentManageBikes_TextView_NoBikes"/>
+
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

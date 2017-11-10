@@ -53,6 +53,14 @@ public class PresenterManageBikes extends MvpBasePresenter<MVPManageBikes.ViewMa
 
     @Subscribe
     public void onGetBikesSucceeded(EventGetAllBikesFromSQLiteSucceeded eventGetAllBikesFromSQLiteSucceeded) {
-        getView().showBikeList(eventGetAllBikesFromSQLiteSucceeded.bikeList);
+        if(eventGetAllBikesFromSQLiteSucceeded.bikeList.isEmpty()){
+            if(isViewAttached() && getView() != null){
+                getView().showNobikes();
+            }
+        }else{
+            if(isViewAttached() && getView() != null) {
+                getView().showBikeList(eventGetAllBikesFromSQLiteSucceeded.bikeList);
+            }
+        }
     }
 }

@@ -32,5 +32,8 @@ public class Maintenance implements Serializable {
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true, columnName = TableContracts.Maintenance.BIKE_ID)
     public Bike bike;
+
+    @DatabaseField(columnName = TableContracts.Maintenance.IS_DONE, canBeNull = false)
+    public boolean isDone;
     //endregion
 }

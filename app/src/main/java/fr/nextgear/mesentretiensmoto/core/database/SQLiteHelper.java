@@ -22,7 +22,7 @@ public class SQLiteHelper extends OrmLiteSqliteOpenHelper {
 
     //region Fields
     private static final String     DB_NAME = "mes_entretiens_moto.sqlite";
-    private static final int        DB_VERSION = 4;
+    private static final int        DB_VERSION = 5;
 
     private Dao<Bike, Integer>                    bikeDAO= null;
     private Dao<Maintenance, Integer>             maintenanceDAO= null;

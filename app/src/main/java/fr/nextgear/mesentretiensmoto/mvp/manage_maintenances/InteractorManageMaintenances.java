@@ -27,6 +27,7 @@ public class InteractorManageMaintenances  implements MVPManageMaintenances.Inte
             loMaintenance.nameMaintenance = psMaintenanceName;
             loMaintenance.nbHoursMaintenance = pfNbHours;
             loMaintenance.dateMaintenance = new Date(System.currentTimeMillis());
+            loMaintenance.isDone = true;
             MaintenanceDBManager.getInstance().addMaintenance(loMaintenance);
             poEmitter.onComplete();
         });

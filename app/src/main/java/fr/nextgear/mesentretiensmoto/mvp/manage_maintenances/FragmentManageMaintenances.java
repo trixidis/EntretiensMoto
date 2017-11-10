@@ -184,7 +184,7 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
         IDLE {
             @Override
             protected void applyOn(@NonNull FragmentManageMaintenances poFragmentManageMaintenances) {
-                poFragmentManageMaintenances.mRecyclerViewListMaintenances.setVisibility(GONE);
+                poFragmentManageMaintenances.mRecyclerViewListMaintenances.setVisibility(View.INVISIBLE);
                 poFragmentManageMaintenances.mTextViewNoMaintenanceToShow.setVisibility(View.GONE);
             }
         }, MAINTENANCES_RETRIEVED {

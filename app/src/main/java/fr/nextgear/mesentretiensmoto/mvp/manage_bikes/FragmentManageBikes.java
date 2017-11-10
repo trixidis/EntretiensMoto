@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.hannesdorfmann.mosby3.mvp.MvpFragment;
 import com.orhanobut.logger.Logger;
@@ -22,11 +23,14 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Unbinder;
 import fr.nextgear.mesentretiensmoto.R;
 import fr.nextgear.mesentretiensmoto.core.model.Bike;
 import fr.nextgear.mesentretiensmoto.core.views.BikeCellView;
 import io.nlopez.smartadapters.SmartAdapter;
 import io.nlopez.smartadapters.adapters.RecyclerMultiAdapter;
+
+import static android.view.View.GONE;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -37,7 +41,10 @@ public class FragmentManageBikes extends MvpFragment<MVPManageBikes.ViewManageBi
     //region Fields
     @BindView(R.id.fragmentManageBikes_RecyclerView_listBikes)
     RecyclerView mRecyclerViewBikes;
+    @BindView(R.id.fragmentManageBikes_TextView_NoBikes)
+    TextView mTextViewNoBikes;
     private RecyclerMultiAdapter mMultiRecyclerAdaper;
+    private Unbinder mUnbinder;
     //endregion
 
     //region Constructor
@@ -57,10 +64,10 @@ public class FragmentManageBikes extends MvpFragment<MVPManageBikes.ViewManageBi
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_fragment_manage_bikes, container, false);
-        ButterKnife.bind(this, v);
+        mUnbinder = ButterKnife.bind(this, v);
         mRecyclerViewBikes.setLayoutManager(new LinearLayoutManager(getContext()));
         mMultiRecyclerAdaper = SmartAdapter.items(new ArrayList<>()).map(Bike.class, BikeCellView.class).into(mRecyclerViewBikes);
-//        mMultiRecyclerAdaper.setViewEventListener((i, bike, i1, view) -> Logger.e(((Bike) bike).nameBike));
+        mTextViewNoBikes.setVisibility(GONE);
         return v;
     }
 
@@ -81,11 +88,14 @@ public class FragmentManageBikes extends MvpFragment<MVPManageBikes.ViewManageBi
     //region Presenter methods
     @Override
     public void showNobikes() {
-        Logger.e("on a pas de motos");
+        mTextViewNoBikes.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void showBikeList(List<Bike> bikes) {
+        if (!bikes.isEmpty()){
+            mTextViewNoBikes.setVisibility(GONE);
+        }
         mMultiRecyclerAdaper.clearItems();
         mMultiRecyclerAdaper.addItems(bikes);
     }
@@ -122,6 +132,12 @@ public class FragmentManageBikes extends MvpFragment<MVPManageBikes.ViewManageBi
                 .setInputFilter(R.string.text_input_error_message, text -> !TextUtils.isEmpty(text))
                 .setConfirmButton(android.R.string.ok, text -> getPresenter().addBike(text))
                 .show();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mUnbinder.unbind();
     }
     //endregion
 

@@ -20,6 +20,13 @@ public interface TableContracts {
         String NAME = "name_maintenance";
         String NB_HOURS = "nb_hours_maintenance";
         String DATE = "date_maintenance";
+        String IS_DONE = "maintenance_is_done";
         String BIKE_ID = "maintenance_bike_id";
+    }
+
+    interface MaintenancePrevision{
+        String TABLE_NAME = "maintenance_prevision_table";
+        String ID = "id_maintenance_prevision";
+        String MAINTENANCE = "maintenance_maintenance_prevision";
     }
 }
