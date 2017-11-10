@@ -81,7 +81,7 @@ public class FragmentManageBikes extends MvpFragment<MVPManageBikes.ViewManageBi
     //region Presenter methods
     @Override
     public void showNobikes() {
-
+        Logger.e("on a pas de motos");
     }
 
     @Override
