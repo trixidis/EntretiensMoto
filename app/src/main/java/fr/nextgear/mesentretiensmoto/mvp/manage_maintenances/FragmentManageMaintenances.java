@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.github.clans.fab.FloatingActionMenu;
 import com.hannesdorfmann.mosby3.mvp.MvpFragment;
 
 import java.util.ArrayList;
@@ -49,8 +50,7 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
     TextView mTextViewNoMaintenanceToShow;
     @BindView(R.id.FragmentManageMaintenances_ViewRoot)
     ViewGroup mViewGroupRoot;
-    @BindView(R.id.FragmentManageMaintenances_FloatingActionButton_AddMaintenance)
-    FloatingActionButton mFloatingActionButtonAddMaintenance;
+
 
     private GetBikeFromActivityCallback mCallback;
     private Unbinder mUnbinder;
@@ -153,7 +153,7 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
     //endregion
 
     //region View events
-    @OnClick(R.id.FragmentManageMaintenances_FloatingActionButton_AddMaintenance)
+    @OnClick(R.id.FragmentManageMaintenances_FloatingActionButton_AddMaintenanceDone)
     public void onAddMaintenanceClicked() {
         new MaterialDialog.Builder(getContext())
                 .title(R.string.title_add_maintenance)

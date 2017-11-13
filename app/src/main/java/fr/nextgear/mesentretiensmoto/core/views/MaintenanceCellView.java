@@ -24,14 +24,11 @@ public class MaintenanceCellView extends BindableLinearLayout<Maintenance> {
 
     @BindView(R.id.manage_maintenance_cell_TextView_dateMaintenance)
     TextView mTextViewDateMaintenance;
-
-    private Context mContext;
     //endregion
 
     //region Constructor
     public MaintenanceCellView(Context poContext) {
         super(poContext);
-        mContext = poContext;
     }
     //endregion
 
