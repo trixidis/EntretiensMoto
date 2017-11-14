@@ -27,14 +27,14 @@ public interface MVPManageMaintenances {
     }
 
     interface Presenter extends MvpPresenter<View>{
-        void addMaintenance(@NonNull final Bike poBike,@NonNull final String psMaintenanceName,@NonNull final float pfNbHours);
+        void addMaintenance(@NonNull final Bike poBike,@NonNull final String psMaintenanceName,@NonNull final float pfNbHours, boolean isDone);
         void getMaintenancesForBike(@NonNull final Bike poBike);
 
         void removeMaintenance(@NonNull final Maintenance poMaintenanceToRemove);
     }
 
     interface Interactor {
-        Completable addMaintenance(@NonNull final Bike poBike, @NonNull final String psMaintenanceName, @NonNull final float pfNbHours);
+        Completable addMaintenance(@NonNull final Bike poBike, @NonNull final String psMaintenanceName, @NonNull final float pfNbHours, boolean isDone);
         Completable getMaintenancesForBike(@NonNull final Bike poBike);
         Completable removeMaintenance(@NonNull final Maintenance poMaintenance);
         

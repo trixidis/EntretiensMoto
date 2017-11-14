@@ -5,7 +5,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BaseTransientBottomBar;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,6 +20,7 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.clans.fab.FloatingActionMenu;
+import com.github.florent37.materialviewpager.header.MaterialViewPagerHeaderDecorator;
 import com.hannesdorfmann.mosby3.mvp.MvpFragment;
 
 import java.util.ArrayList;
@@ -50,6 +50,8 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
     TextView mTextViewNoMaintenanceToShow;
     @BindView(R.id.FragmentManageMaintenances_ViewRoot)
     ViewGroup mViewGroupRoot;
+    @BindView(R.id.FragmentManageMaintenances_FloatingActionMenu_AddMaintenanceDone)
+    FloatingActionMenu mFloatingActionMenuAddMaintenanceDone;
 
 
     private GetBikeFromActivityCallback mCallback;
@@ -89,6 +91,8 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
         View view = inflater.inflate(R.layout.fragment_fragment_manage_maintenances, container, false);
         mUnbinder = ButterKnife.bind(this, view);
         mRecyclerViewListMaintenances.setLayoutManager(new LinearLayoutManager(getContext()));
+        mRecyclerViewListMaintenances.addItemDecoration(new MaterialViewPagerHeaderDecorator());
+
         ItemTouchHelper.SimpleCallback loSimpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             private int position;
 
@@ -155,27 +159,15 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
     //region View events
     @OnClick(R.id.FragmentManageMaintenances_FloatingActionButton_AddMaintenanceDone)
     public void onAddMaintenanceClicked() {
-        new MaterialDialog.Builder(getContext())
-                .title(R.string.title_add_maintenance)
-                .iconRes(R.drawable.ic_build_black_24dp)
-                .customView(R.layout.layout_custom_dialog, true)
-                .positiveText(R.string.positive)
-                .onPositive((poDialog, which) -> {
-                    View v = poDialog.getCustomView();
-                    if (v != null) {
-                        EditText loEditNameMaintenance = v.findViewById(R.id.CustomDialog_EditText_NameMaintenance);
-                        EditText loEditNbHoursMaintenance = v.findViewById(R.id.CustomDialog_EditText_NbHoursMaintenance);
-                        if (loEditNbHoursMaintenance.getText().toString().isEmpty() || loEditNameMaintenance.getText().toString().isEmpty()) {
-                            Toasty.warning(getContext(), getString(R.string.toast_please_fill_inputs), Toast.LENGTH_LONG, true).show();
-                        } else {
-                            String lsNameMaintenance = loEditNameMaintenance.getText().toString();
-                            float lfNbHours = Float.parseFloat(loEditNbHoursMaintenance.getText().toString());
-                            getPresenter().addMaintenance(mCallback.getCurrentSelectedBike(), lsNameMaintenance, lfNbHours);
-                            poDialog.dismiss();
-                        }
-                    }
-                })
-                .show();
+        showDialogAddMaintenance(true);
+    }
+
+
+
+
+    @OnClick(R.id.FragmentManageMaintenances_FloatingActionButton_AddMaintenanceToDo)
+    public void onAddMaintenanceToDoClicked() {
+        showDialogAddMaintenance(false);
     }
     //endregion
 
@@ -210,6 +202,33 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
     }
     //endregion
 
+    //region Private Methods
+
+    private void showDialogAddMaintenance(boolean isDone) {
+        mFloatingActionMenuAddMaintenanceDone.close(true);
+        new MaterialDialog.Builder(getContext())
+                .title(R.string.title_add_maintenance)
+                .iconRes(R.drawable.ic_build_black_24dp)
+                .customView(R.layout.layout_custom_dialog, true)
+                .positiveText(R.string.positive)
+                .onPositive((poDialog, which) -> {
+                    View v = poDialog.getCustomView();
+                    if (v != null) {
+                        EditText loEditNameMaintenance = v.findViewById(R.id.CustomDialog_EditText_NameMaintenance);
+                        EditText loEditNbHoursMaintenance = v.findViewById(R.id.CustomDialog_EditText_NbHoursMaintenance);
+                        if (loEditNbHoursMaintenance.getText().toString().isEmpty() || loEditNameMaintenance.getText().toString().isEmpty()) {
+                            Toasty.warning(getContext(), getString(R.string.toast_please_fill_inputs), Toast.LENGTH_LONG, true).show();
+                        } else {
+                            String lsNameMaintenance = loEditNameMaintenance.getText().toString();
+                            float lfNbHours = Float.parseFloat(loEditNbHoursMaintenance.getText().toString());
+                            getPresenter().addMaintenance(mCallback.getCurrentSelectedBike(), lsNameMaintenance, lfNbHours,isDone);
+                            poDialog.dismiss();
+                        }
+                    }
+                })
+                .show();
+    }
+
     private void runLayoutAnimation(final RecyclerView recyclerView) {
         final Context context = recyclerView.getContext();
         final LayoutAnimationController controller =
@@ -219,6 +238,8 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
         recyclerView.getAdapter().notifyDataSetChanged();
         recyclerView.scheduleLayoutAnimation();
     }
+
+    //endregion Private Methods
 
     //region Callback methods
     public interface GetBikeFromActivityCallback {

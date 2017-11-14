@@ -20,14 +20,14 @@ public class InteractorManageMaintenances  implements MVPManageMaintenances.Inte
 
 
     @Override
-    public Completable addMaintenance(@NonNull final Bike poBike,@NonNull String psMaintenanceName, @NonNull float pfNbHours) {
+    public Completable addMaintenance(@NonNull final Bike poBike,@NonNull String psMaintenanceName, @NonNull float pfNbHours,boolean isDone) {
         return Completable.create(poEmitter -> {
             Maintenance loMaintenance = new Maintenance();
             loMaintenance.bike = poBike;
             loMaintenance.nameMaintenance = psMaintenanceName;
             loMaintenance.nbHoursMaintenance = pfNbHours;
             loMaintenance.dateMaintenance = new Date(System.currentTimeMillis());
-            loMaintenance.isDone = true;
+            loMaintenance.isDone = isDone;
             MaintenanceDBManager.getInstance().addMaintenance(loMaintenance);
             poEmitter.onComplete();
         });

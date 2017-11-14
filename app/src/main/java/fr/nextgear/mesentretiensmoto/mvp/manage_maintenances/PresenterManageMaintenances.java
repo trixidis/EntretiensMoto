@@ -32,8 +32,8 @@ public class PresenterManageMaintenances extends MvpBasePresenter<MVPManageMaint
     }
 
     @Override
-    public void addMaintenance(@NonNull Bike poBike, @NonNull String psMaintenanceName, @NonNull float pfNbHours) {
-        mInteractorManageMaintenances.addMaintenance(poBike, psMaintenanceName, pfNbHours)
+    public void addMaintenance(@NonNull Bike poBike, @NonNull String psMaintenanceName, @NonNull float pfNbHours, boolean isDone) {
+        mInteractorManageMaintenances.addMaintenance(poBike, psMaintenanceName, pfNbHours,isDone)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> getMaintenancesForBike(poBike), throwable -> {
