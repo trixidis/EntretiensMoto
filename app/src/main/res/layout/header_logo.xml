@@ -1,30 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/logo_white"
     android:layout_width="wrap_content"
     android:layout_height="@dimen/materialviewpager_logoHeight"
     android:text="@string/title_activity_manage_maintenances"
     android:textSize="30sp"
-    android:textColor="@android:color/white"/>-->
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/headerLogo"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/backgournd_mechanic">
-  <!--  <ImageView
-        android:id="@+id/headerLogoContent"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        tools:src="@drawable/tennis"
-        android:layout_gravity="center"/>-->
-</FrameLayout>
-<!--
-<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/logo_white"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    android:adjustViewBounds="true"
-    android:layout_centerHorizontal="true"
-    android:src="@drawable/backgournd_mechanic" />-->
+    android:textColor="@android:color/white"/>
