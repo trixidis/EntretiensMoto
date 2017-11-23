@@ -44,14 +44,14 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
 
 
     //region Fields
-    @BindView(R.id.FragmentManageMaintenances_RecyclerView_ListMaintenances)
-    RecyclerView mRecyclerViewListMaintenances;
-    @BindView(R.id.FragmentManageMaintenances_TextView_NoMaintenanceToShow)
-    TextView mTextViewNoMaintenanceToShow;
-    @BindView(R.id.FragmentManageMaintenances_ViewRoot)
-    ViewGroup mViewGroupRoot;
-    @BindView(R.id.FragmentManageMaintenances_FloatingActionMenu_AddMaintenanceDone)
-    FloatingActionMenu mFloatingActionMenuAddMaintenanceDone;
+//    @BindView(R.id.ActivityMaintenances_RecyclerView_ListMaintenances)
+//    RecyclerView mRecyclerViewListMaintenances;
+//    @BindView(R.id.ActivityManageMaintenances_TextView_NoMaintenanceToShow)
+//    TextView mTextViewNoMaintenanceToShow;
+//    @BindView(R.id.ActivityManageMaintenances_ViewRoot)
+//    ViewGroup mViewGroupRoot;
+//    @BindView(R.id.ActivityManageMaintenances_FloatingActionMenu_AddMaintenanceDone)
+//    FloatingActionMenu mFloatingActionMenuAddMaintenanceDone;
 
 
     private GetBikeFromActivityCallback mCallback;

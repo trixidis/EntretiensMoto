@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/FragmentManageMaintenances_ViewRoot"
+        android:id="@+id/ActivityManageMaintenances_ViewRoot"
         tools:context="fr.nextgear.mesentretiensmoto.mvp.manage_maintenances.FragmentManageMaintenances">
         <com.github.florent37.materialviewpager.MaterialViewPager
             android:id="@+id/materialViewPager"
@@ -39,13 +39,13 @@
             android:layout_height="match_parent"
             android:visibility="invisible"
             android:layoutAnimation="@anim/layout_animation_fall_down"
-            android:id="@+id/FragmentManageMaintenances_RecyclerView_ListMaintenances"/>
+            android:id="@+id/ActivityMaintenances_RecyclerView_ListMaintenances"/>
 
 
 
 
         <TextView
-            android:id="@+id/FragmentManageMaintenances_TextView_NoMaintenanceToShow"
+            android:id="@+id/ActivityManageMaintenances_TextView_NoMaintenanceToShow"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAlignment="center"
@@ -54,12 +54,12 @@
 
 
         <com.github.clans.fab.FloatingActionMenu
-            android:id="@+id/FragmentManageMaintenances_FloatingActionMenu_AddMaintenanceDone"
+            android:id="@+id/ActivityManageMaintenances_FloatingActionMenu_AddMaintenanceDone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/ld_side_margin"
             android:src="@drawable/ic_add_black_24dp"
-            app:layout_anchor="@id/FragmentManageMaintenances_RecyclerView_ListMaintenances"
+            app:layout_anchor="@id/ActivityMaintenances_RecyclerView_ListMaintenances"
             app:layout_anchorGravity="bottom|right|end"
             app:menu_fab_size="normal"
             app:menu_showShadow="true"
