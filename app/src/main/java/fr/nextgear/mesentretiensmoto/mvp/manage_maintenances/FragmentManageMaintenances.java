@@ -245,5 +245,5 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
     public interface GetBikeFromActivityCallback {
         Bike getCurrentSelectedBike();
     }
-    //endregion
+    //endregion Callback methods
 }

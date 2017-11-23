@@ -69,15 +69,17 @@ public class PresenterManageMaintenances extends MvpBasePresenter<MVPManageMaint
 
     @Subscribe
     public void onEventGetMaintenancesForBikeReceived(EventGetMaintenancesForBike poEventGetMaintenancesForBike) {
-        ArrayList llMaintenances = (ArrayList) poEventGetMaintenancesForBike.maintenances;
-        Collections.sort(llMaintenances, new Comparator<Maintenance>() {
-            @Override
-            public int compare(Maintenance t, Maintenance t1) {
-                return Float.compare(t1.nbHoursMaintenance, t.nbHoursMaintenance);
+        if( poEventGetMaintenancesForBike.maintenances != null) {
+            ArrayList llMaintenances = (ArrayList) poEventGetMaintenancesForBike.maintenances;
+            Collections.sort(llMaintenances, new Comparator<Maintenance>() {
+                @Override
+                public int compare(Maintenance t, Maintenance t1) {
+                    return Float.compare(t1.nbHoursMaintenance, t.nbHoursMaintenance);
+                }
+            });
+            if (getView() != null && isViewAttached()) {
+                getView().onRetrieveMaintenancesSuccess(llMaintenances);
             }
-        });
-        if (getView() != null && isViewAttached()) {
-            getView().onRetrieveMaintenancesSuccess(llMaintenances);
         }
     }
 

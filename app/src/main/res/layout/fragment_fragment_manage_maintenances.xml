@@ -7,7 +7,7 @@
     tools:context="fr.nextgear.mesentretiensmoto.mvp.manage_maintenances.FragmentManageMaintenances">
 
 
-        <android.support.v7.widget.RecyclerView
+    <!--    <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="invisible"
@@ -94,6 +94,6 @@
             app:fab_size="mini"
             app:fab_label="@string/add_maintenance_to_do" />
 
-    </com.github.clans.fab.FloatingActionMenu>
+    </com.github.clans.fab.FloatingActionMenu>-->
 
 </android.support.design.widget.CoordinatorLayout>
