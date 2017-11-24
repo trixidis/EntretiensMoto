@@ -78,21 +78,18 @@ public class ManageMaintenancesActivity extends AppCompatActivity implements Fra
 
 
 
-        mViewPager.setMaterialViewPagerListener(new MaterialViewPager.Listener() {
-            @Override
-            public HeaderDesign getHeaderDesign(int page) {
-                switch (page) {
-                    case 0:
-                        return HeaderDesign.fromColorResAndDrawable(
-                                R.color.blue,
-                                ContextCompat.getDrawable(mContext,R.drawable.backgournd_mechanic));
-                    case 1:
-                        return HeaderDesign.fromColorResAndDrawable(
-                                R.color.green,
-                                ContextCompat.getDrawable(mContext,R.drawable.backgournd_mechanic));
-                }
-                return null;
+        mViewPager.setMaterialViewPagerListener(page -> {
+            switch (page) {
+                case 0:
+                    return HeaderDesign.fromColorResAndDrawable(
+                            R.color.blue,
+                            ContextCompat.getDrawable(mContext,R.drawable.backgournd_mechanic));
+                case 1:
+                    return HeaderDesign.fromColorResAndDrawable(
+                            R.color.green,
+                            ContextCompat.getDrawable(mContext,R.drawable.list));
             }
+            return null;
         });
 
     }
@@ -109,8 +106,6 @@ public class ManageMaintenancesActivity extends AppCompatActivity implements Fra
     //region private Methods
 
     private void setupViewPager() {
-//        mViewPager.getToolbar().setTitle(R.string.title_activity_manage_maintenances);
-//        mViewPager.getToolbar().setSubtitle(mBike.nameBike);
         mViewPager.getToolbar().setNavigationOnClickListener(v -> finish());
         mViewPager.getViewPager().setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
             @Override
@@ -120,9 +115,30 @@ public class ManageMaintenancesActivity extends AppCompatActivity implements Fra
 
             @Override
             public Fragment getItem(int position) {
-                return new FragmentManageMaintenances();
+                switch (position) {
+                    case 0:
+                        return new FragmentManageMaintenancesBuilder(FragmentManageMaintenances.StateMaintenances.DONE).build();
+                    case 1:
+                        return new FragmentManageMaintenancesBuilder(FragmentManageMaintenances.StateMaintenances.TO_DO).build();
+                    default:
+                        return null;
+                }
+            }
+
+            @Override
+            public CharSequence getPageTitle(int position) {
+                switch (position) {
+                    case 0:
+                        return getString(R.string.title_done);
+                    case 1:
+                        return getString(R.string.title_to_do);
+                    default:
+                       return "";
+                }
             }
         });
+        mViewPager.getPagerTitleStrip().setViewPager(mViewPager.getViewPager());
+
     }
 
     private void removeNotificationBarAndSetFullscreen() {

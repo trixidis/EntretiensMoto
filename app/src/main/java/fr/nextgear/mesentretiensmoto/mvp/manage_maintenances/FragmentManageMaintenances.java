@@ -21,6 +21,9 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.clans.fab.FloatingActionMenu;
 import com.github.florent37.materialviewpager.header.MaterialViewPagerHeaderDecorator;
+import com.hannesdorfmann.fragmentargs.FragmentArgs;
+import com.hannesdorfmann.fragmentargs.annotation.Arg;
+import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs;
 import com.hannesdorfmann.mosby3.mvp.MvpFragment;
 
 import java.util.ArrayList;
@@ -40,6 +43,7 @@ import io.nlopez.smartadapters.adapters.RecyclerMultiAdapter;
 
 import static android.view.View.GONE;
 
+@FragmentWithArgs
 public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenances.View, MVPManageMaintenances.Presenter> implements MVPManageMaintenances.View {
 
 
@@ -53,12 +57,18 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
     @BindView(R.id.FragmentManageMaintenances_FloatingActionMenu_AddMaintenanceDone)
     FloatingActionMenu mFloatingActionMenuAddMaintenanceDone;
 
+    @Arg
+    StateMaintenances mStateMaintenances;
 
     private GetBikeFromActivityCallback mCallback;
     private Unbinder mUnbinder;
     private RecyclerMultiAdapter mMultiRecyclerAdaper;
     private ViewState mViewState;
     private List<Maintenance> mMaintenances;
+
+    public enum StateMaintenances{
+        TO_DO,DONE;
+    }
     //endregion
 
     //region Constructor
@@ -75,6 +85,14 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
     //endregion
 
     //region Lifecycle methods
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        FragmentArgs.inject(this);
+    }
+
     @Override
     public void onAttach(Context poContext) {
         super.onAttach(poContext);
