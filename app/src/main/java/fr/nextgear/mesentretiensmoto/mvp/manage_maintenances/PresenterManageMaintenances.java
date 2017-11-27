@@ -23,17 +23,19 @@ import io.reactivex.schedulers.Schedulers;
 public class PresenterManageMaintenances extends MvpBasePresenter<MVPManageMaintenances.View> implements MVPManageMaintenances.Presenter {
 
     private InteractorManageMaintenances mInteractorManageMaintenances;
+    private boolean isMaintenancesDone;
 
 
-    public PresenterManageMaintenances(@NonNull final Bike poBike) {
+    public PresenterManageMaintenances(@NonNull final Bike poBike,boolean pbIsDone) {
+        isMaintenancesDone = pbIsDone;
         mInteractorManageMaintenances = new InteractorManageMaintenances();
         App.getInstance().getMainThreadBus().register(this);
         getMaintenancesForBike(poBike);
     }
 
     @Override
-    public void addMaintenance(@NonNull Bike poBike, @NonNull String psMaintenanceName, @NonNull float pfNbHours, boolean isDone) {
-        mInteractorManageMaintenances.addMaintenance(poBike, psMaintenanceName, pfNbHours,isDone)
+    public void addMaintenance(@NonNull Bike poBike, @NonNull String psMaintenanceName, @NonNull float pfNbHours) {
+        mInteractorManageMaintenances.addMaintenance(poBike, psMaintenanceName, pfNbHours,isMaintenancesDone)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> getMaintenancesForBike(poBike), throwable -> {
@@ -42,7 +44,7 @@ public class PresenterManageMaintenances extends MvpBasePresenter<MVPManageMaint
 
     @Override
     public void getMaintenancesForBike(@NonNull Bike poBike) {
-        mInteractorManageMaintenances.getMaintenancesForBike(poBike)
+        mInteractorManageMaintenances.getMaintenancesForBike(poBike,isMaintenancesDone)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.newThread())
                 .subscribe(() -> {

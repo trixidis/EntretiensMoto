@@ -54,9 +54,10 @@ public final class MaintenanceDBManager {
         }
     }
 
-    public List<Maintenance> getMaintenancesForBike(Bike poBike) {
+    public List<Maintenance> getMaintenancesForBike(Bike poBike,boolean pbIsDone) {
         Maintenance loMaintenance = new Maintenance();
         loMaintenance.bike = poBike;
+        loMaintenance.isDone = pbIsDone;
         try {
             return helper.getMaintenanceDao().queryForMatchingArgs(loMaintenance);
         } catch (SQLException e) {

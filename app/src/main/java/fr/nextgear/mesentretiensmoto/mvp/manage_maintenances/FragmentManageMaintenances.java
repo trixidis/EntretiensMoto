@@ -80,7 +80,7 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
     //region Presenter callback
     @Override
     public MVPManageMaintenances.Presenter createPresenter() {
-        return new PresenterManageMaintenances(mCallback.getCurrentSelectedBike());
+        return new PresenterManageMaintenances(mCallback.getCurrentSelectedBike(), mStateMaintenances == StateMaintenances.DONE);
     }
     //endregion
 
@@ -240,7 +240,7 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
                         } else {
                             String lsNameMaintenance = loEditNameMaintenance.getText().toString();
                             float lfNbHours = Float.parseFloat(loEditNbHoursMaintenance.getText().toString());
-                            getPresenter().addMaintenance(mCallback.getCurrentSelectedBike(), lsNameMaintenance, lfNbHours,isDone);
+                            getPresenter().addMaintenance(mCallback.getCurrentSelectedBike(), lsNameMaintenance, lfNbHours);
                             poDialog.dismiss();
                         }
                     }

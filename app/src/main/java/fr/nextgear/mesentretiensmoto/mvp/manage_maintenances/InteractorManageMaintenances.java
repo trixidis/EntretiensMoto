@@ -34,9 +34,9 @@ public class InteractorManageMaintenances  implements MVPManageMaintenances.Inte
     }
 
     @Override
-    public Completable getMaintenancesForBike(@NonNull Bike poBike) {
+    public Completable getMaintenancesForBike(@NonNull Bike poBike,boolean pbIsDone) {
         return Completable.create(poEmitter -> {
-            List<Maintenance> llMaintenances = MaintenanceDBManager.getInstance().getMaintenancesForBike(poBike);
+            List<Maintenance> llMaintenances = MaintenanceDBManager.getInstance().getMaintenancesForBike(poBike,pbIsDone);
             EventGetMaintenancesForBike loEvent = new EventGetMaintenancesForBike(llMaintenances);
             App.getInstance().getMainThreadBus().post(loEvent);
             poEmitter.onComplete();
