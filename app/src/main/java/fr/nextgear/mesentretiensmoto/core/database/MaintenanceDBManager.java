@@ -59,7 +59,9 @@ public final class MaintenanceDBManager {
         loMaintenance.bike = poBike;
         loMaintenance.isDone = pbIsDone;
         try {
-            return helper.getMaintenanceDao().queryForMatchingArgs(loMaintenance);
+            List<Maintenance> llMaintenancesToReturn = helper.getMaintenanceDao().queryForMatchingArgs(loMaintenance);
+            return llMaintenancesToReturn;
+
         } catch (SQLException e) {
             e.printStackTrace();
             return null;

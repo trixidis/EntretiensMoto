@@ -2,6 +2,8 @@ package fr.nextgear.mesentretiensmoto.mvp.manage_maintenances;
 
 import android.support.annotation.NonNull;
 
+import com.orhanobut.logger.Logger;
+
 import java.sql.Date;
 import java.util.List;
 
@@ -28,6 +30,7 @@ public class InteractorManageMaintenances  implements MVPManageMaintenances.Inte
             loMaintenance.nbHoursMaintenance = pfNbHours;
             loMaintenance.dateMaintenance = new Date(System.currentTimeMillis());
             loMaintenance.isDone = isDone;
+            Logger.e("on ajoute un entretien qui est à "+isDone);
             MaintenanceDBManager.getInstance().addMaintenance(loMaintenance);
             poEmitter.onComplete();
         });
@@ -37,7 +40,7 @@ public class InteractorManageMaintenances  implements MVPManageMaintenances.Inte
     public Completable getMaintenancesForBike(@NonNull Bike poBike,boolean pbIsDone) {
         return Completable.create(poEmitter -> {
             List<Maintenance> llMaintenances = MaintenanceDBManager.getInstance().getMaintenancesForBike(poBike,pbIsDone);
-            EventGetMaintenancesForBike loEvent = new EventGetMaintenancesForBike(llMaintenances);
+            EventGetMaintenancesForBike loEvent = new EventGetMaintenancesForBike(llMaintenances,pbIsDone);
             App.getInstance().getMainThreadBus().post(loEvent);
             poEmitter.onComplete();
         });

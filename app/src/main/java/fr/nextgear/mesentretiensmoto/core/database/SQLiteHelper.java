@@ -8,6 +8,7 @@ import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
+import com.orhanobut.logger.Logger;
 
 import java.sql.SQLException;
 
@@ -22,7 +23,7 @@ public class SQLiteHelper extends OrmLiteSqliteOpenHelper {
 
     //region Fields
     private static final String     DB_NAME = "mes_entretiens_moto.sqlite";
-    private static final int        DB_VERSION = 5;
+    private static final int        DB_VERSION = 6;
 
     private Dao<Bike, Integer>                    bikeDAO= null;
     private Dao<Maintenance, Integer>             maintenanceDAO= null;

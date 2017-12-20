@@ -8,6 +8,7 @@ import com.squareup.otto.Subscribe;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.logging.Logger;
 
 import fr.nextgear.mesentretiensmoto.core.App;
 import fr.nextgear.mesentretiensmoto.core.events.EventGetMaintenancesForBike;
@@ -27,6 +28,7 @@ public class PresenterManageMaintenances extends MvpBasePresenter<MVPManageMaint
 
 
     public PresenterManageMaintenances(@NonNull final Bike poBike,boolean pbIsDone) {
+        com.orhanobut.logger.Logger.e("state of the ISDONE =="+pbIsDone);
         isMaintenancesDone = pbIsDone;
         mInteractorManageMaintenances = new InteractorManageMaintenances();
         App.getInstance().getMainThreadBus().register(this);
@@ -71,15 +73,19 @@ public class PresenterManageMaintenances extends MvpBasePresenter<MVPManageMaint
 
     @Subscribe
     public void onEventGetMaintenancesForBikeReceived(EventGetMaintenancesForBike poEventGetMaintenancesForBike) {
-        if( poEventGetMaintenancesForBike.maintenances != null) {
+        com.orhanobut.logger.Logger.e("bool == "+isMaintenancesDone);
+        if( poEventGetMaintenancesForBike.maintenances != null && poEventGetMaintenancesForBike.isDone == isMaintenancesDone) {
             if(!poEventGetMaintenancesForBike.maintenances.isEmpty()){
-            ArrayList llMaintenances = (ArrayList) poEventGetMaintenancesForBike.maintenances;
+            ArrayList<Maintenance> llMaintenances = (ArrayList) poEventGetMaintenancesForBike.maintenances;
             Collections.sort(llMaintenances, new Comparator<Maintenance>() {
                 @Override
                 public int compare(Maintenance t, Maintenance t1) {
                     return Float.compare(t1.nbHoursMaintenance, t.nbHoursMaintenance);
                 }
             });
+            if(llMaintenances.get(0).isDone!=isMaintenancesDone){
+                return;
+            }
             if (getView() != null && isViewAttached()) {
                 getView().onRetrieveMaintenancesSuccess(llMaintenances);
             }

@@ -24,9 +24,4 @@ public interface TableContracts {
         String BIKE_ID = "maintenance_bike_id";
     }
 
-    interface MaintenancePrevision{
-        String TABLE_NAME = "maintenance_prevision_table";
-        String ID = "id_maintenance_prevision";
-        String MAINTENANCE = "maintenance_maintenance_prevision";
-    }
 }
