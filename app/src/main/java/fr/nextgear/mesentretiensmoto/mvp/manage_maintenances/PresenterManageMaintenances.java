@@ -28,7 +28,6 @@ public class PresenterManageMaintenances extends MvpBasePresenter<MVPManageMaint
 
 
     public PresenterManageMaintenances(@NonNull final Bike poBike,boolean pbIsDone) {
-        com.orhanobut.logger.Logger.e("state of the ISDONE =="+pbIsDone);
         isMaintenancesDone = pbIsDone;
         mInteractorManageMaintenances = new InteractorManageMaintenances();
         App.getInstance().getMainThreadBus().register(this);
@@ -36,8 +35,8 @@ public class PresenterManageMaintenances extends MvpBasePresenter<MVPManageMaint
     }
 
     @Override
-    public void addMaintenance(@NonNull Bike poBike, @NonNull String psMaintenanceName, @NonNull float pfNbHours) {
-        mInteractorManageMaintenances.addMaintenance(poBike, psMaintenanceName, pfNbHours,isMaintenancesDone)
+    public void addMaintenance(@NonNull Bike poBike, @NonNull String psMaintenanceName, @NonNull float pfNbHours, boolean pbIsDone) {
+        mInteractorManageMaintenances.addMaintenance(poBike, psMaintenanceName, pfNbHours,pbIsDone)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> getMaintenancesForBike(poBike), throwable -> {
@@ -74,6 +73,7 @@ public class PresenterManageMaintenances extends MvpBasePresenter<MVPManageMaint
     @Subscribe
     public void onEventGetMaintenancesForBikeReceived(EventGetMaintenancesForBike poEventGetMaintenancesForBike) {
         com.orhanobut.logger.Logger.e("bool == "+isMaintenancesDone);
+        com.orhanobut.logger.Logger.e("ref == "+this);
         if( poEventGetMaintenancesForBike.maintenances != null && poEventGetMaintenancesForBike.isDone == isMaintenancesDone) {
             if(!poEventGetMaintenancesForBike.maintenances.isEmpty()){
             ArrayList<Maintenance> llMaintenances = (ArrayList) poEventGetMaintenancesForBike.maintenances;
@@ -83,9 +83,6 @@ public class PresenterManageMaintenances extends MvpBasePresenter<MVPManageMaint
                     return Float.compare(t1.nbHoursMaintenance, t.nbHoursMaintenance);
                 }
             });
-            if(llMaintenances.get(0).isDone!=isMaintenancesDone){
-                return;
-            }
             if (getView() != null && isViewAttached()) {
                 getView().onRetrieveMaintenancesSuccess(llMaintenances);
             }

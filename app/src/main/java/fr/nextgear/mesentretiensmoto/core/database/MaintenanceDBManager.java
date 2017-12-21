@@ -77,5 +77,6 @@ public final class MaintenanceDBManager {
             return -1;
         }
     }
+
     //endregion
 }

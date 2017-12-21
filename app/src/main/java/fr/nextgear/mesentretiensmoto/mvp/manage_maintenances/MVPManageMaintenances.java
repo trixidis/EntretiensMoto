@@ -27,7 +27,7 @@ public interface MVPManageMaintenances {
     }
 
     interface Presenter extends MvpPresenter<View>{
-        void addMaintenance(@NonNull final Bike poBike,@NonNull final String psMaintenanceName,@NonNull final float pfNbHours);
+        void addMaintenance(@NonNull final Bike poBike,@NonNull final String psMaintenanceName,@NonNull final float pfNbHours, boolean pbIsDone);
         void getMaintenancesForBike(@NonNull final Bike poBike);
 
         void removeMaintenance(@NonNull final Maintenance poMaintenanceToRemove);

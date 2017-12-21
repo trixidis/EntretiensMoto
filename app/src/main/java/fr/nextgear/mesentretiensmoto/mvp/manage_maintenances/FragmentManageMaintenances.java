@@ -25,6 +25,7 @@ import com.hannesdorfmann.fragmentargs.FragmentArgs;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs;
 import com.hannesdorfmann.mosby3.mvp.MvpFragment;
+import com.orhanobut.logger.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +68,19 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
     private List<Maintenance> mMaintenances;
 
     public enum StateMaintenances{
-        TO_DO,DONE;
+        TO_DO {
+            @Override
+            protected boolean getValue() {
+                return false;
+            }
+        },DONE {
+            @Override
+            protected boolean getValue() {
+                return true;
+            }
+        };
+
+        protected abstract boolean getValue();
     }
     //endregion
 
@@ -80,7 +93,7 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
     //region Presenter callback
     @Override
     public MVPManageMaintenances.Presenter createPresenter() {
-        return new PresenterManageMaintenances(mCallback.getCurrentSelectedBike(), mStateMaintenances == StateMaintenances.DONE);
+        return new PresenterManageMaintenances(mCallback.getCurrentSelectedBike(), mStateMaintenances.getValue());
     }
     //endregion
 
@@ -176,18 +189,17 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
     //endregion
 
     //region View events
+
     @OnClick(R.id.FragmentManageMaintenances_FloatingActionButton_AddMaintenanceDone)
     public void onAddMaintenanceClicked() {
         showDialogAddMaintenance(true);
     }
 
-
-
-
     @OnClick(R.id.FragmentManageMaintenances_FloatingActionButton_AddMaintenanceToDo)
     public void onAddMaintenanceToDoClicked() {
         showDialogAddMaintenance(false);
     }
+
     //endregion
 
     //region ViewState
@@ -225,7 +237,7 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
 
     private void showDialogAddMaintenance(boolean isDone) {
         mFloatingActionMenuAddMaintenanceDone.close(true);
-        new MaterialDialog.Builder(getContext())
+        MaterialDialog loDialog = new MaterialDialog.Builder(getContext())
                 .title(R.string.title_add_maintenance)
                 .iconRes(R.drawable.ic_build_black_24dp)
                 .customView(R.layout.layout_custom_dialog, true)
@@ -235,17 +247,20 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
                     if (v != null) {
                         EditText loEditNameMaintenance = v.findViewById(R.id.CustomDialog_EditText_NameMaintenance);
                         EditText loEditNbHoursMaintenance = v.findViewById(R.id.CustomDialog_EditText_NbHoursMaintenance);
-                        if (loEditNbHoursMaintenance.getText().toString().isEmpty() || loEditNameMaintenance.getText().toString().isEmpty()) {
+
+                        if (loEditNbHoursMaintenance.getText().toString().isEmpty() || loEditNameMaintenance.getText().toString().isEmpty() && isDone) {
                             Toasty.warning(getContext(), getString(R.string.toast_please_fill_inputs), Toast.LENGTH_LONG, true).show();
                         } else {
                             String lsNameMaintenance = loEditNameMaintenance.getText().toString();
                             float lfNbHours = Float.parseFloat(loEditNbHoursMaintenance.getText().toString());
-                            getPresenter().addMaintenance(mCallback.getCurrentSelectedBike(), lsNameMaintenance, lfNbHours);
+                            getPresenter().addMaintenance(mCallback.getCurrentSelectedBike(), lsNameMaintenance, lfNbHours,isDone);
                             poDialog.dismiss();
                         }
+
                     }
                 })
-                .show();
+                .build();
+                loDialog.show();
     }
 
     private void runLayoutAnimation(final RecyclerView recyclerView) {
