@@ -7,15 +7,14 @@ package fr.nextgear.mesentretiensmoto.core.database;
 public interface TableContracts {
 
     interface Bike{
-        String TABLE_NAME = "bike_table";
+        String TABLE_NAME = "bike";
         String ID = "id_bike";
         String NAME = "name_bike";
         String MAINTENANCES = "maintenances_bike";
-
     }
 
     interface Maintenance{
-        String TABLE_NAME = "maintenance_table";
+        String TABLE_NAME = "maintenance";
         String ID = "id_maintenance";
         String NAME = "name_maintenance";
         String NB_HOURS = "nb_hours_maintenance";

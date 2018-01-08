@@ -27,6 +27,7 @@ import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs;
 import com.hannesdorfmann.mosby3.mvp.MvpFragment;
 import com.orhanobut.logger.Logger;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,7 +68,7 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
     private ViewState mViewState;
     private List<Maintenance> mMaintenances;
 
-    public enum StateMaintenances{
+    public enum StateMaintenances implements Serializable{
         TO_DO {
             @Override
             protected boolean getValue() {

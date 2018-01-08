@@ -2,6 +2,8 @@ package fr.nextgear.mesentretiensmoto.core;
 
 import android.app.Application;
 
+import java.util.logging.Logger;
+
 import fr.nextgear.mesentretiensmoto.core.bus.MainThreadBus;
 import fr.nextgear.mesentretiensmoto.core.database.BikeDBManager;
 import fr.nextgear.mesentretiensmoto.core.database.MaintenanceDBManager;
@@ -16,11 +18,11 @@ public class App extends Application {
 
     @Override
     public void onCreate() {
-        super.onCreate();
         instance = this;
         mainThreadBus = new MainThreadBus();
-        BikeDBManager.init(getApplicationContext());
-        MaintenanceDBManager.init(getApplicationContext());
+        BikeDBManager.init(this);
+        MaintenanceDBManager.init(this);
+        super.onCreate();
     }
 
     public MainThreadBus getMainThreadBus() {

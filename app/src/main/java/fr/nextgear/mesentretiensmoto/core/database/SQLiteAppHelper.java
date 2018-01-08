@@ -19,26 +19,27 @@ import fr.nextgear.mesentretiensmoto.core.model.Maintenance;
  * Created by adrien on 18/05/2017.
  */
 
-public class SQLiteHelper extends OrmLiteSqliteOpenHelper {
+public class SQLiteAppHelper extends OrmLiteSqliteOpenHelper {
 
     //region Fields
     private static final String     DB_NAME = "mes_entretiens_moto.sqlite";
-    private static final int        DB_VERSION = 6;
+    private static final int        DB_VERSION = 7;
 
     private Dao<Bike, Integer>                    bikeDAO= null;
     private Dao<Maintenance, Integer>             maintenanceDAO= null;
     //endregion
 
     //region Lifecycle events
-    public SQLiteHelper(Context context){
+    public SQLiteAppHelper(Context context){
         super(context, DB_NAME, null, DB_VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase database, ConnectionSource connectionSource) {
         try {
-            TableUtils.createTable(connectionSource, Bike.class);
-            TableUtils.createTable(connectionSource, Maintenance.class);
+            Logger.e("on est dans la creation des tables");
+            TableUtils.createTableIfNotExists(connectionSource, Maintenance.class);
+            TableUtils.createTableIfNotExists(connectionSource, Bike.class);
         } catch (java.sql.SQLException e) {
             e.printStackTrace();
         }
@@ -47,8 +48,8 @@ public class SQLiteHelper extends OrmLiteSqliteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase database, ConnectionSource connectionSource, int oldVersion, int newVersion) {
         try {
-            TableUtils.dropTable(connectionSource, Bike.class, true);
-            TableUtils.dropTable(connectionSource, Maintenance.class, true);
+            TableUtils.dropTable(connectionSource, Bike.class, false);
+            TableUtils.dropTable(connectionSource, Maintenance.class, false);
         } catch (SQLException e) {
             e.printStackTrace();
         }

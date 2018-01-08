@@ -4,8 +4,6 @@ import android.content.Context;
 
 import com.orhanobut.logger.Logger;
 
-import org.apache.log4j.chainsaw.Main;
-
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +17,7 @@ import fr.nextgear.mesentretiensmoto.core.model.Maintenance;
 
 public final class MaintenanceDBManager {
 
-    private SQLiteHelper  helper;
+    private SQLiteAppHelper helper;
     private static MaintenanceDBManager ourInstance;
 
     public static MaintenanceDBManager getInstance() {
@@ -27,7 +25,7 @@ public final class MaintenanceDBManager {
     }
 
     private MaintenanceDBManager(Context context) {
-        helper = new SQLiteHelper(context);
+        helper = new SQLiteAppHelper(context);
     }
 
     public static void init(Context context) {

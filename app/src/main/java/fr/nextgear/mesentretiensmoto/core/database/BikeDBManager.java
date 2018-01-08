@@ -13,7 +13,7 @@ import fr.nextgear.mesentretiensmoto.core.model.Bike;
 
 public final class BikeDBManager {
 
-    private SQLiteHelper  helper;
+    private SQLiteAppHelper helper;
     private static BikeDBManager ourInstance;
 
     public static BikeDBManager getInstance() {
@@ -21,7 +21,7 @@ public final class BikeDBManager {
     }
 
     private BikeDBManager(Context context) {
-        helper = new SQLiteHelper(context);
+        helper = new SQLiteAppHelper(context);
     }
 
     public static void init(Context context) {
