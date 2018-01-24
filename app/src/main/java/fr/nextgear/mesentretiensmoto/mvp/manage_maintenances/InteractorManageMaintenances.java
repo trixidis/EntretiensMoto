@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import com.orhanobut.logger.Logger;
 
 import java.sql.Date;
+import java.sql.SQLException;
 import java.util.List;
 
 import fr.nextgear.mesentretiensmoto.core.App;
@@ -24,15 +25,21 @@ public class InteractorManageMaintenances  implements MVPManageMaintenances.Inte
     @Override
     public Completable addMaintenance(@NonNull final Bike poBike,@NonNull String psMaintenanceName, @NonNull float pfNbHours,boolean isDone) {
         return Completable.create(poEmitter -> {
-            Maintenance loMaintenance = new Maintenance();
-            loMaintenance.bike = poBike;
-            loMaintenance.nameMaintenance = psMaintenanceName;
-            loMaintenance.nbHoursMaintenance = pfNbHours;
-            loMaintenance.dateMaintenance = new Date(System.currentTimeMillis());
-            loMaintenance.isDone = isDone;
+            Maintenance loMaintenance =  new Maintenance.Builder()
+                    .nameMaintenance(psMaintenanceName)
+                    .date(new Date(System.currentTimeMillis()))
+                    .nbHoursMaintenance(pfNbHours)
+                    .bike(poBike)
+                    .isDone(isDone)
+                    .build();
             Logger.e("on ajoute un entretien qui est à "+isDone);
-            MaintenanceDBManager.getInstance().addMaintenance(loMaintenance);
-            poEmitter.onComplete();
+            int result = MaintenanceDBManager.getInstance().addMaintenance(loMaintenance);
+            if (result == 1) {
+                poEmitter.onComplete();
+            }else{
+                poEmitter.onError(new SQLException());
+            }
+
         });
     }
 

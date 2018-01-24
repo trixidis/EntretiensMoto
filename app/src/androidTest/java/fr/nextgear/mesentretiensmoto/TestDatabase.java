@@ -5,8 +5,12 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.sql.Date;
+import java.time.Instant;
+
 import fr.nextgear.mesentretiensmoto.core.App;
 import fr.nextgear.mesentretiensmoto.core.database.MaintenanceDBManager;
+import fr.nextgear.mesentretiensmoto.core.model.Bike;
 import fr.nextgear.mesentretiensmoto.core.model.Maintenance;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -26,15 +30,24 @@ public class TestDatabase {
     @Test
     public void testError() {
         Maintenance loMaintenance;
-        Given :{
-            loMaintenance = new Maintenance();
-            loMaintenance.nameMaintenance = "test";
+        int result = 0;
+        Given:
+        {
+
+            loMaintenance = new Maintenance.Builder()
+                    .nameMaintenance("test")
+                    .date(new Date(1, 1, 1))
+                    .nbHoursMaintenance(50)
+                    .bike(new Bike())
+                    .build();
         }
-        When : {
-            MaintenanceDBManager.getInstance().addMaintenance(loMaintenance);
+        When:
+        {
+            result = MaintenanceDBManager.getInstance().addMaintenance(loMaintenance);
         }
-        Then : {
-            assertThat(MaintenanceDBManager.getInstance().getAllMaintenances()).contains(loMaintenance);
+        Then:
+        {
+            assertThat(result).isEqualTo(1);
         }
     }
 
