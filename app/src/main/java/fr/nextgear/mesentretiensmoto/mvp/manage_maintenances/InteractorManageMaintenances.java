@@ -32,7 +32,6 @@ public class InteractorManageMaintenances  implements MVPManageMaintenances.Inte
                     .bike(poBike)
                     .isDone(isDone)
                     .build();
-            Logger.e("on ajoute un entretien qui est à "+isDone);
             int result = MaintenanceDBManager.getInstance().addMaintenance(loMaintenance);
             if (result == 1) {
                 poEmitter.onComplete();

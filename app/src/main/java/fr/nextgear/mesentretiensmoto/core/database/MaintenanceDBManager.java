@@ -53,12 +53,14 @@ public final class MaintenanceDBManager {
     }
 
     public List<Maintenance> getMaintenancesForBike(Bike poBike,boolean pbIsDone) {
-        Maintenance loMaintenance = new Maintenance();
-        loMaintenance.bike = poBike;
-        loMaintenance.isDone = pbIsDone;
         try {
-            List<Maintenance> llMaintenancesToReturn = helper.getMaintenanceDao().queryForMatchingArgs(loMaintenance);
-            return llMaintenancesToReturn;
+            return helper.getMaintenanceDao()
+                    .queryBuilder()
+                    .where()
+                    .eq(TableContracts.Maintenance.BIKE_ID,poBike.idBike)
+                    .and()
+                    .eq(TableContracts.Maintenance.IS_DONE,pbIsDone)
+                    .query();
 
         } catch (SQLException e) {
             e.printStackTrace();

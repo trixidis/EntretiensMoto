@@ -21,4 +21,7 @@
     <string name="add_maintenance_to_do">Entretien à faire</string>
     <string name="title_done">Faits</string>
     <string name="title_to_do">A faire</string>
+    <string name="ask_maintenance_done">Marquer cet entretien comme terminé ?</string>
+    <string name="yes">Oui</string>
+    <string name="no">Non</string>
 </resources>

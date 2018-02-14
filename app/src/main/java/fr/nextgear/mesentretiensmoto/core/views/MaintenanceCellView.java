@@ -5,6 +5,10 @@ import android.icu.text.DateFormat;
 import android.icu.text.SimpleDateFormat;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.orhanobut.logger.Logger;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import fr.nextgear.mesentretiensmoto.R;
@@ -16,9 +20,12 @@ public class MaintenanceCellView extends BindableLinearLayout<Maintenance> {
     //region Fields
     private static final String FORMAT = "%s H";
     private static final String DATE_FORMAT = "dd/MM/yyyy";
+    private final Context mContext;
 
     @BindView(R.id.manage_maintenance_cell_TextView_nameMaintenance)
     TextView mTextViewNameMaintenance;
+    @BindView(R.id.manage_maintenance_cell_GroupView)
+    ViewGroup mLayout;
     @BindView(R.id.manage_maintenance_cell_TextView_nbHoursMaintenance)
     TextView mTextViewNbHoursMaintenance;
 
@@ -29,6 +36,7 @@ public class MaintenanceCellView extends BindableLinearLayout<Maintenance> {
     //region Constructor
     public MaintenanceCellView(Context poContext) {
         super(poContext);
+        mContext = poContext;
     }
     //endregion
 
@@ -48,6 +56,17 @@ public class MaintenanceCellView extends BindableLinearLayout<Maintenance> {
         mTextViewNameMaintenance.setText(poMaintenance.nameMaintenance);
         mTextViewNbHoursMaintenance.setText(String.format(FORMAT,poMaintenance.nbHoursMaintenance));
         mTextViewDateMaintenance.setText(android.text.format.DateFormat.format(DATE_FORMAT, poMaintenance.dateMaintenance));
+        //TODO : terminer le passe d'un entretien en àà faire à Fait
+        if(!poMaintenance.isDone) {
+            mLayout.setOnClickListener(view -> new MaterialDialog.Builder(mContext)
+                    .content(R.string.ask_maintenance_done)
+                    .positiveText(R.string.yes)
+                    .negativeText(R.string.no)
+                    .onPositive((dialog, which) -> poMaintenance.isDone = true)
+                    .onNegative((dialog, which) -> Logger.e("remain not done "))
+                    .build()
+                    .show());
+        }
     }
 
     @Override
