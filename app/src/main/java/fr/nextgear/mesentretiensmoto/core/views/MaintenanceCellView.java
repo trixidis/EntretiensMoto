@@ -12,6 +12,10 @@ import com.orhanobut.logger.Logger;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import fr.nextgear.mesentretiensmoto.R;
+import fr.nextgear.mesentretiensmoto.core.App;
+import fr.nextgear.mesentretiensmoto.core.bus.MainThreadBus;
+import fr.nextgear.mesentretiensmoto.core.database.MaintenanceDBManager;
+import fr.nextgear.mesentretiensmoto.core.events.EventMarkMaintenanceDone;
 import fr.nextgear.mesentretiensmoto.core.model.Maintenance;
 import io.nlopez.smartadapters.views.BindableLinearLayout;
 
@@ -62,7 +66,9 @@ public class MaintenanceCellView extends BindableLinearLayout<Maintenance> {
                     .content(R.string.ask_maintenance_done)
                     .positiveText(R.string.yes)
                     .negativeText(R.string.no)
-                    .onPositive((dialog, which) -> poMaintenance.isDone = true)
+                    .onPositive((dialog, which) ->{
+                        App.getInstance().getMainThreadBus().post(new EventMarkMaintenanceDone(poMaintenance));
+                    })
                     .onNegative((dialog, which) -> Logger.e("remain not done "))
                     .build()
                     .show());

@@ -52,6 +52,15 @@ public final class MaintenanceDBManager {
         }
     }
 
+    public int updateMaintenance(Maintenance poMaintenance){
+        try{
+            return helper.getMaintenanceDao().update(poMaintenance);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
     public List<Maintenance> getMaintenancesForBike(Bike poBike,boolean pbIsDone) {
         try {
             return helper.getMaintenanceDao()

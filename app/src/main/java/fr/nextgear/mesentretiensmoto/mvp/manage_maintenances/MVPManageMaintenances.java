@@ -24,6 +24,8 @@ public interface MVPManageMaintenances {
         void onRetrieveMaintenancesError();
 
         void onRetrieveMaintenancesSuccess(@NonNull final List<Maintenance> maintenances);
+
+        void onUpdateMaintenance(Maintenance poMaintenance);
     }
 
     interface Presenter extends MvpPresenter<View>{

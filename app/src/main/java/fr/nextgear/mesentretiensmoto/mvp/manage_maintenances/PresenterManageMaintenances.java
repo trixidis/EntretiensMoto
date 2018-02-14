@@ -11,7 +11,9 @@ import java.util.Comparator;
 import java.util.logging.Logger;
 
 import fr.nextgear.mesentretiensmoto.core.App;
+import fr.nextgear.mesentretiensmoto.core.database.MaintenanceDBManager;
 import fr.nextgear.mesentretiensmoto.core.events.EventGetMaintenancesForBike;
+import fr.nextgear.mesentretiensmoto.core.events.EventMarkMaintenanceDone;
 import fr.nextgear.mesentretiensmoto.core.model.Bike;
 import fr.nextgear.mesentretiensmoto.core.model.Maintenance;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -69,6 +71,15 @@ public class PresenterManageMaintenances extends MvpBasePresenter<MVPManageMaint
 
                         });
     }
+
+    @Subscribe
+    public void onEventMarkMaintenanceDoneReceived(EventMarkMaintenanceDone poEvent){
+        MaintenanceDBManager.getInstance().updateMaintenance(poEvent.getMaintenance());
+        if (getView() != null && isViewAttached()){
+            getView().onUpdateMaintenance(poEvent.getMaintenance());
+        }
+    }
+
 
     @Subscribe
     public void onEventGetMaintenancesForBikeReceived(EventGetMaintenancesForBike poEventGetMaintenancesForBike) {

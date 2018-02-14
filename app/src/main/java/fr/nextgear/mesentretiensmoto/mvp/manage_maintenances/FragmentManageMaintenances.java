@@ -187,6 +187,11 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
         }
         setViewState(ViewState.NO_MAINTENACE_TO_SHOW);
     }
+
+    @Override
+    public void onUpdateMaintenance(Maintenance poMaintenance) {
+        presenter.getMaintenancesForBike(mCallback.getCurrentSelectedBike());
+    }
     //endregion
 
     //region View events

@@ -22,8 +22,8 @@ import fr.nextgear.mesentretiensmoto.core.model.Maintenance;
 public class SQLiteAppHelper extends OrmLiteSqliteOpenHelper {
 
     //region Fields
-    private static final String     DB_NAME = "mes_entretiens_moto.sqlite";
-    private static final int        DB_VERSION = 7;
+    private static final String     DB_NAME = "maintenances_bike.sqlite";
+    private static final int        DB_VERSION = 1;
 
     private Dao<Bike, Integer>                    bikeDAO= null;
     private Dao<Maintenance, Integer>             maintenanceDAO= null;
