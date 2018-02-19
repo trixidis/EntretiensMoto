@@ -1,19 +1,19 @@
 package fr.nextgear.mesentretiensmoto.mvp.manage_maintenances;
 
+import android.database.sqlite.SQLiteAbortException;
 import android.support.annotation.NonNull;
-
-import com.orhanobut.logger.Logger;
 
 import java.sql.Date;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 
-import fr.nextgear.mesentretiensmoto.core.App;
 import fr.nextgear.mesentretiensmoto.core.database.MaintenanceDBManager;
-import fr.nextgear.mesentretiensmoto.core.events.EventGetMaintenancesForBike;
 import fr.nextgear.mesentretiensmoto.core.model.Bike;
 import fr.nextgear.mesentretiensmoto.core.model.Maintenance;
 import io.reactivex.Completable;
+import io.reactivex.Observable;
+import io.reactivex.Single;
 
 /**
  * Created by adrien on 22/09/2017.
@@ -23,8 +23,8 @@ public class InteractorManageMaintenances  implements MVPManageMaintenances.Inte
 
 
     @Override
-    public Completable addMaintenance(@NonNull final Bike poBike,@NonNull String psMaintenanceName, @NonNull float pfNbHours,boolean isDone) {
-        return Completable.create(poEmitter -> {
+    public Single<Maintenance> addMaintenance(@NonNull final Bike poBike, @NonNull String psMaintenanceName, @NonNull float pfNbHours, boolean isDone) {
+        return Single.create(poEmitter -> {
             Maintenance loMaintenance =  new Maintenance.Builder()
                     .nameMaintenance(psMaintenanceName)
                     .date(new Date(System.currentTimeMillis()))
@@ -34,7 +34,7 @@ public class InteractorManageMaintenances  implements MVPManageMaintenances.Inte
                     .build();
             int result = MaintenanceDBManager.getInstance().addMaintenance(loMaintenance);
             if (result == 1) {
-                poEmitter.onComplete();
+                poEmitter.onSuccess(loMaintenance);
             }else{
                 poEmitter.onError(new SQLException());
             }
@@ -43,11 +43,13 @@ public class InteractorManageMaintenances  implements MVPManageMaintenances.Inte
     }
 
     @Override
-    public Completable getMaintenancesForBike(@NonNull Bike poBike,boolean pbIsDone) {
-        return Completable.create(poEmitter -> {
+    public Observable<List<Maintenance>> getMaintenancesForBike(@NonNull Bike poBike, boolean pbIsDone) {
+        return Observable.create(poEmitter -> {
             List<Maintenance> llMaintenances = MaintenanceDBManager.getInstance().getMaintenancesForBike(poBike,pbIsDone);
-            EventGetMaintenancesForBike loEvent = new EventGetMaintenancesForBike(llMaintenances,pbIsDone);
-            App.getInstance().getMainThreadBus().post(loEvent);
+            if (llMaintenances != null) {
+                Collections.sort(llMaintenances, (t, t1) -> Float.compare(t1.nbHoursMaintenance, t.nbHoursMaintenance));
+            }
+            poEmitter.onNext(llMaintenances);
             poEmitter.onComplete();
         });
     }
@@ -59,4 +61,18 @@ public class InteractorManageMaintenances  implements MVPManageMaintenances.Inte
             poEmitter.onComplete();
         });
     }
+
+    @Override
+    public Completable setMaintenanceDone(Maintenance maintenance) {
+        return Completable.create(poEmitter -> {
+            maintenance.isDone = true;
+            int res = MaintenanceDBManager.getInstance().updateMaintenance(maintenance);
+            if (res == 1){
+                poEmitter.onComplete();
+            }else{
+                poEmitter.onError(new SQLiteAbortException("update object has not been updated"));
+            }
+        });
+    }
 }
+

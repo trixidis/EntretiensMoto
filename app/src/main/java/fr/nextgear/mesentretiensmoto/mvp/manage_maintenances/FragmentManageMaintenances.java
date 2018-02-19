@@ -2,10 +2,14 @@ package fr.nextgear.mesentretiensmoto.mvp.manage_maintenances;
 
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BaseTransientBottomBar;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -56,8 +60,8 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
     TextView mTextViewNoMaintenanceToShow;
     @BindView(R.id.ActivityManageMaintenances_ViewRoot)
     ViewGroup mViewGroupRoot;
-    @BindView(R.id.FragmentManageMaintenances_FloatingActionMenu_AddMaintenanceDone)
-    FloatingActionMenu mFloatingActionMenuAddMaintenanceDone;
+    @BindView(R.id.FragmentManageMaintenances_FloatingActionButton_AddMaintenance)
+    FloatingActionButton mAddMaintenanceFAB;
 
     @Arg
     StateMaintenances mStateMaintenances;
@@ -124,7 +128,17 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
         mUnbinder = ButterKnife.bind(this, view);
         mRecyclerViewListMaintenances.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerViewListMaintenances.addItemDecoration(new MaterialViewPagerHeaderDecorator());
-
+        mRecyclerViewListMaintenances.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (dy > 0 && mAddMaintenanceFAB.getVisibility() == View.VISIBLE) {
+                    mAddMaintenanceFAB.hide();
+                } else if (dy < 0 && mAddMaintenanceFAB.getVisibility() != View.VISIBLE) {
+                    mAddMaintenanceFAB.show();
+                }
+            }
+        });
         ItemTouchHelper.SimpleCallback loSimpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             private int position;
 
@@ -157,8 +171,11 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
 
         ItemTouchHelper loItemTouchHelper = new ItemTouchHelper(loSimpleItemTouchCallback);
         loItemTouchHelper.attachToRecyclerView(mRecyclerViewListMaintenances);
-        mMultiRecyclerAdaper = SmartAdapter.items(new ArrayList<>()).map(Maintenance.class, MaintenanceCellView.class).into(mRecyclerViewListMaintenances);
+        mMultiRecyclerAdaper = SmartAdapter.empty().map(Maintenance.class, MaintenanceCellView.class).into(mRecyclerViewListMaintenances);
         setViewState(ViewState.IDLE);
+        if (mStateMaintenances == StateMaintenances.DONE){
+            mAddMaintenanceFAB.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getContext(),R.color.accent_color)));
+        }
         return view;
     }
 
@@ -177,10 +194,10 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
 
     @Override
     public void onRetrieveMaintenancesSuccess(@NonNull List<Maintenance> plMaintenances) {
+        mMultiRecyclerAdaper.clearItems();
         if (!plMaintenances.isEmpty()) {
             mMaintenances = plMaintenances;
             setViewState(ViewState.MAINTENANCES_RETRIEVED);
-            mMultiRecyclerAdaper.clearItems();
             mMultiRecyclerAdaper.addItems(mMaintenances);
             runLayoutAnimation(mRecyclerViewListMaintenances);
             return;
@@ -192,18 +209,19 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
     public void onUpdateMaintenance(Maintenance poMaintenance) {
         presenter.getMaintenancesForBike(mCallback.getCurrentSelectedBike());
     }
+
+    @Override
+    public void onMaintenanceAdded(Maintenance poMaintenance) {
+        mMaintenances.add(poMaintenance);
+        mMultiRecyclerAdaper.addItem(poMaintenance);
+    }
     //endregion
 
     //region View events
 
-    @OnClick(R.id.FragmentManageMaintenances_FloatingActionButton_AddMaintenanceDone)
+    @OnClick(R.id.FragmentManageMaintenances_FloatingActionButton_AddMaintenance)
     public void onAddMaintenanceClicked() {
-        showDialogAddMaintenance(true);
-    }
-
-    @OnClick(R.id.FragmentManageMaintenances_FloatingActionButton_AddMaintenanceToDo)
-    public void onAddMaintenanceToDoClicked() {
-        showDialogAddMaintenance(false);
+            showDialogAddMaintenance(mStateMaintenances.getValue());
     }
 
     //endregion
@@ -242,7 +260,6 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
     //region Private Methods
 
     private void showDialogAddMaintenance(boolean isDone) {
-        mFloatingActionMenuAddMaintenanceDone.close(true);
         MaterialDialog loDialog = new MaterialDialog.Builder(getContext())
                 .title(R.string.title_add_maintenance)
                 .iconRes(R.drawable.ic_build_black_24dp)
@@ -273,7 +290,6 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
         final Context context = recyclerView.getContext();
         final LayoutAnimationController controller =
                 AnimationUtils.loadLayoutAnimation(context, R.anim.layout_animation_fall_down);
-
         recyclerView.setLayoutAnimation(controller);
         recyclerView.getAdapter().notifyDataSetChanged();
         recyclerView.scheduleLayoutAnimation();

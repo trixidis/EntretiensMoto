@@ -10,32 +10,25 @@ import android.view.View;
  * Created by FX98589 on 29/09/2017.
  */
 
-public class ScrollingFabBehavior extends FloatingActionButton.Behavior {
-
-
-    //region Constructor
+public class ScrollingFabBehavior extends CoordinatorLayout.Behavior<FloatingActionButton>  {
     public ScrollingFabBehavior(Context context, AttributeSet attrs) {
         super();
     }
-    //endregion
 
     @Override
-    public boolean onStartNestedScroll(CoordinatorLayout parent, FloatingActionButton child, View directTargetChild, View target, int nestedScrollAxes) {
+    public boolean onStartNestedScroll(final CoordinatorLayout coordinatorLayout, final FloatingActionButton child,
+                                       final View directTargetChild, final View target, final int nestedScrollAxes) {
         return true;
     }
 
     @Override
-    public void onNestedScroll(CoordinatorLayout coordinatorLayout, FloatingActionButton child, View target, int dxConsumed,int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
-        super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed,
-                dxUnconsumed, dyUnconsumed);
+    public void onNestedScroll(final CoordinatorLayout coordinatorLayout,
+                               final FloatingActionButton child,
+                               final View target, final int dxConsumed, final int dyConsumed,
+                               final int dxUnconsumed, final int dyUnconsumed) {
+        super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed,dxUnconsumed, dyUnconsumed);
         if (dyConsumed > 0 && child.getVisibility() == View.VISIBLE) {
-            child.hide(new FloatingActionButton.OnVisibilityChangedListener() {
-                @Override
-                public void onHidden(FloatingActionButton fab) {
-                    super.onHidden(fab);
-                    fab.setVisibility(View.INVISIBLE);
-                }
-            });
+            child.hide();
         } else if (dyConsumed < 0 && child.getVisibility() != View.VISIBLE) {
             child.show();
         }

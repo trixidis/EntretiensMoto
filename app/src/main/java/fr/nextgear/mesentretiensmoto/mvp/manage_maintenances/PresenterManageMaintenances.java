@@ -16,6 +16,7 @@ import fr.nextgear.mesentretiensmoto.core.events.EventGetMaintenancesForBike;
 import fr.nextgear.mesentretiensmoto.core.events.EventMarkMaintenanceDone;
 import fr.nextgear.mesentretiensmoto.core.model.Bike;
 import fr.nextgear.mesentretiensmoto.core.model.Maintenance;
+import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
@@ -29,7 +30,7 @@ public class PresenterManageMaintenances extends MvpBasePresenter<MVPManageMaint
     private boolean isMaintenancesDone;
 
 
-    public PresenterManageMaintenances(@NonNull final Bike poBike,boolean pbIsDone) {
+    public PresenterManageMaintenances(@NonNull final Bike poBike, boolean pbIsDone) {
         isMaintenancesDone = pbIsDone;
         mInteractorManageMaintenances = new InteractorManageMaintenances();
         App.getInstance().getMainThreadBus().register(this);
@@ -38,24 +39,35 @@ public class PresenterManageMaintenances extends MvpBasePresenter<MVPManageMaint
 
     @Override
     public void addMaintenance(@NonNull Bike poBike, @NonNull String psMaintenanceName, @NonNull float pfNbHours, boolean pbIsDone) {
-        mInteractorManageMaintenances.addMaintenance(poBike, psMaintenanceName, pfNbHours,pbIsDone)
+        mInteractorManageMaintenances.addMaintenance(poBike, psMaintenanceName, pfNbHours, pbIsDone)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> getMaintenancesForBike(poBike), throwable -> {
+                .subscribe(poMaintenance ->
+                        {
+                            if (getView() != null && isViewAttached()){
+                                getView().onMaintenanceAdded(poMaintenance);
+                            }
+                        }
+
+                        , throwable -> {
                 });
     }
 
     @Override
     public void getMaintenancesForBike(@NonNull Bike poBike) {
-        mInteractorManageMaintenances.getMaintenancesForBike(poBike,isMaintenancesDone)
+        mInteractorManageMaintenances.getMaintenancesForBike(poBike, isMaintenancesDone)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.newThread())
-                .subscribe(() -> {
-
-                }, throwable -> {
+                .subscribe(ploMaintenances -> {
+                    if (getView() != null && isViewAttached()) {
+                        getView().onRetrieveMaintenancesSuccess(ploMaintenances);
+                    }
+                },throwable -> {
                     if (getView() != null && isViewAttached()) {
                         getView().onRetrieveMaintenancesError();
                     }
+                } ,() -> {
+
                 });
     }
 
@@ -73,32 +85,18 @@ public class PresenterManageMaintenances extends MvpBasePresenter<MVPManageMaint
     }
 
     @Subscribe
-    public void onEventMarkMaintenanceDoneReceived(EventMarkMaintenanceDone poEvent){
-        MaintenanceDBManager.getInstance().updateMaintenance(poEvent.getMaintenance());
-        if (getView() != null && isViewAttached()){
-            getView().onUpdateMaintenance(poEvent.getMaintenance());
-        }
-    }
-
-
-    @Subscribe
-    public void onEventGetMaintenancesForBikeReceived(EventGetMaintenancesForBike poEventGetMaintenancesForBike) {
-        com.orhanobut.logger.Logger.e("bool == "+isMaintenancesDone);
-        com.orhanobut.logger.Logger.e("ref == "+this);
-        if( poEventGetMaintenancesForBike.maintenances != null && poEventGetMaintenancesForBike.isDone == isMaintenancesDone) {
-            if(!poEventGetMaintenancesForBike.maintenances.isEmpty()){
-            ArrayList<Maintenance> llMaintenances = (ArrayList) poEventGetMaintenancesForBike.maintenances;
-            Collections.sort(llMaintenances, new Comparator<Maintenance>() {
-                @Override
-                public int compare(Maintenance t, Maintenance t1) {
-                    return Float.compare(t1.nbHoursMaintenance, t.nbHoursMaintenance);
-                }
-            });
-            if (getView() != null && isViewAttached()) {
-                getView().onRetrieveMaintenancesSuccess(llMaintenances);
-            }
-            }
-        }
+    public void onEventMarkMaintenanceDoneReceived(EventMarkMaintenanceDone poEvent) {
+        mInteractorManageMaintenances.setMaintenanceDone(poEvent.getMaintenance())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.newThread())
+                .subscribe(() -> {
+                            if (getView() != null && isViewAttached()) {
+                                getView().onUpdateMaintenance(poEvent.getMaintenance());
+                            }
+                        },
+                        throwable -> {
+                            //TODO : handle error
+                        });
     }
 
 }
