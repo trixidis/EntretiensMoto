@@ -19,23 +19,30 @@ import io.reactivex.Single;
  * Created by adrien on 22/09/2017.
  */
 
-public class InteractorManageMaintenances  implements MVPManageMaintenances.Interactor {
+public class InteractorManageMaintenances implements MVPManageMaintenances.Interactor {
 
+
+    //region Fields
+
+    private static final int MAINTENANCE_NOT_DONE_NB_HOURS = -1;
+
+    //endregion Fields
 
     @Override
     public Single<Maintenance> addMaintenance(@NonNull final Bike poBike, @NonNull String psMaintenanceName, @NonNull float pfNbHours, boolean isDone) {
         return Single.create(poEmitter -> {
-            Maintenance loMaintenance =  new Maintenance.Builder()
-                    .nameMaintenance(psMaintenanceName)
+            Maintenance.Builder loMaintenancebuilder = new Maintenance.Builder();
+            loMaintenancebuilder.nameMaintenance(psMaintenanceName)
                     .date(new Date(System.currentTimeMillis()))
-                    .nbHoursMaintenance(pfNbHours)
+                    //if maintenance is done we give the numbers of hours filled by the user else its set to -1
+                    .nbHoursMaintenance(isDone ? pfNbHours : MAINTENANCE_NOT_DONE_NB_HOURS)
                     .bike(poBike)
-                    .isDone(isDone)
-                    .build();
+                    .isDone(isDone);
+            Maintenance loMaintenance = loMaintenancebuilder.build();
             int result = MaintenanceDBManager.getInstance().addMaintenance(loMaintenance);
             if (result == 1) {
                 poEmitter.onSuccess(loMaintenance);
-            }else{
+            } else {
                 poEmitter.onError(new SQLException());
             }
 
@@ -45,7 +52,7 @@ public class InteractorManageMaintenances  implements MVPManageMaintenances.Inte
     @Override
     public Observable<List<Maintenance>> getMaintenancesForBike(@NonNull Bike poBike, boolean pbIsDone) {
         return Observable.create(poEmitter -> {
-            List<Maintenance> llMaintenances = MaintenanceDBManager.getInstance().getMaintenancesForBike(poBike,pbIsDone);
+            List<Maintenance> llMaintenances = MaintenanceDBManager.getInstance().getMaintenancesForBike(poBike, pbIsDone);
             if (llMaintenances != null) {
                 Collections.sort(llMaintenances, (t, t1) -> Float.compare(t1.nbHoursMaintenance, t.nbHoursMaintenance));
             }
@@ -67,9 +74,9 @@ public class InteractorManageMaintenances  implements MVPManageMaintenances.Inte
         return Completable.create(poEmitter -> {
             maintenance.isDone = true;
             int res = MaintenanceDBManager.getInstance().updateMaintenance(maintenance);
-            if (res == 1){
+            if (res == 1) {
                 poEmitter.onComplete();
-            }else{
+            } else {
                 poEmitter.onError(new SQLiteAbortException("update object has not been updated"));
             }
         });

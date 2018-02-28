@@ -260,6 +260,7 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
     //region Private Methods
 
     private void showDialogAddMaintenance(boolean isDone) {
+        //TODO : change the layout if we are adding a maintenance that is not done to don't display the hours field
         MaterialDialog loDialog = new MaterialDialog.Builder(getContext())
                 .title(R.string.title_add_maintenance)
                 .iconRes(R.drawable.ic_build_black_24dp)
@@ -271,7 +272,7 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
                         EditText loEditNameMaintenance = v.findViewById(R.id.CustomDialog_EditText_NameMaintenance);
                         EditText loEditNbHoursMaintenance = v.findViewById(R.id.CustomDialog_EditText_NbHoursMaintenance);
 
-                        if (loEditNbHoursMaintenance.getText().toString().isEmpty() || loEditNameMaintenance.getText().toString().isEmpty() && isDone) {
+                        if (loEditNbHoursMaintenance.getText().toString().isEmpty() || loEditNameMaintenance.getText().toString().isEmpty()) {
                             Toasty.warning(getContext(), getString(R.string.toast_please_fill_inputs), Toast.LENGTH_LONG, true).show();
                         } else {
                             String lsNameMaintenance = loEditNameMaintenance.getText().toString();
