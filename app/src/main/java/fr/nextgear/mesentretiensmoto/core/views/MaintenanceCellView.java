@@ -63,7 +63,6 @@ public class MaintenanceCellView extends BindableLinearLayout<Maintenance> {
             mTextViewNbHoursMaintenance.setText(String.format(FORMAT,poMaintenance.nbHoursMaintenance));
         }
         mTextViewDateMaintenance.setText(android.text.format.DateFormat.format(DATE_FORMAT, poMaintenance.dateMaintenance));
-        //TODO : terminer le passe d'un entretien en àà faire à Fait
         if(!poMaintenance.isDone) {
             mLayout.setOnClickListener(view -> new MaterialDialog.Builder(mContext)
                     .content(R.string.ask_maintenance_done)

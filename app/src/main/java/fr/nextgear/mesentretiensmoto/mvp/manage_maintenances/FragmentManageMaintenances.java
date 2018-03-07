@@ -3,7 +3,6 @@ package fr.nextgear.mesentretiensmoto.mvp.manage_maintenances;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BaseTransientBottomBar;
@@ -23,13 +22,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.github.clans.fab.FloatingActionMenu;
 import com.github.florent37.materialviewpager.header.MaterialViewPagerHeaderDecorator;
 import com.hannesdorfmann.fragmentargs.FragmentArgs;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs;
 import com.hannesdorfmann.mosby3.mvp.MvpFragment;
-import com.orhanobut.logger.Logger;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -215,6 +212,34 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
         mMaintenances.add(poMaintenance);
         mMultiRecyclerAdaper.addItem(poMaintenance);
     }
+
+    @Override
+    public void onAskMarkMaitenanceDone(Maintenance poMaintenance) {
+        MaterialDialog loDialog = new MaterialDialog.Builder(getContext())
+                .title(R.string.title_mark_maintenance_done)
+                //.content(poMaintenance.nameMaintenance)
+                .iconRes(R.drawable.ic_build_black_24dp)
+                .customView(R.layout.layout_dialog_mark_maintenance_done, true)
+                .positiveText(R.string.positive)
+                .onPositive((poDialog, which) -> {
+                    View v = poDialog.getCustomView();
+                    if (v != null) {
+                        EditText loEditNbHoursMaintenance = v.findViewById(R.id.DialogMarkMaintenanceDone_EditText_NbHoursMaintenance);
+
+                        if (loEditNbHoursMaintenance.getText().toString().isEmpty() ) {
+                            Toasty.warning(getContext(), getString(R.string.toast_please_fill_inputs), Toast.LENGTH_LONG, true).show();
+                        } else {
+                            float lfNbHours = Float.parseFloat(loEditNbHoursMaintenance.getText().toString());
+                            poMaintenance.nbHoursMaintenance = lfNbHours;
+                            getPresenter().updateMaintenaceToDone(poMaintenance);
+                            poDialog.dismiss();
+                        }
+
+                    }
+                })
+                .build();
+        loDialog.show();
+    }
     //endregion
 
     //region View events
@@ -260,31 +285,56 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
     //region Private Methods
 
     private void showDialogAddMaintenance(boolean isDone) {
-        //TODO : change the layout if we are adding a maintenance that is not done to don't display the hours field
-        MaterialDialog loDialog = new MaterialDialog.Builder(getContext())
-                .title(R.string.title_add_maintenance)
-                .iconRes(R.drawable.ic_build_black_24dp)
-                .customView(R.layout.layout_custom_dialog, true)
-                .positiveText(R.string.positive)
-                .onPositive((poDialog, which) -> {
-                    View v = poDialog.getCustomView();
-                    if (v != null) {
-                        EditText loEditNameMaintenance = v.findViewById(R.id.CustomDialog_EditText_NameMaintenance);
-                        EditText loEditNbHoursMaintenance = v.findViewById(R.id.CustomDialog_EditText_NbHoursMaintenance);
+        //TODO : refactor this code
+        if(isDone){
+            MaterialDialog loDialog = new MaterialDialog.Builder(getContext())
+                    .title(R.string.title_add_maintenance)
+                    .iconRes(R.drawable.ic_build_black_24dp)
+                    .customView(R.layout.layout_dialog_add_maintenance_done, true)
+                    .positiveText(R.string.positive)
+                    .onPositive((poDialog, which) -> {
+                        View v = poDialog.getCustomView();
+                        if (v != null) {
+                            EditText loEditNameMaintenance = v.findViewById(R.id.CustomDialog_EditText_NameMaintenance);
+                            EditText loEditNbHoursMaintenance = v.findViewById(R.id.CustomDialog_EditText_NbHoursMaintenance);
 
-                        if (loEditNbHoursMaintenance.getText().toString().isEmpty() || loEditNameMaintenance.getText().toString().isEmpty()) {
-                            Toasty.warning(getContext(), getString(R.string.toast_please_fill_inputs), Toast.LENGTH_LONG, true).show();
-                        } else {
-                            String lsNameMaintenance = loEditNameMaintenance.getText().toString();
-                            float lfNbHours = Float.parseFloat(loEditNbHoursMaintenance.getText().toString());
-                            getPresenter().addMaintenance(mCallback.getCurrentSelectedBike(), lsNameMaintenance, lfNbHours,isDone);
-                            poDialog.dismiss();
+                            if (loEditNbHoursMaintenance.getText().toString().isEmpty() || loEditNameMaintenance.getText().toString().isEmpty()) {
+                                Toasty.warning(getContext(), getString(R.string.toast_please_fill_inputs), Toast.LENGTH_LONG, true).show();
+                            } else {
+                                String lsNameMaintenance = loEditNameMaintenance.getText().toString();
+                                float lfNbHours = Float.parseFloat(loEditNbHoursMaintenance.getText().toString());
+                                getPresenter().addMaintenance(mCallback.getCurrentSelectedBike(), lsNameMaintenance, lfNbHours,isDone);
+                                poDialog.dismiss();
+                            }
+
                         }
+                    })
+                    .build();
+            loDialog.show();
+        }else {
+            MaterialDialog loDialog = new MaterialDialog.Builder(getContext())
+                    .title(R.string.title_add_maintenance_to_do)
+                    .iconRes(R.drawable.ic_build_black_24dp)
+                    .customView(R.layout.layout_dialog_add_maintenance_not_done, true)
+                    .positiveText(R.string.positive)
+                    .onPositive((poDialog, which) -> {
+                        View v = poDialog.getCustomView();
+                        if (v != null) {
+                            EditText loEditNameMaintenance = v.findViewById(R.id.DialogAddMaintenanceToDo_EditText_NameMaintenance);
 
-                    }
-                })
-                .build();
-                loDialog.show();
+                            if ( loEditNameMaintenance.getText().toString().isEmpty()) {
+                                Toasty.warning(getContext(), getString(R.string.toast_please_fill_inputs), Toast.LENGTH_LONG, true).show();
+                            } else {
+                                String lsNameMaintenance = loEditNameMaintenance.getText().toString();
+                                getPresenter().addMaintenance(mCallback.getCurrentSelectedBike(), lsNameMaintenance, 0, isDone);
+                                poDialog.dismiss();
+                            }
+
+                        }
+                    })
+                    .build();
+            loDialog.show();
+        }
     }
 
     private void runLayoutAnimation(final RecyclerView recyclerView) {

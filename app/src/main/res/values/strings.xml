@@ -24,4 +24,7 @@
     <string name="ask_maintenance_done">Marquer cet entretien comme terminé ?</string>
     <string name="yes">Oui</string>
     <string name="no">Non</string>
+    <string name="title_add_maintenance_to_do">Ajout d\'un entretien à faire</string>
+    <string name="title_mark_maintenance_done">Marquer cet entretien comme terminé</string>
+    <string name="message_add_maintenance_fill_nb_hours">Veuillez renseigner le nombre d\'heures auquel vous avez effectué cet entretien</string>
 </resources>

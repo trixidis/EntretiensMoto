@@ -33,6 +33,8 @@ public class PresenterManageMaintenances extends MvpBasePresenter<MVPManageMaint
     public PresenterManageMaintenances(@NonNull final Bike poBike, boolean pbIsDone) {
         isMaintenancesDone = pbIsDone;
         mInteractorManageMaintenances = new InteractorManageMaintenances();
+        /*TODO : problem we have two presenters instantiated because we have two fragments
+        TODO : so we go two bus registered and we listen for the events two times*/
         App.getInstance().getMainThreadBus().register(this);
         getMaintenancesForBike(poBike);
     }
@@ -44,13 +46,13 @@ public class PresenterManageMaintenances extends MvpBasePresenter<MVPManageMaint
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(poMaintenance ->
                         {
-                            if (getView() != null && isViewAttached()){
+                            if (getView() != null && isViewAttached()) {
                                 getView().onMaintenanceAdded(poMaintenance);
                             }
                         }
 
                         , throwable -> {
-                });
+                        });
     }
 
     @Override
@@ -62,11 +64,11 @@ public class PresenterManageMaintenances extends MvpBasePresenter<MVPManageMaint
                     if (getView() != null && isViewAttached()) {
                         getView().onRetrieveMaintenancesSuccess(ploMaintenances);
                     }
-                },throwable -> {
+                }, throwable -> {
                     if (getView() != null && isViewAttached()) {
                         getView().onRetrieveMaintenancesError();
                     }
-                } ,() -> {
+                }, () -> {
 
                 });
     }
@@ -84,19 +86,26 @@ public class PresenterManageMaintenances extends MvpBasePresenter<MVPManageMaint
                         });
     }
 
-    @Subscribe
-    public void onEventMarkMaintenanceDoneReceived(EventMarkMaintenanceDone poEvent) {
-        mInteractorManageMaintenances.setMaintenanceDone(poEvent.getMaintenance())
+    @Override
+    public void updateMaintenaceToDone(@NonNull Maintenance poMaintenance) {
+        mInteractorManageMaintenances.setMaintenanceDone(poMaintenance)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.newThread())
                 .subscribe(() -> {
                             if (getView() != null && isViewAttached()) {
-                                getView().onUpdateMaintenance(poEvent.getMaintenance());
+                                getView().onUpdateMaintenance(poMaintenance);
                             }
                         },
                         throwable -> {
                             //TODO : handle error
                         });
+    }
+
+    @Subscribe
+    public void onEventMarkMaintenanceDoneReceived(EventMarkMaintenanceDone poEvent) {
+        if (getView() != null && isViewAttached()) {
+            getView().onAskMarkMaitenanceDone(poEvent.getMaintenance());
+        }
     }
 
 }

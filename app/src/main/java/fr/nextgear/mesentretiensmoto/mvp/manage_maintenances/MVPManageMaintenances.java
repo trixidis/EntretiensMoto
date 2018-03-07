@@ -28,13 +28,15 @@ public interface MVPManageMaintenances {
         void onUpdateMaintenance(Maintenance poMaintenance);
 
         void onMaintenanceAdded(Maintenance poMaintenance);
+
+        void onAskMarkMaitenanceDone(Maintenance poMaintenance);
     }
 
     interface Presenter extends MvpPresenter<View>{
         void addMaintenance(@NonNull final Bike poBike,@NonNull final String psMaintenanceName,@NonNull final float pfNbHours, boolean pbIsDone);
         void getMaintenancesForBike(@NonNull final Bike poBike);
-
         void removeMaintenance(@NonNull final Maintenance poMaintenanceToRemove);
+        void updateMaintenaceToDone(@NonNull final Maintenance poMaintenance);
     }
 
     interface Interactor {
