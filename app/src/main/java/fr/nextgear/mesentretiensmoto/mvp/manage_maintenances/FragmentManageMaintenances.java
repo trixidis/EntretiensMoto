@@ -52,7 +52,7 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
 
     //region Fields
     @BindView(R.id.FragmentManageMaintenances_RecyclerView_ListMaintenances)
-       RecyclerView mRecyclerViewListMaintenances;
+    RecyclerView mRecyclerViewListMaintenances;
     @BindView(R.id.FragmentManageMaintenances_TextView_NoMaintenanceToShow)
     TextView mTextViewNoMaintenanceToShow;
     @BindView(R.id.ActivityManageMaintenances_ViewRoot)
@@ -68,14 +68,15 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
     private RecyclerMultiAdapter mMultiRecyclerAdaper;
     private ViewState mViewState;
     private List<Maintenance> mMaintenances;
+    private Snackbar mSnackbar;
 
-    public enum StateMaintenances implements Serializable{
+    public enum StateMaintenances implements Serializable {
         TO_DO {
             @Override
             protected boolean getValue() {
                 return false;
             }
-        },DONE {
+        }, DONE {
             @Override
             protected boolean getValue() {
                 return true;
@@ -147,31 +148,42 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 position = viewHolder.getAdapterPosition();
-                final List<Maintenance> llMaintenances = new ArrayList<>(mMaintenances);
+                List<Maintenance> llMaintenances = new ArrayList<>(mMaintenances);
                 final Maintenance loMaintenanceToRemove = mMaintenances.get(position);
                 mMultiRecyclerAdaper.delItem(mMaintenances.get(position));
-                Snackbar.make(mViewGroupRoot, R.string.text_delete_maitenance, Snackbar.LENGTH_LONG).setAction(R.string.cancel, view
-                        -> mMultiRecyclerAdaper.notifyDataSetChanged()).addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
-                    @Override
-                    public void onDismissed(Snackbar transientBottomBar, int event) {
-                        super.onDismissed(transientBottomBar, event);
-                        if (event == 1) {//Cancel button clicked
-                            mMaintenances = llMaintenances;
-                            mMultiRecyclerAdaper.setItems(mMaintenances);
-                        } else if (event == 2 || event == 3) {//let the Snackbar be dismissed by herself
-                            getPresenter().removeMaintenance(loMaintenanceToRemove);
-                        }
-                    }
-                }).show();
+                //TODO : correct the remove of multiple items
+                Snackbar.make(mViewGroupRoot,
+                        R.string.text_delete_maitenance,
+                        Snackbar.LENGTH_LONG)
+                        .setAction(R.string.cancel, view ->
+                                mMultiRecyclerAdaper.notifyDataSetChanged()).addCallback(
+                        new BaseTransientBottomBar.BaseCallback<Snackbar>() {
+                            @Override
+                            public void onDismissed(Snackbar transientBottomBar, int event) {
+                                super.onDismissed(transientBottomBar, event);
+                                if (event == Snackbar.Callback.DISMISS_EVENT_ACTION) {
+                                    mMaintenances = llMaintenances;
+                                    mMultiRecyclerAdaper.setItems(mMaintenances);
+                                } else {
+                                    mMaintenances.remove(loMaintenanceToRemove);
+                                    mMultiRecyclerAdaper.delItem(loMaintenanceToRemove);
+                                    getPresenter().removeMaintenance(loMaintenanceToRemove);
+                                }
+                            }
+                        }).show();
             }
         };
 
         ItemTouchHelper loItemTouchHelper = new ItemTouchHelper(loSimpleItemTouchCallback);
         loItemTouchHelper.attachToRecyclerView(mRecyclerViewListMaintenances);
-        mMultiRecyclerAdaper = SmartAdapter.empty().map(Maintenance.class, MaintenanceCellView.class).into(mRecyclerViewListMaintenances);
+        mMultiRecyclerAdaper = SmartAdapter
+                .empty()
+                .map(Maintenance.class, MaintenanceCellView.class)
+                .into(mRecyclerViewListMaintenances);
         setViewState(ViewState.IDLE);
-        if (mStateMaintenances == StateMaintenances.DONE){
-            mAddMaintenanceFAB.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getContext(),R.color.accent_color)));
+        if (mStateMaintenances == StateMaintenances.DONE) {
+            mAddMaintenanceFAB.setBackgroundTintList(ColorStateList
+                            .valueOf(ContextCompat.getColor(getContext(), R.color.accent_color)));
         }
         return view;
     }
@@ -208,12 +220,6 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
     }
 
     @Override
-    public void onMaintenanceAdded(Maintenance poMaintenance) {
-        mMaintenances.add(poMaintenance);
-        mMultiRecyclerAdaper.addItem(poMaintenance);
-    }
-
-    @Override
     public void onAskMarkMaitenanceDone(Maintenance poMaintenance) {
         MaterialDialog loDialog = new MaterialDialog.Builder(getContext())
                 .title(R.string.title_mark_maintenance_done)
@@ -226,7 +232,7 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
                     if (v != null) {
                         EditText loEditNbHoursMaintenance = v.findViewById(R.id.DialogMarkMaintenanceDone_EditText_NbHoursMaintenance);
 
-                        if (loEditNbHoursMaintenance.getText().toString().isEmpty() ) {
+                        if (loEditNbHoursMaintenance.getText().toString().isEmpty()) {
                             Toasty.warning(getContext(), getString(R.string.toast_please_fill_inputs), Toast.LENGTH_LONG, true).show();
                         } else {
                             float lfNbHours = Float.parseFloat(loEditNbHoursMaintenance.getText().toString());
@@ -246,7 +252,7 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
 
     @OnClick(R.id.FragmentManageMaintenances_FloatingActionButton_AddMaintenance)
     public void onAddMaintenanceClicked() {
-            showDialogAddMaintenance(mStateMaintenances.getValue());
+        showDialogAddMaintenance(mStateMaintenances.getValue());
     }
 
     //endregion
@@ -286,7 +292,7 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
 
     private void showDialogAddMaintenance(boolean isDone) {
         //TODO : refactor this code
-        if(isDone){
+        if (isDone) {
             MaterialDialog loDialog = new MaterialDialog.Builder(getContext())
                     .title(R.string.title_add_maintenance)
                     .iconRes(R.drawable.ic_build_black_24dp)
@@ -303,7 +309,7 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
                             } else {
                                 String lsNameMaintenance = loEditNameMaintenance.getText().toString();
                                 float lfNbHours = Float.parseFloat(loEditNbHoursMaintenance.getText().toString());
-                                getPresenter().addMaintenance(mCallback.getCurrentSelectedBike(), lsNameMaintenance, lfNbHours,isDone);
+                                getPresenter().addMaintenance(mCallback.getCurrentSelectedBike(), lsNameMaintenance, lfNbHours, isDone);
                                 poDialog.dismiss();
                             }
 
@@ -311,7 +317,7 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
                     })
                     .build();
             loDialog.show();
-        }else {
+        } else {
             MaterialDialog loDialog = new MaterialDialog.Builder(getContext())
                     .title(R.string.title_add_maintenance_to_do)
                     .iconRes(R.drawable.ic_build_black_24dp)
@@ -322,7 +328,7 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
                         if (v != null) {
                             EditText loEditNameMaintenance = v.findViewById(R.id.DialogAddMaintenanceToDo_EditText_NameMaintenance);
 
-                            if ( loEditNameMaintenance.getText().toString().isEmpty()) {
+                            if (loEditNameMaintenance.getText().toString().isEmpty()) {
                                 Toasty.warning(getContext(), getString(R.string.toast_please_fill_inputs), Toast.LENGTH_LONG, true).show();
                             } else {
                                 String lsNameMaintenance = loEditNameMaintenance.getText().toString();

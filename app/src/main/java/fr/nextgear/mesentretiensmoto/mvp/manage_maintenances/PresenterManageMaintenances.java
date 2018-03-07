@@ -14,6 +14,7 @@ import fr.nextgear.mesentretiensmoto.core.App;
 import fr.nextgear.mesentretiensmoto.core.database.MaintenanceDBManager;
 import fr.nextgear.mesentretiensmoto.core.events.EventGetMaintenancesForBike;
 import fr.nextgear.mesentretiensmoto.core.events.EventMarkMaintenanceDone;
+import fr.nextgear.mesentretiensmoto.core.events.EventUpdateMaintenancesListForBike;
 import fr.nextgear.mesentretiensmoto.core.model.Bike;
 import fr.nextgear.mesentretiensmoto.core.model.Maintenance;
 import io.reactivex.Scheduler;
@@ -28,13 +29,13 @@ public class PresenterManageMaintenances extends MvpBasePresenter<MVPManageMaint
 
     private InteractorManageMaintenances mInteractorManageMaintenances;
     private boolean isMaintenancesDone;
+    private Bike mCurrentBike;
 
 
     public PresenterManageMaintenances(@NonNull final Bike poBike, boolean pbIsDone) {
+        mCurrentBike = poBike;
         isMaintenancesDone = pbIsDone;
         mInteractorManageMaintenances = new InteractorManageMaintenances();
-        /*TODO : problem we have two presenters instantiated because we have two fragments
-        TODO : so we go two bus registered and we listen for the events two times*/
         App.getInstance().getMainThreadBus().register(this);
         getMaintenancesForBike(poBike);
     }
@@ -46,9 +47,10 @@ public class PresenterManageMaintenances extends MvpBasePresenter<MVPManageMaint
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(poMaintenance ->
                         {
-                            if (getView() != null && isViewAttached()) {
-                                getView().onMaintenanceAdded(poMaintenance);
-                            }
+//                            if (getView() != null && isViewAttached()) {
+//                                getView().onMaintenanceAdded(poMaintenance);
+//                            }
+                            getMaintenancesForBike(mCurrentBike);
                         }
 
                         , throwable -> {
@@ -92,9 +94,10 @@ public class PresenterManageMaintenances extends MvpBasePresenter<MVPManageMaint
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.newThread())
                 .subscribe(() -> {
-                            if (getView() != null && isViewAttached()) {
-                                getView().onUpdateMaintenance(poMaintenance);
-                            }
+            App.getInstance().getMainThreadBus().post(new EventUpdateMaintenancesListForBike());
+//                            if (getView() != null && isViewAttached()) {
+//                                getView().onUpdateMaintenance(poMaintenance);
+//                            }
                         },
                         throwable -> {
                             //TODO : handle error
@@ -103,9 +106,16 @@ public class PresenterManageMaintenances extends MvpBasePresenter<MVPManageMaint
 
     @Subscribe
     public void onEventMarkMaintenanceDoneReceived(EventMarkMaintenanceDone poEvent) {
-        if (getView() != null && isViewAttached()) {
-            getView().onAskMarkMaitenanceDone(poEvent.getMaintenance());
+        if(poEvent.getMaintenance().isDone == isMaintenancesDone) {
+            if (getView() != null && isViewAttached()) {
+                getView().onAskMarkMaitenanceDone(poEvent.getMaintenance());
+            }
         }
+    }
+
+    @Subscribe
+    public void onEventUpdateMaintenancesListForBikeReceived(EventUpdateMaintenancesListForBike poEvent) {
+        getMaintenancesForBike(mCurrentBike);
     }
 
 }

@@ -27,7 +27,7 @@ public interface MVPManageMaintenances {
 
         void onUpdateMaintenance(Maintenance poMaintenance);
 
-        void onMaintenanceAdded(Maintenance poMaintenance);
+//        void onMaintenanceAdded(Maintenance poMaintenance);
 
         void onAskMarkMaitenanceDone(Maintenance poMaintenance);
     }
