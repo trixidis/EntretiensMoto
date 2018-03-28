@@ -220,12 +220,6 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
     }
 
     @Override
-    public void onMaintenanceAdded(Maintenance poMaintenance) {
-        mMaintenances.add(poMaintenance);
-        mMultiRecyclerAdaper.addItem(poMaintenance);
-    }
-
-    @Override
     public void onAskMarkMaitenanceDone(Maintenance poMaintenance) {
         MaterialDialog loDialog = new MaterialDialog.Builder(getContext())
                 .title(R.string.title_mark_maintenance_done)
