@@ -67,7 +67,7 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
     private Unbinder mUnbinder;
     private RecyclerMultiAdapter mMultiRecyclerAdaper;
     private ViewState mViewState;
-    private List<Maintenance> mMaintenances;
+    private List<Maintenance> mMaintenances = new ArrayList<>();
 
     public enum StateMaintenances implements Serializable{
         TO_DO {

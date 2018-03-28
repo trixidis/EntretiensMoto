@@ -14,6 +14,7 @@ import fr.nextgear.mesentretiensmoto.core.App;
 import fr.nextgear.mesentretiensmoto.core.database.MaintenanceDBManager;
 import fr.nextgear.mesentretiensmoto.core.events.EventGetMaintenancesForBike;
 import fr.nextgear.mesentretiensmoto.core.events.EventMarkMaintenanceDone;
+import fr.nextgear.mesentretiensmoto.core.events.EventRefreshMaintenances;
 import fr.nextgear.mesentretiensmoto.core.model.Bike;
 import fr.nextgear.mesentretiensmoto.core.model.Maintenance;
 import io.reactivex.Scheduler;
@@ -30,7 +31,7 @@ public class PresenterManageMaintenances extends MvpBasePresenter<MVPManageMaint
     private boolean isMaintenancesDone;
 
 
-    public PresenterManageMaintenances(@NonNull final Bike poBike, boolean pbIsDone) {
+    PresenterManageMaintenances(@NonNull final Bike poBike, boolean pbIsDone) {
         isMaintenancesDone = pbIsDone;
         mInteractorManageMaintenances = new InteractorManageMaintenances();
         /*TODO : problem we have two presenters instantiated because we have two fragments
@@ -44,12 +45,7 @@ public class PresenterManageMaintenances extends MvpBasePresenter<MVPManageMaint
         mInteractorManageMaintenances.addMaintenance(poBike, psMaintenanceName, pfNbHours, pbIsDone)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(poMaintenance ->
-                        {
-                            if (getView() != null && isViewAttached()) {
-                                getView().onMaintenanceAdded(poMaintenance);
-                            }
-                        }
+                .subscribe(poMaintenance -> App.getInstance().getMainThreadBus().post(new EventRefreshMaintenances(poMaintenance.bike))
 
                         , throwable -> {
                         });
@@ -91,11 +87,7 @@ public class PresenterManageMaintenances extends MvpBasePresenter<MVPManageMaint
         mInteractorManageMaintenances.setMaintenanceDone(poMaintenance)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.newThread())
-                .subscribe(() -> {
-                            if (getView() != null && isViewAttached()) {
-                                getView().onUpdateMaintenance(poMaintenance);
-                            }
-                        },
+                .subscribe(() -> App.getInstance().getMainThreadBus().post(new EventRefreshMaintenances(poMaintenance.bike)),
                         throwable -> {
                             //TODO : handle error
                         });
@@ -103,9 +95,16 @@ public class PresenterManageMaintenances extends MvpBasePresenter<MVPManageMaint
 
     @Subscribe
     public void onEventMarkMaintenanceDoneReceived(EventMarkMaintenanceDone poEvent) {
-        if (getView() != null && isViewAttached()) {
-            getView().onAskMarkMaitenanceDone(poEvent.getMaintenance());
+        if(poEvent.getMaintenance().isDone == isMaintenancesDone){
+            if (getView() != null && isViewAttached()) {
+                getView().onAskMarkMaitenanceDone(poEvent.getMaintenance());
+            }
         }
+    }
+
+    @Subscribe
+    public void onEventRefreshMaintenances(EventRefreshMaintenances poEvent){
+        getMaintenancesForBike(poEvent.bike);
     }
 
 }
