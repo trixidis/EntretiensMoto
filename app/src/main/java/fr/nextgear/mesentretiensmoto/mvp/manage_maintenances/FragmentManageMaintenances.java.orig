@@ -67,8 +67,12 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
     private Unbinder mUnbinder;
     private RecyclerMultiAdapter mMultiRecyclerAdaper;
     private ViewState mViewState;
+<<<<<<< HEAD
+    private List<Maintenance> mMaintenances = new ArrayList<>();
+=======
     private List<Maintenance> mMaintenances;
     private Snackbar mSnackbar;
+>>>>>>> 3a2889380ceee18f9f0c90d60b52f9e9f70fd92b
 
     public enum StateMaintenances implements Serializable {
         TO_DO {
@@ -217,12 +221,6 @@ public class FragmentManageMaintenances extends MvpFragment<MVPManageMaintenance
     @Override
     public void onUpdateMaintenance(Maintenance poMaintenance) {
         presenter.getMaintenancesForBike(mCallback.getCurrentSelectedBike());
-    }
-
-    @Override
-    public void onMaintenanceAdded(Maintenance poMaintenance) {
-        mMaintenances.add(poMaintenance);
-        mMultiRecyclerAdaper.addItem(poMaintenance);
     }
 
     @Override
