@@ -53,18 +53,18 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
 
     //region Fields
     @BindView(R.id.FragmentManageMaintenances_RecyclerView_ListMaintenances)
-    internal var mRecyclerViewListMaintenances: RecyclerView? = null
+    lateinit var mRecyclerViewListMaintenances: RecyclerView
     @BindView(R.id.FragmentManageMaintenances_TextView_NoMaintenanceToShow)
-    internal var mTextViewNoMaintenanceToShow: TextView? = null
+    lateinit  var mTextViewNoMaintenanceToShow: TextView
     @BindView(R.id.ActivityManageMaintenances_ViewRoot)
-    internal var mViewGroupRoot: ViewGroup? = null
+    lateinit  var mViewGroupRoot: ViewGroup
     @BindView(R.id.FragmentManageMaintenances_FloatingActionButton_AddMaintenance)
-    internal var mAddMaintenanceFAB: FloatingActionButton? = null
+    lateinit  var mAddMaintenanceFAB: FloatingActionButton
 
     @Arg
-    internal var mStateMaintenances: StateMaintenances? = null
+    lateinit var mStateMaintenances: StateMaintenances
     @Arg
-    internal var mBike: Bike? = null
+    lateinit  var mBike: Bike
 
     private var mCallback: GetBikeFromActivityCallback? = null
     private var mUnbinder: Unbinder? = null
@@ -74,11 +74,12 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
 
     enum class StateMaintenances : Serializable {
         TO_DO {
-            protected override val value: Boolean
+            override val value: Boolean
                 get() = false
         },
         DONE {
-            protected override val value: Boolean
+
+            override val value: Boolean
                 get() = true
         };
 
@@ -88,7 +89,7 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
 
     //region Presenter callback
     override fun createPresenter(): MVPManageMaintenances.Presenter {
-        return PresenterManageMaintenances(mCallback!!.currentSelectedBike, mStateMaintenances!!.value)
+        return PresenterManageMaintenances(mCallback!!.currentSelectedBike!!, mStateMaintenances!!.value)
     }
     //endregion
 
@@ -135,8 +136,8 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, swipeDir: Int) {
                 position = viewHolder.adapterPosition
                 val llMaintenances = ArrayList(mBike!!.mMaintenances!!)
-                val loMaintenanceToRemove = mMaintenances.get(position)
-                mMultiRecyclerAdaper!!.delItem(mMaintenances.get(position))
+                val loMaintenanceToRemove = mBike.mMaintenances!!.toList()[position]
+                mMultiRecyclerAdaper!!.delItem(mBike.mMaintenances!!.toList()[position])
                 //TODO : correct the remove of multiple items
                 Snackbar.make(mViewGroupRoot!!,
                         R.string.text_delete_maitenance,
@@ -146,10 +147,14 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
                                     override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                                         super.onDismissed(transientBottomBar, event)
                                         if (event == Snackbar.Callback.DISMISS_EVENT_ACTION) {
-                                            mMaintenances = llMaintenances
-                                            mMultiRecyclerAdaper!!.setItems(mMaintenances)
+//                                            mMaintenances = llMaintenances
+                                            llMaintenances.forEach({
+                                                mBike.mMaintenances!!.add(it)
+                                            })
+
+                                            mMultiRecyclerAdaper!!.setItems(mBike.mMaintenances!!.toList())
                                         } else {
-                                            mMaintenances.remove(loMaintenanceToRemove)
+                                            mBike.mMaintenances!!.remove(loMaintenanceToRemove)
                                             mMultiRecyclerAdaper!!.delItem(loMaintenanceToRemove)
                                             getPresenter().removeMaintenance(loMaintenanceToRemove)
                                         }
@@ -186,9 +191,11 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
     override fun onRetrieveMaintenancesSuccess(plMaintenances: List<Maintenance>) {
         mMultiRecyclerAdaper!!.clearItems()
         if (!plMaintenances.isEmpty()) {
-            mMaintenances = plMaintenances
+            plMaintenances.forEach({
+                mBike.mMaintenances!!.add(it)
+            })
             setViewState(ViewState.MAINTENANCES_RETRIEVED)
-            mMultiRecyclerAdaper!!.addItems(mMaintenances)
+            mMultiRecyclerAdaper!!.addItems( mBike.mMaintenances!!.toList())
             runLayoutAnimation(mRecyclerViewListMaintenances!!)
             return
         }
@@ -196,7 +203,7 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
     }
 
     override fun onUpdateMaintenance(poMaintenance: Maintenance) {
-        presenter.getMaintenancesForBike(mCallback!!.currentSelectedBike)
+        presenter.getMaintenancesForBike(mCallback!!.currentSelectedBike!!)
     }
 
     override fun onAskMarkMaitenanceDone(poMaintenance: Maintenance) {
@@ -239,19 +246,19 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
     //region ViewState
     private enum class ViewState {
         IDLE {
-            protected override fun applyOn(poFragmentManageMaintenances: FragmentManageMaintenances) {
+            override fun applyOn(poFragmentManageMaintenances: FragmentManageMaintenances) {
                 poFragmentManageMaintenances.mRecyclerViewListMaintenances!!.visibility = View.INVISIBLE
                 poFragmentManageMaintenances.mTextViewNoMaintenanceToShow!!.visibility = View.GONE
             }
         },
         MAINTENANCES_RETRIEVED {
-            protected override fun applyOn(poFragmentManageMaintenances: FragmentManageMaintenances) {
+            override fun applyOn(poFragmentManageMaintenances: FragmentManageMaintenances) {
                 poFragmentManageMaintenances.mRecyclerViewListMaintenances!!.visibility = View.VISIBLE
                 poFragmentManageMaintenances.mTextViewNoMaintenanceToShow!!.visibility = GONE
             }
         },
         NO_MAINTENACE_TO_SHOW {
-            protected override fun applyOn(poFragmentManageMaintenances: FragmentManageMaintenances) {
+            override fun applyOn(poFragmentManageMaintenances: FragmentManageMaintenances) {
                 poFragmentManageMaintenances.mTextViewNoMaintenanceToShow!!.visibility = View.VISIBLE
             }
         };
@@ -287,7 +294,7 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
                             } else {
                                 val lsNameMaintenance = loEditNameMaintenance.text.toString()
                                 val lfNbHours = java.lang.Float.parseFloat(loEditNbHoursMaintenance.text.toString())
-                                getPresenter().addMaintenance(mCallback!!.currentSelectedBike, lsNameMaintenance, lfNbHours, isDone)
+                                getPresenter().addMaintenance(mCallback!!.currentSelectedBike!!, lsNameMaintenance, lfNbHours, isDone)
                                 poDialog.dismiss()
                             }
 
@@ -310,7 +317,7 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
                                 Toasty.warning(context!!, getString(R.string.toast_please_fill_inputs), Toast.LENGTH_LONG, true).show()
                             } else {
                                 val lsNameMaintenance = loEditNameMaintenance.text.toString()
-                                getPresenter().addMaintenance(mCallback!!.currentSelectedBike, lsNameMaintenance, 0f, isDone)
+                                getPresenter().addMaintenance(mCallback!!.currentSelectedBike!!, lsNameMaintenance, 0f, isDone)
                                 poDialog.dismiss()
                             }
 

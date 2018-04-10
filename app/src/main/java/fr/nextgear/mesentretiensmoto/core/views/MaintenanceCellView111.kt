@@ -3,7 +3,9 @@ package fr.nextgear.mesentretiensmoto.core.views
 import android.content.Context
 import android.icu.text.DateFormat
 import android.icu.text.SimpleDateFormat
+import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
 
 import com.afollestad.materialdialogs.MaterialDialog
@@ -26,14 +28,14 @@ class MaintenanceCellView
 (private val mContext: Context) : BindableLinearLayout<Maintenance>(mContext) {
 
     @BindView(R.id.manage_maintenance_cell_TextView_nameMaintenance)
-    internal var mTextViewNameMaintenance: TextView? = null
+    lateinit var mTextViewNameMaintenance: TextView
     @BindView(R.id.manage_maintenance_cell_GroupView)
-    internal var mLayout: ViewGroup? = null
+    lateinit var mLayout: ViewGroup
     @BindView(R.id.manage_maintenance_cell_TextView_nbHoursMaintenance)
-    internal var mTextViewNbHoursMaintenance: TextView? = null
+    lateinit var mTextViewNbHoursMaintenance: TextView
 
     @BindView(R.id.manage_maintenance_cell_TextView_dateMaintenance)
-    internal var mTextViewDateMaintenance: TextView? = null
+    lateinit var mTextViewDateMaintenance: TextView
     //endregion
 
     //region Lifecycle events

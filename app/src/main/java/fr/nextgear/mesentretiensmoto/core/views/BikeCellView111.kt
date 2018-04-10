@@ -29,7 +29,7 @@ class BikeCellView
     private var mBike: Bike? = null
 
     @BindView(R.id.manage_bike_cell_TextView_nameBike)
-    internal var mTextViewNameBike: TextView? = null
+    lateinit var mTextViewNameBike: TextView
     //endregion
 
     //region Lifecycle methods

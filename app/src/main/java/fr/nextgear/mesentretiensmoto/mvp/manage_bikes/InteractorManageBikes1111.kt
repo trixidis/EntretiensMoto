@@ -1,7 +1,5 @@
 package fr.nextgear.mesentretiensmoto.mvp.manage_bikes
 
-import com.orhanobut.logger.Logger
-
 import fr.nextgear.mesentretiensmoto.core.App
 import fr.nextgear.mesentretiensmoto.core.database.BikeDBManager
 import fr.nextgear.mesentretiensmoto.core.events.EventGetAllBikesFromSQLiteSucceeded
@@ -17,7 +15,7 @@ class InteractorManageBikes : MVPManageBikes.InteractorManageBikes {
     override val bikesFromSQLiteDatabase: Completable
         get() = Completable.create { e ->
             try {
-                val list = BikeDBManager.getInstance().getAllBikes()
+                val list = BikeDBManager.allBikes
                 if (list != null) {
                     val eventGetAllBikesFromSQLiteSucceeded = EventGetAllBikesFromSQLiteSucceeded(list)
                     App.instance!!.mainThreadBus!!.post(eventGetAllBikesFromSQLiteSucceeded)
@@ -34,7 +32,7 @@ class InteractorManageBikes : MVPManageBikes.InteractorManageBikes {
         return Completable.create { e ->
             val loBike = Bike()
             loBike.nameBike = psNameBike
-            BikeDBManager.getInstance().addBike(loBike)
+            BikeDBManager.addBike(loBike)
             e.onComplete()
         }
     }

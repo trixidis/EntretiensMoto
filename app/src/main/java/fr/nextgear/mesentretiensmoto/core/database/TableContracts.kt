@@ -8,22 +8,22 @@ interface TableContracts {
 
     interface Bike {
         companion object {
-            val TABLE_NAME = "bike"
-            val ID = "id_bike"
-            val NAME = "name_bike"
-            val MAINTENANCES = "maintenances_bike"
+            const val TABLE_NAME = "bike"
+            const val ID = "id_bike"
+            const val NAME = "name_bike"
+            const val MAINTENANCES = "maintenances_bike"
         }
     }
 
     interface Maintenance {
         companion object {
-            val TABLE_NAME = "maintenance"
-            val ID = "id_maintenance"
-            val NAME = "name_maintenance"
-            val NB_HOURS = "nb_hours_maintenance"
-            val DATE = "date_maintenance"
-            val IS_DONE = "maintenance_is_done"
-            val BIKE_ID = "maintenance_bike_id"
+           const val TABLE_NAME = "maintenance"
+           const val ID = "id_maintenance"
+           const val NAME = "name_maintenance"
+           const val NB_HOURS = "nb_hours_maintenance"
+           const val DATE = "date_maintenance"
+           const val IS_DONE = "maintenance_is_done"
+           const val BIKE_ID = "maintenance_bike_id"
         }
     }
 

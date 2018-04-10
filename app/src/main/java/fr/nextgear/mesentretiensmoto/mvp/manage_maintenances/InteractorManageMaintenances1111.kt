@@ -27,11 +27,11 @@ class InteractorManageMaintenances : MVPManageMaintenances.Interactor {
             loMaintenancebuilder.nameMaintenance(psMaintenanceName)
                     .date(Date(System.currentTimeMillis()))
                     //if maintenance is done we give the numbers of hours filled by the user else its set to -1
-                    .nbHoursMaintenance(if (isDone) pfNbHours else MAINTENANCE_NOT_DONE_NB_HOURS)
+                    .nbHoursMaintenance(if (isDone) pfNbHours else MAINTENANCE_NOT_DONE_NB_HOURS.toFloat())
                     .bike(poBike)
                     .isDone(isDone)
             val loMaintenance = loMaintenancebuilder.build()
-            val result = MaintenanceDBManager.getInstance().addMaintenance(loMaintenance)
+            val result = MaintenanceDBManager.addMaintenance(loMaintenance)
             if (result == 1) {
                 poEmitter.onSuccess(loMaintenance)
             } else {
@@ -43,18 +43,18 @@ class InteractorManageMaintenances : MVPManageMaintenances.Interactor {
 
     override fun getMaintenancesForBike(poBike: Bike, pbIsDone: Boolean): Observable<List<Maintenance>> {
         return Observable.create { poEmitter ->
-            val llMaintenances = MaintenanceDBManager.getInstance().getMaintenancesForBike(poBike, pbIsDone)
+            val llMaintenances = MaintenanceDBManager.getMaintenancesForBike(poBike, pbIsDone)
             if (llMaintenances != null) {
                 Collections.sort<Maintenance>(llMaintenances!!) { t, t1 -> java.lang.Float.compare(t1.nbHoursMaintenance, t.nbHoursMaintenance) }
             }
-            poEmitter.onNext(llMaintenances)
+            poEmitter.onNext(llMaintenances!!)
             poEmitter.onComplete()
         }
     }
 
     override fun removeMaintenance(poMaintenance: Maintenance): Completable {
         return Completable.create { poEmitter ->
-            MaintenanceDBManager.getInstance().removeMaintenance(poMaintenance)
+            MaintenanceDBManager.removeMaintenance(poMaintenance)
             poEmitter.onComplete()
         }
     }
@@ -62,7 +62,7 @@ class InteractorManageMaintenances : MVPManageMaintenances.Interactor {
     override fun setMaintenanceDone(maintenance: Maintenance): Completable {
         return Completable.create { poEmitter ->
             maintenance.isDone = true
-            val res = MaintenanceDBManager.getInstance().updateMaintenance(maintenance)
+            val res = MaintenanceDBManager.updateMaintenance(maintenance)
             if (res == 1) {
                 poEmitter.onComplete()
             } else {

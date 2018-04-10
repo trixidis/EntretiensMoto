@@ -40,7 +40,7 @@ class PresenterManageMaintenances internal constructor(poBike: Bike, private val
         mInteractorManageMaintenances.addMaintenance(poBike, psMaintenanceName, pfNbHours, pbIsDone)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ poMaintenance -> App.instance!!.mainThreadBus!!.post(EventRefreshMaintenances(poMaintenance.bike)) }) { throwable -> }
+                .subscribe({ poMaintenance -> App.instance!!.mainThreadBus!!.post(EventRefreshMaintenances(poMaintenance.bike!!)) }) { throwable -> }
     }
 
     override fun getMaintenancesForBike(poBike: Bike) {
@@ -76,7 +76,7 @@ class PresenterManageMaintenances internal constructor(poBike: Bike, private val
         mInteractorManageMaintenances.setMaintenanceDone(poMaintenance)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.newThread())
-                .subscribe({ App.instance!!.mainThreadBus!!.post(EventRefreshMaintenances(poMaintenance.bike)) }
+                .subscribe({ App.instance!!.mainThreadBus!!.post(EventRefreshMaintenances(poMaintenance.bike!!)) }
                 ) { throwable ->
                     //TODO : handle error
                 }

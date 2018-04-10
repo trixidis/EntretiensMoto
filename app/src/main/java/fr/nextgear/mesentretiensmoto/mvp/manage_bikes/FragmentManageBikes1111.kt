@@ -41,9 +41,9 @@ class FragmentManageBikes : MvpFragment<MVPManageBikes.ViewManageBikes, Presente
 
     //region Fields
     @BindView(R.id.fragmentManageBikes_RecyclerView_listBikes)
-    internal var mRecyclerViewBikes: RecyclerView? = null
+    lateinit var mRecyclerViewBikes: RecyclerView
     @BindView(R.id.fragmentManageBikes_TextView_NoBikes)
-    internal var mTextViewNoBikes: TextView? = null
+    lateinit  var mTextViewNoBikes: TextView
     private var mMultiRecyclerAdaper: RecyclerMultiAdapter? = null
     private var mUnbinder: Unbinder? = null
     //endregion

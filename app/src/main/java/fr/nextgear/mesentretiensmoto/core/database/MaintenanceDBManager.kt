@@ -3,6 +3,7 @@ package fr.nextgear.mesentretiensmoto.core.database
 import android.content.Context
 
 import com.orhanobut.logger.Logger
+import fr.nextgear.mesentretiensmoto.core.App
 
 import java.sql.SQLException
 import java.util.ArrayList
@@ -14,9 +15,9 @@ import fr.nextgear.mesentretiensmoto.core.model.Maintenance
  * Created by adrien on 22/09/2017.
  */
 
-class MaintenanceDBManager private constructor(context: Context) {
+object MaintenanceDBManager {
 
-    private val helper: SQLiteAppHelper
+    private val helper: SQLiteAppHelper = SQLiteAppHelper(App.instance!!.applicationContext)
 
     //region Bike CRUD methods
     val allMaintenances: List<Maintenance>
@@ -29,10 +30,6 @@ class MaintenanceDBManager private constructor(context: Context) {
             }
 
         }
-
-    init {
-        helper = SQLiteAppHelper(context)
-    }
 
     fun addMaintenance(poMaintenance: Maintenance): Int {
         try {
@@ -79,16 +76,6 @@ class MaintenanceDBManager private constructor(context: Context) {
             return -1
         }
 
-    }
-
-    companion object {
-        var instance: MaintenanceDBManager? = null
-            private set
-
-        fun init(context: Context) {
-            if (instance == null)
-                instance = MaintenanceDBManager(context)
-        }
     }
 
     //endregion

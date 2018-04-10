@@ -19,8 +19,7 @@ class App : Application() {
     override fun onCreate() {
         instance = this
         mainThreadBus = MainThreadBus()
-        BikeDBManager.init(this)
-        MaintenanceDBManager.init(this)
+        BikeDBManager.instance
         super.onCreate()
     }
 
