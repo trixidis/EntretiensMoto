@@ -15,7 +15,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
-import android.view.animation.LayoutAnimationController
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
@@ -70,7 +69,6 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
     private var mUnbinder: Unbinder? = null
     private var mMultiRecyclerAdaper: RecyclerMultiAdapter? = null
     private var mViewState: ViewState? = null
-    private val mSnackbar: Snackbar? = null
 
     enum class StateMaintenances : Serializable {
         TO_DO {
@@ -89,7 +87,7 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
 
     //region Presenter callback
     override fun createPresenter(): MVPManageMaintenances.Presenter {
-        return PresenterManageMaintenances(mCallback!!.currentSelectedBike!!, mStateMaintenances!!.value)
+        return PresenterManageMaintenances(mCallback!!.currentSelectedBike!!, mStateMaintenances.value)
     }
     //endregion
 
@@ -114,15 +112,15 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_fragment_manage_maintenances, container, false)
         mUnbinder = ButterKnife.bind(this, view)
-        mRecyclerViewListMaintenances!!.layoutManager = LinearLayoutManager(context)
-        mRecyclerViewListMaintenances!!.addItemDecoration(MaterialViewPagerHeaderDecorator())
-        mRecyclerViewListMaintenances!!.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        mRecyclerViewListMaintenances.layoutManager = LinearLayoutManager(context)
+        mRecyclerViewListMaintenances.addItemDecoration(MaterialViewPagerHeaderDecorator())
+        mRecyclerViewListMaintenances.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                if (dy > 0 && mAddMaintenanceFAB!!.visibility == View.VISIBLE) {
-                    mAddMaintenanceFAB!!.hide()
-                } else if (dy < 0 && mAddMaintenanceFAB!!.visibility != View.VISIBLE) {
-                    mAddMaintenanceFAB!!.show()
+                if (dy > 0 && mAddMaintenanceFAB.visibility == View.VISIBLE) {
+                    mAddMaintenanceFAB.hide()
+                } else if (dy < 0 && mAddMaintenanceFAB.visibility != View.VISIBLE) {
+                    mAddMaintenanceFAB.show()
                 }
             }
         })
@@ -135,11 +133,11 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, swipeDir: Int) {
                 position = viewHolder.adapterPosition
-                val llMaintenances = ArrayList(mBike!!.mMaintenances!!)
+                val llMaintenances = ArrayList(mBike.mMaintenances!!)
                 val loMaintenanceToRemove = mBike.mMaintenances!!.toList()[position]
                 mMultiRecyclerAdaper!!.delItem(mBike.mMaintenances!!.toList()[position])
                 //TODO : correct the remove of multiple items
-                Snackbar.make(mViewGroupRoot!!,
+                Snackbar.make(mViewGroupRoot,
                         R.string.text_delete_maitenance,
                         Snackbar.LENGTH_LONG)
                         .setAction(R.string.cancel) { view -> mMultiRecyclerAdaper!!.notifyDataSetChanged() }.addCallback(
@@ -168,10 +166,10 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
         mMultiRecyclerAdaper = SmartAdapter
                 .empty()
                 .map(Maintenance::class.java, MaintenanceCellView::class.java)
-                .into(mRecyclerViewListMaintenances!!)
+                .into(mRecyclerViewListMaintenances)
         setViewState(ViewState.IDLE)
         if (mStateMaintenances === StateMaintenances.DONE) {
-            mAddMaintenanceFAB!!.backgroundTintList = ColorStateList
+            mAddMaintenanceFAB.backgroundTintList = ColorStateList
                     .valueOf(ContextCompat.getColor(context!!, R.color.accent_color))
         }
         return view
@@ -185,7 +183,7 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
 
     //region View methods
     override fun onRetrieveMaintenancesError() {
-
+        //TODO : handle error of retrieving the maintenances
     }
 
     override fun onRetrieveMaintenancesSuccess(plMaintenances: List<Maintenance>) {
@@ -196,7 +194,7 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
             })
             setViewState(ViewState.MAINTENANCES_RETRIEVED)
             mMultiRecyclerAdaper!!.addItems( mBike.mMaintenances!!.toList())
-            runLayoutAnimation(mRecyclerViewListMaintenances!!)
+            runLayoutAnimation(mRecyclerViewListMaintenances)
             return
         }
         setViewState(ViewState.NO_MAINTENACE_TO_SHOW)
@@ -238,7 +236,7 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
 
     @OnClick(R.id.FragmentManageMaintenances_FloatingActionButton_AddMaintenance)
     fun onAddMaintenanceClicked() {
-        showDialogAddMaintenance(mStateMaintenances!!.value)
+        showDialogAddMaintenance(mStateMaintenances.value)
     }
 
     //endregion
@@ -247,19 +245,19 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
     private enum class ViewState {
         IDLE {
             override fun applyOn(poFragmentManageMaintenances: FragmentManageMaintenances) {
-                poFragmentManageMaintenances.mRecyclerViewListMaintenances!!.visibility = View.INVISIBLE
-                poFragmentManageMaintenances.mTextViewNoMaintenanceToShow!!.visibility = View.GONE
+                poFragmentManageMaintenances.mRecyclerViewListMaintenances.visibility = View.INVISIBLE
+                poFragmentManageMaintenances.mTextViewNoMaintenanceToShow.visibility = View.GONE
             }
         },
         MAINTENANCES_RETRIEVED {
             override fun applyOn(poFragmentManageMaintenances: FragmentManageMaintenances) {
-                poFragmentManageMaintenances.mRecyclerViewListMaintenances!!.visibility = View.VISIBLE
-                poFragmentManageMaintenances.mTextViewNoMaintenanceToShow!!.visibility = GONE
+                poFragmentManageMaintenances.mRecyclerViewListMaintenances.visibility = View.VISIBLE
+                poFragmentManageMaintenances.mTextViewNoMaintenanceToShow.visibility = GONE
             }
         },
         NO_MAINTENACE_TO_SHOW {
             override fun applyOn(poFragmentManageMaintenances: FragmentManageMaintenances) {
-                poFragmentManageMaintenances.mTextViewNoMaintenanceToShow!!.visibility = View.VISIBLE
+                poFragmentManageMaintenances.mTextViewNoMaintenanceToShow.visibility = View.VISIBLE
             }
         };
 
