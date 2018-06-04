@@ -187,23 +187,15 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
     }
 
     override fun onRetrieveMaintenancesSuccess(plMaintenances: List<Maintenance>) {
-        //TODO : here handle the list update correctly
         mMultiRecyclerAdaper!!.clearItems()
-
-        if (mBike.mMaintenances != plMaintenances) {
-            mBike.mMaintenances!!.clear()
-            plMaintenances.forEach({
-                mBike.mMaintenances!!.add(it)
-            })
-        }
-
-        if (mBike.mMaintenances!!.isEmpty()) {
+        if (!plMaintenances!!.isEmpty()) {
             setViewState(ViewState.MAINTENANCES_RETRIEVED)
-            mMultiRecyclerAdaper!!.addItems(mBike.mMaintenances!!.toList())
+            mMultiRecyclerAdaper!!.addItems(plMaintenances)
             runLayoutAnimation(mRecyclerViewListMaintenances)
             return
+        }else{
+            setViewState(ViewState.NO_MAINTENACE_TO_SHOW)
         }
-        setViewState(ViewState.NO_MAINTENACE_TO_SHOW)
     }
 
     override fun onUpdateMaintenance(poMaintenance: Maintenance) {
