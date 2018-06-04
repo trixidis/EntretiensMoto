@@ -45,14 +45,14 @@ class ManageMaintenancesActivity : AppCompatActivity(), FragmentManageMaintenanc
         setupViewPager()
         mUnbinder = ButterKnife.bind(this)
 
-
-
-        mViewPager!!.setMaterialViewPagerListener { page ->
+        mViewPager.setMaterialViewPagerListener { page ->
             when (page) {
                 0 ->  HeaderDesign.fromColorResAndDrawable( R.color.blue,ContextCompat.getDrawable(mContext!!, R.drawable.backgournd_mechanic))
                 1 ->  HeaderDesign.fromColorResAndDrawable( R.color.green,ContextCompat.getDrawable(mContext!!, R.drawable.list))
+                else -> {
+                    null
+                }
             }
-            null
         }
 
     }

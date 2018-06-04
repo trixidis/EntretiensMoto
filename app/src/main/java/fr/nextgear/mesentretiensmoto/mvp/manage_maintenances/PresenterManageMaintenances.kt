@@ -18,6 +18,7 @@ import fr.nextgear.mesentretiensmoto.core.model.Maintenance
 import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import java.lang.ref.WeakReference
 
 /**
  * Created by FX98589 on 22/09/2017.
@@ -25,11 +26,9 @@ import io.reactivex.schedulers.Schedulers
 
 class PresenterManageMaintenances internal constructor(poBike: Bike, private val isMaintenancesDone: Boolean) : MvpBasePresenter<MVPManageMaintenances.View>(), MVPManageMaintenances.Presenter {
 
-    private val mInteractorManageMaintenances: InteractorManageMaintenances
-
+    private val mInteractorManageMaintenances: InteractorManageMaintenances = InteractorManageMaintenances()
 
     init {
-        mInteractorManageMaintenances = InteractorManageMaintenances()
         /*TODO : problem we have two presenters instantiated because we have two fragments
         TODO : so we go two bus registered and we listen for the events two times*/
         App.instance!!.mainThreadBus!!.register(this)

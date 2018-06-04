@@ -54,16 +54,16 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
     @BindView(R.id.FragmentManageMaintenances_RecyclerView_ListMaintenances)
     lateinit var mRecyclerViewListMaintenances: RecyclerView
     @BindView(R.id.FragmentManageMaintenances_TextView_NoMaintenanceToShow)
-    lateinit  var mTextViewNoMaintenanceToShow: TextView
+    lateinit var mTextViewNoMaintenanceToShow: TextView
     @BindView(R.id.ActivityManageMaintenances_ViewRoot)
-    lateinit  var mViewGroupRoot: ViewGroup
+    lateinit var mViewGroupRoot: ViewGroup
     @BindView(R.id.FragmentManageMaintenances_FloatingActionButton_AddMaintenance)
-    lateinit  var mAddMaintenanceFAB: FloatingActionButton
+    lateinit var mAddMaintenanceFAB: FloatingActionButton
 
     @Arg
     lateinit var mStateMaintenances: StateMaintenances
     @Arg
-    lateinit  var mBike: Bike
+    lateinit var mBike: Bike
 
     private var mCallback: GetBikeFromActivityCallback? = null
     private var mUnbinder: Unbinder? = null
@@ -187,13 +187,19 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
     }
 
     override fun onRetrieveMaintenancesSuccess(plMaintenances: List<Maintenance>) {
+        //TODO : here handle the list update correctly
         mMultiRecyclerAdaper!!.clearItems()
-        if (!plMaintenances.isEmpty()) {
+
+        if (mBike.mMaintenances != plMaintenances) {
+            mBike.mMaintenances!!.clear()
             plMaintenances.forEach({
                 mBike.mMaintenances!!.add(it)
             })
+        }
+
+        if (mBike.mMaintenances!!.isEmpty()) {
             setViewState(ViewState.MAINTENANCES_RETRIEVED)
-            mMultiRecyclerAdaper!!.addItems( mBike.mMaintenances!!.toList())
+            mMultiRecyclerAdaper!!.addItems(mBike.mMaintenances!!.toList())
             runLayoutAnimation(mRecyclerViewListMaintenances)
             return
         }
