@@ -1,15 +1,11 @@
 package fr.nextgear.mesentretiensmoto;
 
 import org.frutilla.annotations.Frutilla;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.sql.Date;
-import java.time.Instant;
 
-import fr.nextgear.mesentretiensmoto.core.App;
-import fr.nextgear.mesentretiensmoto.core.database.MaintenanceDBManager;
 import fr.nextgear.mesentretiensmoto.core.model.Bike;
 import fr.nextgear.mesentretiensmoto.core.model.Maintenance;
 
@@ -43,7 +39,7 @@ public class TestDatabase {
         }
         When:
         {
-            result = MaintenanceDBManager.getInstance().addMaintenance(loMaintenance);
+            result =  new Maintenance.MaintenanceDao().addMaintenance(loMaintenance);
         }
         Then:
         {

@@ -1,14 +1,15 @@
 package fr.nextgear.mesentretiensmoto.core.model
 
-import com.j256.ormlite.dao.ForeignCollection
+import com.j256.ormlite.dao.Dao
 import com.j256.ormlite.field.DatabaseField
-import com.j256.ormlite.field.ForeignCollectionField
 import com.j256.ormlite.table.DatabaseTable
+import fr.nextgear.mesentretiensmoto.core.database.SQLiteAppHelper
 
 import java.io.Serializable
 import java.sql.Date
 
 import fr.nextgear.mesentretiensmoto.core.database.TableContracts
+import java.sql.SQLException
 
 /**
  * Created by adrien on 14/06/2017.
@@ -80,5 +81,65 @@ class Maintenance : Serializable {
             return loMaintenance
         }
 
+    }
+
+    class MaintenanceDao {
+
+        companion object {
+            lateinit var dao: Dao<Maintenance, Int>
+        }
+
+        init {
+            dao = SQLiteAppHelper.getDao(Maintenance::class.java)
+        }
+
+        fun update(loMaintenance: Maintenance) = dao.update(loMaintenance)
+
+        fun addMaintenance(poMaintenance: Maintenance): Int {
+            try {
+                return dao.create(poMaintenance)
+            } catch (e: SQLException) {
+                e.printStackTrace()
+                return -1
+            }
+
+        }
+
+        fun updateMaintenance(poMaintenance: Maintenance): Int {
+            try {
+                return dao.update(poMaintenance)
+            } catch (e: SQLException) {
+                e.printStackTrace()
+                return -1
+            }
+
+        }
+
+        fun getMaintenancesForBike(poBike: Bike, pbIsDone: Boolean): List<Maintenance>? {
+            try {
+                return dao
+                        .queryBuilder()
+                        .where()
+                        .eq(TableContracts.Maintenance.BIKE_ID, poBike.idBike)
+                        .and()
+                        .eq(TableContracts.Maintenance.IS_DONE, pbIsDone)
+                        .query()
+
+            } catch (e: SQLException) {
+                e.printStackTrace()
+                return null
+            }
+
+        }
+
+        fun removeMaintenance(poMaintenance: Maintenance): Int {
+            try {
+                return dao.delete(poMaintenance)
+            } catch (e: SQLException) {
+                e.printStackTrace()
+                return -1
+            }
+
+        }
     }
 }

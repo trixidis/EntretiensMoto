@@ -1,22 +1,24 @@
 package fr.nextgear.mesentretiensmoto.core.database
 
+import android.provider.BaseColumns
+
 /**
  * Created by adrien on 14/06/2017.
  */
 
-interface TableContracts {
+object TableContracts {
 
-    interface Bike {
-        companion object {
+    const val DB_NAME = "maintenances_bike.sqlite"
+    const val DB_VERSION = 6
+
+    object Bike : BaseColumns{
             const val TABLE_NAME = "bike"
             const val ID = "id_bike"
             const val NAME = "name_bike"
             const val MAINTENANCES = "maintenances_bike"
-        }
     }
 
-    interface Maintenance {
-        companion object {
+    object Maintenance : BaseColumns {
            const val TABLE_NAME = "maintenance"
            const val ID = "id_maintenance"
            const val NAME = "name_maintenance"
@@ -24,7 +26,6 @@ interface TableContracts {
            const val DATE = "date_maintenance"
            const val IS_DONE = "maintenance_is_done"
            const val BIKE_ID = "maintenance_bike_id"
-        }
     }
 
 }

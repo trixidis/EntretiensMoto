@@ -3,22 +3,13 @@ package fr.nextgear.mesentretiensmoto.mvp.manage_maintenances
 import com.hannesdorfmann.mosby3.mvp.MvpBasePresenter
 import com.squareup.otto.Subscribe
 
-import java.util.ArrayList
-import java.util.Collections
-import java.util.Comparator
-import java.util.logging.Logger
-
 import fr.nextgear.mesentretiensmoto.core.App
-import fr.nextgear.mesentretiensmoto.core.database.MaintenanceDBManager
-import fr.nextgear.mesentretiensmoto.core.events.EventGetMaintenancesForBike
 import fr.nextgear.mesentretiensmoto.core.events.EventMarkMaintenanceDone
 import fr.nextgear.mesentretiensmoto.core.events.EventRefreshMaintenances
 import fr.nextgear.mesentretiensmoto.core.model.Bike
 import fr.nextgear.mesentretiensmoto.core.model.Maintenance
-import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import java.lang.ref.WeakReference
 
 /**
  * Created by FX98589 on 22/09/2017.

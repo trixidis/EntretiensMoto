@@ -1,6 +1,7 @@
 package fr.nextgear.mesentretiensmoto.mvp.manage_bikes
 
 import com.hannesdorfmann.mosby3.mvp.MvpBasePresenter
+import com.orhanobut.logger.Logger
 import com.squareup.otto.Subscribe
 
 import fr.nextgear.mesentretiensmoto.core.App
@@ -32,7 +33,10 @@ class PresenterManageBikes : MvpBasePresenter<MVPManageBikes.ViewManageBikes>(),
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ getBikesSQLiteAndDisplay() }
-                ) { throwable -> }
+                ) { throwable ->
+                    Logger.e(throwable.message)
+                    throwable.printStackTrace()
+                }
     }
 
     override fun attachView(view: MVPManageBikes.ViewManageBikes) {

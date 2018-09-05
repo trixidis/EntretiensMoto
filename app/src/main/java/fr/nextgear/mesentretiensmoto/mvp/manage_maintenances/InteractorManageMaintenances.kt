@@ -6,7 +6,6 @@ import java.sql.Date
 import java.sql.SQLException
 import java.util.Collections
 
-import fr.nextgear.mesentretiensmoto.core.database.MaintenanceDBManager
 import fr.nextgear.mesentretiensmoto.core.model.Bike
 import fr.nextgear.mesentretiensmoto.core.model.Maintenance
 import io.reactivex.Completable
@@ -31,7 +30,7 @@ class InteractorManageMaintenances : MVPManageMaintenances.Interactor {
                     .bike(poBike)
                     .isDone(isDone)
             val loMaintenance = loMaintenancebuilder.build()
-            val result = MaintenanceDBManager.addMaintenance(loMaintenance)
+            val result = Maintenance.MaintenanceDao().addMaintenance(loMaintenance)
             if (result == 1) {
                 poEmitter.onSuccess(loMaintenance)
             } else {
@@ -43,7 +42,7 @@ class InteractorManageMaintenances : MVPManageMaintenances.Interactor {
 
     override fun getMaintenancesForBike(poBike: Bike, pbIsDone: Boolean): Observable<List<Maintenance>> {
         return Observable.create { poEmitter ->
-            val llMaintenances = MaintenanceDBManager.getMaintenancesForBike(poBike, pbIsDone)
+            val llMaintenances = Maintenance.MaintenanceDao().getMaintenancesForBike(poBike, pbIsDone)
             if (llMaintenances != null) {
                 Collections.sort<Maintenance>(llMaintenances!!) { t, t1 -> java.lang.Float.compare(t1.nbHoursMaintenance, t.nbHoursMaintenance) }
             }
@@ -54,7 +53,7 @@ class InteractorManageMaintenances : MVPManageMaintenances.Interactor {
 
     override fun removeMaintenance(poMaintenance: Maintenance): Completable {
         return Completable.create { poEmitter ->
-            MaintenanceDBManager.removeMaintenance(poMaintenance)
+            Maintenance.MaintenanceDao().removeMaintenance(poMaintenance)
             poEmitter.onComplete()
         }
     }
@@ -62,7 +61,7 @@ class InteractorManageMaintenances : MVPManageMaintenances.Interactor {
     override fun setMaintenanceDone(maintenance: Maintenance): Completable {
         return Completable.create { poEmitter ->
             maintenance.isDone = true
-            val res = MaintenanceDBManager.updateMaintenance(maintenance)
+            val res = Maintenance.MaintenanceDao().updateMaintenance(maintenance)
             if (res == 1) {
                 poEmitter.onComplete()
             } else {

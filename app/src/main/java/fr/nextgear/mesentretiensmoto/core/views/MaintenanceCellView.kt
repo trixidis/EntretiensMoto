@@ -1,8 +1,6 @@
 package fr.nextgear.mesentretiensmoto.core.views
 
 import android.content.Context
-import android.icu.text.DateFormat
-import android.icu.text.SimpleDateFormat
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
@@ -15,8 +13,6 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import fr.nextgear.mesentretiensmoto.R
 import fr.nextgear.mesentretiensmoto.core.App
-import fr.nextgear.mesentretiensmoto.core.bus.MainThreadBus
-import fr.nextgear.mesentretiensmoto.core.database.MaintenanceDBManager
 import fr.nextgear.mesentretiensmoto.core.events.EventMarkMaintenanceDone
 import fr.nextgear.mesentretiensmoto.core.model.Maintenance
 import io.nlopez.smartadapters.views.BindableLinearLayout
