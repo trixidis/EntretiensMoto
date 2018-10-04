@@ -51,10 +51,14 @@ class PresenterManageMaintenances internal constructor(poBike: Bike, private val
     }
 
     override fun removeMaintenance(poMaintenanceToRemove: Maintenance) {
+        val loBikeToRefresh = poMaintenanceToRemove.bike
         mInteractorManageMaintenances.removeMaintenance(poMaintenanceToRemove)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.newThread())
                 .subscribe({
+//                    if(loBikeToRefresh != null){
+//                        getMaintenancesForBike(loBikeToRefresh)
+//                    }
 
                 }
                 ) { throwable ->

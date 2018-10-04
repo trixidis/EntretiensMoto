@@ -4,12 +4,13 @@ package fr.nextgear.mesentretiensmoto.mvp.manage_maintenances
 import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.support.design.widget.BaseTransientBottomBar
 import android.support.design.widget.FloatingActionButton
+import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -46,6 +47,7 @@ import android.view.View.GONE
 //region Constructor
 @FragmentWithArgs
 class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPManageMaintenances.Presenter>(), MVPManageMaintenances.View {
+
 
 
     //region Fields
@@ -130,34 +132,32 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, swipeDir: Int) {
-                position = viewHolder.adapterPosition
-//                val llMaintenances = ArrayList(mBike.mMaintenances!!)
-//                val loMaintenanceToRemove = mBike.mMaintenances!!.toList()[position]
-//                mMultiRecyclerAdaper!!.delItem(mBike.mMaintenances!!.toList()[position])
-                Log.e("removeList","sizeBefore == ${mBike.mMaintenances!!.size}")
-                mBike.mMaintenances!!.remove(mBike.mMaintenances!!.elementAt(position))
-                Log.e("removeList","sizeAfter == ${mBike.mMaintenances!!.size}")
-                Bike.BikeDao().updateBike(mBike)
                 //TODO : correct the remove of multiple items
-//                Snackbar.make(mViewGroupRoot,
-//                        R.string.text_delete_maitenance,
-//                        Snackbar.LENGTH_LONG)
-//                        .setAction(R.string.cancel) { view -> mMultiRecyclerAdaper!!.notifyDataSetChanged() }.addCallback(
-//                                object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
-//                                    override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-//                                        super.onDismissed(transientBottomBar, event)
-//                                        if (event == Snackbar.Callback.DISMISS_EVENT_ACTION) {
-//                                            llMaintenances.forEach {
-//                                                mBike.mMaintenances!!.add(it)
-//                                            }
-//                                            mMultiRecyclerAdaper!!.setItems(mBike.mMaintenances!!.toList())
-//                                        } else {
-//                                            mBike.mMaintenances!!.remove(loMaintenanceToRemove)
-//                                            mMultiRecyclerAdaper!!.delItem(loMaintenanceToRemove)
-//                                            getPresenter().removeMaintenance(loMaintenanceToRemove)
-//                                        }
-//                                    }
-//                                }).show()
+                position = viewHolder.adapterPosition
+                val loMaintenanceToRemove = mBike.mMaintenances.elementAt(position)
+
+
+
+                Snackbar.make(mViewGroupRoot,
+                        R.string.text_delete_maitenance,
+                        Snackbar.LENGTH_LONG)
+                        .setAction(R.string.cancel) {
+                            mMultiRecyclerAdaper!!.notifyDataSetChanged() }.addCallback(
+                                object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
+                                    override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                                        super.onDismissed(transientBottomBar, event)
+
+                                        //si la snackbar est enlevée avec un action différente de ,l'utilisateur clique sur "Annuler"
+                                        if (event == Snackbar.Callback.DISMISS_EVENT_ACTION) {
+                                            presenter.addMaintenance(loMaintenanceToRemove.bike!!,loMaintenanceToRemove.nameMaintenance!!,loMaintenanceToRemove.nbHoursMaintenance,loMaintenanceToRemove.isDone)
+                                            mMultiRecyclerAdaper!!.notifyItemInserted(position)
+                                        }else{
+                                            presenter.removeMaintenance(mBike.mMaintenances.elementAt( position))
+                                        }
+                                    }
+                                }).show()
+                mBike.mMaintenances.remove(mBike.mMaintenances.elementAt(position))
+                mMultiRecyclerAdaper!!.notifyItemRemoved(position)
             }
         }
 
@@ -182,6 +182,8 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
     //endregion
 
     //region View methods
+
+
     override fun onRetrieveMaintenancesError() {
         //TODO : handle error of retrieving the maintenances
     }

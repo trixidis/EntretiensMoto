@@ -3,6 +3,7 @@ package fr.nextgear.mesentretiensmoto.core.model
 import com.j256.ormlite.dao.Dao
 import com.j256.ormlite.field.DatabaseField
 import com.j256.ormlite.table.DatabaseTable
+import com.orhanobut.logger.Logger
 import fr.nextgear.mesentretiensmoto.core.database.SQLiteAppHelper
 
 import java.io.Serializable
