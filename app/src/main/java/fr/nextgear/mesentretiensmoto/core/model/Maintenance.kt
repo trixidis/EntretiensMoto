@@ -16,14 +16,20 @@ import java.sql.SQLException
  */
 
 @DatabaseTable(tableName = TableContracts.Maintenance.TABLE_NAME)
-class Maintenance : Serializable {
+class Maintenance(
+
+        @DatabaseField(columnName = TableContracts.Maintenance.NAME, canBeNull = false)
+        var nameMaintenance: String? = null,
+
+        @DatabaseField(columnName = TableContracts.Maintenance.IS_DONE, canBeNull = false)
+        var isDone: Boolean = false
+
+) : Serializable {
 
     //region Fields
     @DatabaseField(generatedId = true, columnName = TableContracts.Maintenance.ID)
     var idMaintenance: Long = 0
 
-    @DatabaseField(columnName = TableContracts.Maintenance.NAME, canBeNull = false)
-    var nameMaintenance: String? = null
 
     @DatabaseField(columnName = TableContracts.Maintenance.NB_HOURS, canBeNull = false)
     var nbHoursMaintenance: Float = 0.toFloat()
@@ -34,8 +40,7 @@ class Maintenance : Serializable {
     @DatabaseField(foreign = true, foreignAutoRefresh = true, columnName = TableContracts.Maintenance.BIKE_ID)
     var bike: Bike? = null
 
-    @DatabaseField(columnName = TableContracts.Maintenance.IS_DONE, canBeNull = false)
-    var isDone: Boolean = false
+
     //endregion
 
     class Builder {

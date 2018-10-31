@@ -4,7 +4,9 @@ package fr.nextgear.mesentretiensmoto.mvp.manage_maintenances
 import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.support.design.widget.BaseTransientBottomBar
 import android.support.design.widget.FloatingActionButton
+import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -68,6 +70,7 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
     private var mMultiRecyclerAdaper: RecyclerMultiAdapter? = null
     private var mViewState: ViewState? = null
 
+    private var mMaintenances : MutableList<Maintenance> = ArrayList()
     enum class StateMaintenances : Serializable {
         TO_DO {
             override val value: Boolean
@@ -95,6 +98,7 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         FragmentArgs.inject(this)
+        mMaintenances.addAll(mBike.mMaintenances.toList().filter { it.isDone == this.mStateMaintenances.value })
     }
 
     override fun onAttach(poContext: Context?) {
@@ -131,48 +135,57 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, swipeDir: Int) {
                 position = viewHolder.adapterPosition
-//                val llMaintenances = ArrayList(mBike.mMaintenances!!)
-//                val loMaintenanceToRemove = mBike.mMaintenances!!.toList()[position]
-//                mMultiRecyclerAdaper!!.delItem(mBike.mMaintenances!!.toList()[position])
-                Log.e("removeList","sizeBefore == ${mBike.mMaintenances!!.size}")
-                mBike.mMaintenances!!.remove(mBike.mMaintenances!!.elementAt(position))
-                Log.e("removeList","sizeAfter == ${mBike.mMaintenances!!.size}")
-                Bike.BikeDao().updateBike(mBike)
-                //TODO : correct the remove of multiple items
-//                Snackbar.make(mViewGroupRoot,
-//                        R.string.text_delete_maitenance,
-//                        Snackbar.LENGTH_LONG)
-//                        .setAction(R.string.cancel) { view -> mMultiRecyclerAdaper!!.notifyDataSetChanged() }.addCallback(
-//                                object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
-//                                    override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-//                                        super.onDismissed(transientBottomBar, event)
-//                                        if (event == Snackbar.Callback.DISMISS_EVENT_ACTION) {
-//                                            llMaintenances.forEach {
-//                                                mBike.mMaintenances!!.add(it)
-//                                            }
-//                                            mMultiRecyclerAdaper!!.setItems(mBike.mMaintenances!!.toList())
-//                                        } else {
-//                                            mBike.mMaintenances!!.remove(loMaintenanceToRemove)
-//                                            mMultiRecyclerAdaper!!.delItem(loMaintenanceToRemove)
-//                                            getPresenter().removeMaintenance(loMaintenanceToRemove)
-//                                        }
-//                                    }
-//                                }).show()
+                val loMaintenanceToRemove = mMaintenances.elementAt(position)
+                mMultiRecyclerAdaper!!.delItem(loMaintenanceToRemove)
+                getPresenter().removeMaintenance(loMaintenanceToRemove)
+                mMaintenances.remove(loMaintenanceToRemove)
+                updateList()
+                Snackbar.make(mViewGroupRoot,
+                        R.string.text_delete_maitenance,
+                        Snackbar.LENGTH_LONG)
+                        .setAction(R.string.cancel) { view -> mMultiRecyclerAdaper!!.notifyDataSetChanged() }.addCallback(
+                                object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
+                                    override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                                        if (transientBottomBar != null) {
+                                            if(transientBottomBar.isShown){
+                                                super.onDismissed(transientBottomBar, event)
+                                                //In case we cancel the deletion
+                                                if (event == Snackbar.Callback.DISMISS_EVENT_ACTION) {
+                                                    presenter.addMaintenance(loMaintenanceToRemove.bike!!, loMaintenanceToRemove.nameMaintenance!!,loMaintenanceToRemove.nbHoursMaintenance,loMaintenanceToRemove.isDone)
+                                                    updateList()
+                                                } else {
+                                                    //Confirm the deletion
+
+                                                }
+                                            }
+                                        }
+                                    }
+                                }).show()
             }
         }
 
         val loItemTouchHelper = ItemTouchHelper(loSimpleItemTouchCallback)
         loItemTouchHelper.attachToRecyclerView(mRecyclerViewListMaintenances)
-        mMultiRecyclerAdaper = SmartAdapter
-                .empty()
-                .map(Maintenance::class.java, MaintenanceCellView::class.java)
-                .into(mRecyclerViewListMaintenances)
-        setViewState(ViewState.IDLE)
+        updateList()
+
+        if(mMaintenances.count() == 0){
+            setViewState(ViewState.NO_MAINTENACE_TO_SHOW)
+        }else{
+            setViewState(ViewState.MAINTENANCES_RETRIEVED)
+        }
+
         if (mStateMaintenances === StateMaintenances.DONE) {
             mAddMaintenanceFAB.backgroundTintList = ColorStateList
                     .valueOf(ContextCompat.getColor(context!!, R.color.accent_color))
         }
         return view
+    }
+
+    private fun updateList() {
+        mMultiRecyclerAdaper = SmartAdapter
+                .items(mMaintenances)
+                .map(Maintenance::class.java, MaintenanceCellView::class.java)
+                .into(mRecyclerViewListMaintenances)
     }
 
     override fun onDestroyView() {
@@ -187,15 +200,9 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
     }
 
     override fun onRetrieveMaintenancesSuccess(plMaintenances: List<Maintenance>) {
-        mMultiRecyclerAdaper!!.clearItems()
-        if (!plMaintenances!!.isEmpty()) {
-            setViewState(ViewState.MAINTENANCES_RETRIEVED)
-            mMultiRecyclerAdaper!!.addItems(plMaintenances)
-            runLayoutAnimation(mRecyclerViewListMaintenances)
-            return
-        }else{
-            setViewState(ViewState.NO_MAINTENACE_TO_SHOW)
-        }
+        mMaintenances.clear()
+        mMaintenances.addAll(plMaintenances)
+        updateList()
     }
 
     override fun onUpdateMaintenance(poMaintenance: Maintenance) {

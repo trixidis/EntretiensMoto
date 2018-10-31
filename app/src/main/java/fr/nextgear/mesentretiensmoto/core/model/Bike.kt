@@ -20,17 +20,19 @@ import java.util.ArrayList
  */
 
 @DatabaseTable(tableName = TableContracts.Bike.TABLE_NAME)
-class Bike : Serializable {
+data class Bike(
+
+        @DatabaseField(columnName = TableContracts.Bike.NAME, canBeNull = false)
+        var nameBike: String? = null
+
+) : Serializable {
 
     //region Fields
     @DatabaseField(generatedId = true, columnName = TableContracts.Bike.ID)
     var idBike: Long = 0
 
-    @DatabaseField(columnName = TableContracts.Bike.NAME, canBeNull = false)
-    var nameBike: String? = null
-
-    @ForeignCollectionField(eager = true, columnName = TableContracts.Bike.MAINTENANCES,maxEagerLevel = DEFAULT_MAX_FOREIGN_AUTO_REFRESH_LEVEL)
-    var mMaintenances: ForeignCollection<Maintenance> = Maintenance.MaintenanceDao.dao.getEmptyForeignCollection(TableContracts.Bike.MAINTENANCES)
+    @ForeignCollectionField(eager = true, columnName = TableContracts.Bike.MAINTENANCES, maxEagerLevel = DEFAULT_MAX_FOREIGN_AUTO_REFRESH_LEVEL)
+    var mMaintenances: ForeignCollection<Maintenance> = Bike.BikeDao.dao.getEmptyForeignCollection(TableContracts.Bike.MAINTENANCES)
     //endregion
 
 

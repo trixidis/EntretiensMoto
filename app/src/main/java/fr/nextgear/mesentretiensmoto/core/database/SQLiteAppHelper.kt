@@ -27,7 +27,6 @@ object SQLiteAppHelper : OrmLiteSqliteOpenHelper(App.instance, DB_NAME, null, DB
 
     override fun onCreate(database: SQLiteDatabase, connectionSource: ConnectionSource) {
         try {
-            Logger.e("on est dans la creation des tables")
             TableUtils.createTableIfNotExists(connectionSource, Maintenance::class.java)
             TableUtils.createTableIfNotExists(connectionSource, Bike::class.java)
         } catch (e: java.sql.SQLException) {
