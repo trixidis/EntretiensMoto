@@ -11,7 +11,6 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -48,6 +47,7 @@ import android.view.View.GONE
 //region Constructor
 @FragmentWithArgs
 class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPManageMaintenances.Presenter>(), MVPManageMaintenances.View {
+
 
 
     //region Fields
@@ -134,6 +134,7 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, swipeDir: Int) {
+
                 position = viewHolder.adapterPosition
                 val loMaintenanceToRemove = mMaintenances.elementAt(position)
                 mMultiRecyclerAdaper!!.delItem(loMaintenanceToRemove)
@@ -161,6 +162,7 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
                                         }
                                     }
                                 }).show()
+
             }
         }
 
@@ -195,6 +197,8 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
     //endregion
 
     //region View methods
+
+
     override fun onRetrieveMaintenancesError() {
         //TODO : handle error of retrieving the maintenances
     }

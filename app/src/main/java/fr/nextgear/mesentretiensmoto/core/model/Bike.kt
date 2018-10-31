@@ -1,6 +1,7 @@
 package fr.nextgear.mesentretiensmoto.core.model
 
 import com.j256.ormlite.dao.Dao
+import com.j256.ormlite.dao.DaoManager
 import com.j256.ormlite.dao.ForeignCollection
 import com.j256.ormlite.field.DatabaseField
 import com.j256.ormlite.field.DatabaseField.DEFAULT_MAX_FOREIGN_AUTO_REFRESH_LEVEL
@@ -28,11 +29,13 @@ data class Bike(
 ) : Serializable {
 
     //region Fields
+
     @DatabaseField(generatedId = true, columnName = TableContracts.Bike.ID)
     var idBike: Long = 0
 
     @ForeignCollectionField(eager = true, columnName = TableContracts.Bike.MAINTENANCES, maxEagerLevel = DEFAULT_MAX_FOREIGN_AUTO_REFRESH_LEVEL)
     var mMaintenances: ForeignCollection<Maintenance> = Bike.BikeDao.dao.getEmptyForeignCollection(TableContracts.Bike.MAINTENANCES)
+
     //endregion
 
 
@@ -59,11 +62,11 @@ data class Bike(
 
             }
 
-        fun addBike(bike: Bike): Int {
+        fun addBike(poBike: Bike): Int {
             return try {
                 dao.getEmptyForeignCollection<Maintenance>(TableContracts.Bike.MAINTENANCES)
-                dao.create(bike)
-                bike.idBike.toInt()
+                dao.create(poBike)
+                poBike.idBike.toInt()
             } catch (e: SQLException) {
                 e.printStackTrace()
                 -1
