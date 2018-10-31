@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/ActivityManageMaintenances_ViewRoot"
-    tools:context="fr.nextgear.mesentretiensmoto.mvp.manage_maintenances.FragmentManageMaintenances">
+    tools:context="fr.nextgear.mesentretiensmoto.features.manage_maintenances_of_bike.FragmentManageMaintenances">
 
 
     <android.support.v7.widget.RecyclerView

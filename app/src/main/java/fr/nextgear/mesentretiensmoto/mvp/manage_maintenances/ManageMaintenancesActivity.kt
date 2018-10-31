@@ -15,7 +15,8 @@ import butterknife.ButterKnife
 import butterknife.Unbinder
 import fr.nextgear.mesentretiensmoto.R
 import fr.nextgear.mesentretiensmoto.core.model.Bike
-import se.emilsjolander.intentbuilder.Extra
+import fr.nextgear.mesentretiensmoto.features.manage_maintenances_of_bike.FragmentManageMaintenances
+import fr.nextgear.mesentretiensmoto.features.manage_maintenances_of_bike.FragmentManageMaintenancesBuilder
 import se.emilsjolander.intentbuilder.IntentBuilder
 
 @IntentBuilder
@@ -76,8 +77,8 @@ class ManageMaintenancesActivity : AppCompatActivity(), FragmentManageMaintenanc
 
             override fun getItem(position: Int): Fragment? {
                 when (position) {
-                    0 -> return FragmentManageMaintenancesBuilder(currentSelectedBike!!,FragmentManageMaintenances.StateMaintenances.DONE).build()
-                    1 -> return FragmentManageMaintenancesBuilder(currentSelectedBike!!,FragmentManageMaintenances.StateMaintenances.TO_DO).build()
+                    0 -> return FragmentManageMaintenancesBuilder(currentSelectedBike!!, FragmentManageMaintenances.StateMaintenances.DONE).build()
+                    1 -> return FragmentManageMaintenancesBuilder(currentSelectedBike!!, FragmentManageMaintenances.StateMaintenances.TO_DO).build()
                     else -> return null
                 }
             }

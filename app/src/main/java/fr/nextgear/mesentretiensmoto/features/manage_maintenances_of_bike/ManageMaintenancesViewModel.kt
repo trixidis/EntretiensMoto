@@ -1,0 +1,93 @@
+package fr.nextgear.mesentretiensmoto.features.manage_maintenances_of_bike
+
+import android.arch.lifecycle.ViewModel
+import com.squareup.otto.Subscribe
+import fr.nextgear.mesentretiensmoto.core.App
+import fr.nextgear.mesentretiensmoto.core.events.EventMarkMaintenanceDone
+import fr.nextgear.mesentretiensmoto.core.events.EventRefreshMaintenances
+import fr.nextgear.mesentretiensmoto.core.model.Bike
+import fr.nextgear.mesentretiensmoto.core.model.Maintenance
+import fr.nextgear.mesentretiensmoto.mvp.manage_maintenances.InteractorManageMaintenances
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
+
+class ManageMaintenancesViewModel(val poBike : Bike,val isMaintenancesDone:Boolean) : ViewModel() {
+
+
+
+    private val mInteractorManageMaintenances: InteractorManageMaintenances = InteractorManageMaintenances()
+
+    init {
+        /*TODO : problem we have two presenters instantiated because we have two fragments
+        TODO : so we go two bus registered and we listen for the events two times*/
+        App.instance!!.mainThreadBus!!.register(this)
+        getMaintenancesForBike(poBike)
+    }
+
+     fun addMaintenance(poBike: Bike, psMaintenanceName: String, pfNbHours: Float, pbIsDone: Boolean) {
+        mInteractorManageMaintenances.addMaintenance(poBike, psMaintenanceName, pfNbHours, pbIsDone)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ poMaintenance -> App.instance!!.mainThreadBus!!.post(EventRefreshMaintenances(poMaintenance.bike!!)) }) { throwable -> }
+    }
+
+     fun getMaintenancesForBike(poBike: Bike) {
+//        mInteractorManageMaintenances.getMaintenancesForBike(poBike, isMaintenancesDone)
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribeOn(Schedulers.newThread())
+//                .subscribe({ ploMaintenances ->
+//                    if (view != null && isViewAttached) {
+//                        view.onRetrieveMaintenancesSuccess(ploMaintenances)
+//                    }
+//                }, { throwable ->
+//                    if (view != null && isViewAttached) {
+//                        view.onRetrieveMaintenancesError()
+//                    }
+//                }) {
+//
+//                }
+    }
+
+     fun removeMaintenance(poMaintenanceToRemove: Maintenance) {
+        val loBikeToRefresh = poMaintenanceToRemove.bike
+        mInteractorManageMaintenances.removeMaintenance(poMaintenanceToRemove)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.newThread())
+                .subscribe({
+                    //                    if(loBikeToRefresh != null){
+//                        getMaintenancesForBike(loBikeToRefresh)
+//                    }
+
+                }
+                ) { throwable ->
+
+                }
+    }
+
+     fun updateMaintenaceToDone(poMaintenance: Maintenance) {
+        mInteractorManageMaintenances.setMaintenanceDone(poMaintenance)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.newThread())
+                .subscribe({ App.instance!!.mainThreadBus!!.post(EventRefreshMaintenances(poMaintenance.bike!!)) }
+                ) { throwable ->
+                    //TODO : handle error
+                }
+    }
+
+    @Subscribe
+    fun onEventMarkMaintenanceDoneReceived(poEvent: EventMarkMaintenanceDone) {
+        if (poEvent.maintenance.isDone == isMaintenancesDone) {
+//            if (view != null && isViewAttached) {
+//                view.onAskMarkMaitenanceDone(poEvent.maintenance)
+//            }
+        }
+    }
+
+    @Subscribe
+    fun onEventRefreshMaintenances(poEvent: EventRefreshMaintenances) {
+        getMaintenancesForBike(poEvent.bike)
+    }
+
+
+
+}

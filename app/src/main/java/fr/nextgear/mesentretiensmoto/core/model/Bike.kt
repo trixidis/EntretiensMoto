@@ -56,7 +56,7 @@ data class Bike(
                 return try {
                     dao.queryForAll()
                 } catch (e: SQLException) {
-                    Logger.e(e.message)
+                    Logger.e(e.message!!)
                     ArrayList()
                 }
 

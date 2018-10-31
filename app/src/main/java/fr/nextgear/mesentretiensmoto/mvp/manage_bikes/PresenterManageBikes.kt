@@ -34,7 +34,7 @@ class PresenterManageBikes : MvpBasePresenter<MVPManageBikes.ViewManageBikes>(),
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ getBikesSQLiteAndDisplay() }
                 ) { throwable ->
-                    Logger.e(throwable.message)
+                    Logger.e(throwable.message!!)
                     throwable.printStackTrace()
                 }
     }

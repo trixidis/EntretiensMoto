@@ -1,12 +1,15 @@
-package fr.nextgear.mesentretiensmoto.mvp.manage_maintenances
+package fr.nextgear.mesentretiensmoto.features.manage_maintenances_of_bike
 
 
+import android.arch.lifecycle.ViewModelProvider
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.support.design.widget.BaseTransientBottomBar
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
+import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -41,16 +44,25 @@ import io.nlopez.smartadapters.SmartAdapter
 import io.nlopez.smartadapters.adapters.RecyclerMultiAdapter
 
 import android.view.View.GONE
+import fr.nextgear.mesentretiensmoto.mvp.manage_maintenances.MVPManageMaintenances
+import fr.nextgear.mesentretiensmoto.mvp.manage_maintenances.PresenterManageMaintenances
+import org.koin.android.ext.android.inject
+import org.koin.android.viewmodel.ext.android.getViewModel
+import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.ParameterList
+import org.koin.core.parameter.parametersOf
 
 //endregion
 
 //region Constructor
 @FragmentWithArgs
-class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPManageMaintenances.Presenter>(), MVPManageMaintenances.View {
-
-
+class FragmentManageMaintenances : Fragment() {
 
     //region Fields
+//    ParameterList("poBike" to mBike,"isMaintenancesDone" to mStateMaintenances.value)
+    val mViewModel by viewModel<ManageMaintenancesViewModel> { parametersOf(mBike,mStateMaintenances.value)}
+
+
     @BindView(R.id.FragmentManageMaintenances_RecyclerView_ListMaintenances)
     lateinit var mRecyclerViewListMaintenances: RecyclerView
     @BindView(R.id.FragmentManageMaintenances_TextView_NoMaintenanceToShow)
@@ -87,13 +99,12 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
     //endregion
 
     //region Presenter callback
-    override fun createPresenter(): MVPManageMaintenances.Presenter {
-        return PresenterManageMaintenances(mCallback!!.currentSelectedBike!!, mStateMaintenances.value)
-    }
+//    override fun createPresenter(): MVPManageMaintenances.Presenter {
+//        return PresenterManageMaintenances(mCallback!!.currentSelectedBike!!, mStateMaintenances.value)
+//    }
     //endregion
 
     //region Lifecycle methods
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -107,7 +118,6 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
             mCallback = poContext
         }
     }
-
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -127,18 +137,18 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
             }
         })
         val loSimpleItemTouchCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
-            private var position: Int = 0
+
 
             override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
                 return false
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, swipeDir: Int) {
-
-                position = viewHolder.adapterPosition
+                val position = viewHolder.adapterPosition
                 val loMaintenanceToRemove = mMaintenances.elementAt(position)
                 mMultiRecyclerAdaper!!.delItem(loMaintenanceToRemove)
-                getPresenter().removeMaintenance(loMaintenanceToRemove)
+
+                /*getPresenter()*/mViewModel.removeMaintenance(loMaintenanceToRemove)
                 mMaintenances.remove(loMaintenanceToRemove)
                 updateList()
                 Snackbar.make(mViewGroupRoot,
@@ -152,7 +162,7 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
                                                 super.onDismissed(transientBottomBar, event)
                                                 //In case we cancel the deletion
                                                 if (event == Snackbar.Callback.DISMISS_EVENT_ACTION) {
-                                                    presenter.addMaintenance(loMaintenanceToRemove.bike!!, loMaintenanceToRemove.nameMaintenance!!,loMaintenanceToRemove.nbHoursMaintenance,loMaintenanceToRemove.isDone)
+                                                    mViewModel.addMaintenance(loMaintenanceToRemove.bike!!, loMaintenanceToRemove.nameMaintenance!!,loMaintenanceToRemove.nbHoursMaintenance,loMaintenanceToRemove.isDone)
                                                     updateList()
                                                 } else {
                                                     //Confirm the deletion
@@ -162,7 +172,6 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
                                         }
                                     }
                                 }).show()
-
             }
         }
 
@@ -199,46 +208,46 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
     //region View methods
 
 
-    override fun onRetrieveMaintenancesError() {
-        //TODO : handle error of retrieving the maintenances
-    }
-
-    override fun onRetrieveMaintenancesSuccess(plMaintenances: List<Maintenance>) {
-        mMaintenances.clear()
-        mMaintenances.addAll(plMaintenances)
-        updateList()
-    }
-
-    override fun onUpdateMaintenance(poMaintenance: Maintenance) {
-        presenter.getMaintenancesForBike(mCallback!!.currentSelectedBike!!)
-    }
-
-    override fun onAskMarkMaitenanceDone(poMaintenance: Maintenance) {
-        val loDialog = MaterialDialog.Builder(context!!)
-                .title(R.string.title_mark_maintenance_done)
-                //.content(poMaintenance.nameMaintenance)
-                .iconRes(R.drawable.ic_build_black_24dp)
-                .customView(R.layout.layout_dialog_mark_maintenance_done, true)
-                .positiveText(R.string.positive)
-                .onPositive { poDialog, which ->
-                    val v = poDialog.customView
-                    if (v != null) {
-                        val loEditNbHoursMaintenance = v.findViewById<EditText>(R.id.DialogMarkMaintenanceDone_EditText_NbHoursMaintenance)
-
-                        if (loEditNbHoursMaintenance.text.toString().isEmpty()) {
-                            Toasty.warning(context!!, getString(R.string.toast_please_fill_inputs), Toast.LENGTH_LONG, true).show()
-                        } else {
-                            val lfNbHours = java.lang.Float.parseFloat(loEditNbHoursMaintenance.text.toString())
-                            poMaintenance.nbHoursMaintenance = lfNbHours
-                            getPresenter().updateMaintenaceToDone(poMaintenance)
-                            poDialog.dismiss()
-                        }
-
-                    }
-                }
-                .build()
-        loDialog.show()
-    }
+//    override fun onRetrieveMaintenancesError() {
+//        //TODO : handle error of retrieving the maintenances
+//    }
+//
+//    override fun onRetrieveMaintenancesSuccess(plMaintenances: List<Maintenance>) {
+//        mMaintenances.clear()
+//        mMaintenances.addAll(plMaintenances)
+//        updateList()
+//    }
+//
+//    override fun onUpdateMaintenance(poMaintenance: Maintenance) {
+//        presenter.getMaintenancesForBike(mCallback!!.currentSelectedBike!!)
+//    }
+//
+//    override fun onAskMarkMaitenanceDone(poMaintenance: Maintenance) {
+//        val loDialog = MaterialDialog.Builder(context!!)
+//                .title(R.string.title_mark_maintenance_done)
+//                //.content(poMaintenance.nameMaintenance)
+//                .iconRes(R.drawable.ic_build_black_24dp)
+//                .customView(R.layout.layout_dialog_mark_maintenance_done, true)
+//                .positiveText(R.string.positive)
+//                .onPositive { poDialog, which ->
+//                    val v = poDialog.customView
+//                    if (v != null) {
+//                        val loEditNbHoursMaintenance = v.findViewById<EditText>(R.id.DialogMarkMaintenanceDone_EditText_NbHoursMaintenance)
+//
+//                        if (loEditNbHoursMaintenance.text.toString().isEmpty()) {
+//                            Toasty.warning(context!!, getString(R.string.toast_please_fill_inputs), Toast.LENGTH_LONG, true).show()
+//                        } else {
+//                            val lfNbHours = java.lang.Float.parseFloat(loEditNbHoursMaintenance.text.toString())
+//                            poMaintenance.nbHoursMaintenance = lfNbHours
+//                            getPresenter().updateMaintenaceToDone(poMaintenance)
+//                            poDialog.dismiss()
+//                        }
+//
+//                    }
+//                }
+//                .build()
+//        loDialog.show()
+//    }
     //endregion
 
     //region View events
@@ -301,7 +310,7 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
                             } else {
                                 val lsNameMaintenance = loEditNameMaintenance.text.toString()
                                 val lfNbHours = java.lang.Float.parseFloat(loEditNbHoursMaintenance.text.toString())
-                                getPresenter().addMaintenance(mCallback!!.currentSelectedBike!!, lsNameMaintenance, lfNbHours, isDone)
+                                mViewModel.addMaintenance(mCallback!!.currentSelectedBike!!, lsNameMaintenance, lfNbHours, isDone)
                                 poDialog.dismiss()
                             }
 
@@ -324,7 +333,7 @@ class FragmentManageMaintenances : MvpFragment<MVPManageMaintenances.View, MVPMa
                                 Toasty.warning(context!!, getString(R.string.toast_please_fill_inputs), Toast.LENGTH_LONG, true).show()
                             } else {
                                 val lsNameMaintenance = loEditNameMaintenance.text.toString()
-                                getPresenter().addMaintenance(mCallback!!.currentSelectedBike!!, lsNameMaintenance, 0f, isDone)
+                                mViewModel.addMaintenance(mCallback!!.currentSelectedBike!!, lsNameMaintenance, 0f, isDone)
                                 poDialog.dismiss()
                             }
 
