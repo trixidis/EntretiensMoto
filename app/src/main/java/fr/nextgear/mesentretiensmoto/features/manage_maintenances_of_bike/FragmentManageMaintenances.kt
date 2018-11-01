@@ -1,8 +1,7 @@
 package fr.nextgear.mesentretiensmoto.features.manage_maintenances_of_bike
 
 
-import android.arch.lifecycle.ViewModelProvider
-import android.arch.lifecycle.ViewModelProviders
+import android.arch.lifecycle.Observer
 import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Bundle
@@ -16,40 +15,33 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-
+import butterknife.BindView
+import butterknife.ButterKnife
+import butterknife.OnClick
+import butterknife.Unbinder
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.florent37.materialviewpager.header.MaterialViewPagerHeaderDecorator
 import com.hannesdorfmann.fragmentargs.FragmentArgs
 import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
-import com.hannesdorfmann.mosby3.mvp.MvpFragment
-
-import java.io.Serializable
-
-import butterknife.BindView
-import butterknife.ButterKnife
-import butterknife.OnClick
-import butterknife.Unbinder
+import com.squareup.otto.Subscribe
 import es.dmoral.toasty.Toasty
 import fr.nextgear.mesentretiensmoto.R
+import fr.nextgear.mesentretiensmoto.App
+import fr.nextgear.mesentretiensmoto.core.events.EventMarkMaintenanceDone
 import fr.nextgear.mesentretiensmoto.core.model.Bike
 import fr.nextgear.mesentretiensmoto.core.model.Maintenance
+import fr.nextgear.mesentretiensmoto.core.model.StateMaintenance
 import fr.nextgear.mesentretiensmoto.core.views.MaintenanceCellView
 import io.nlopez.smartadapters.SmartAdapter
 import io.nlopez.smartadapters.adapters.RecyclerMultiAdapter
-
-import android.view.View.GONE
-import fr.nextgear.mesentretiensmoto.mvp.manage_maintenances.MVPManageMaintenances
-import fr.nextgear.mesentretiensmoto.mvp.manage_maintenances.PresenterManageMaintenances
-import org.koin.android.ext.android.inject
-import org.koin.android.viewmodel.ext.android.getViewModel
 import org.koin.android.viewmodel.ext.android.viewModel
-import org.koin.core.parameter.ParameterList
 import org.koin.core.parameter.parametersOf
 
 //endregion
@@ -59,9 +51,7 @@ import org.koin.core.parameter.parametersOf
 class FragmentManageMaintenances : Fragment() {
 
     //region Fields
-//    ParameterList("poBike" to mBike,"isMaintenancesDone" to mStateMaintenances.value)
-    val mViewModel by viewModel<ManageMaintenancesViewModel> { parametersOf(mBike,mStateMaintenances.value)}
-
+    val mViewModel by viewModel<ManageMaintenancesViewModel> { parametersOf(mBike, mStateMaintenances.value) }
 
     @BindView(R.id.FragmentManageMaintenances_RecyclerView_ListMaintenances)
     lateinit var mRecyclerViewListMaintenances: RecyclerView
@@ -73,7 +63,7 @@ class FragmentManageMaintenances : Fragment() {
     lateinit var mAddMaintenanceFAB: FloatingActionButton
 
     @Arg
-    lateinit var mStateMaintenances: StateMaintenances
+    lateinit var mStateMaintenances: StateMaintenance
     @Arg
     lateinit var mBike: Bike
 
@@ -82,26 +72,7 @@ class FragmentManageMaintenances : Fragment() {
     private var mMultiRecyclerAdaper: RecyclerMultiAdapter? = null
     private var mViewState: ViewState? = null
 
-    private var mMaintenances : MutableList<Maintenance> = ArrayList()
-    enum class StateMaintenances : Serializable {
-        TO_DO {
-            override val value: Boolean
-                get() = false
-        },
-        DONE {
 
-            override val value: Boolean
-                get() = true
-        };
-
-        abstract val value: Boolean
-    }
-    //endregion
-
-    //region Presenter callback
-//    override fun createPresenter(): MVPManageMaintenances.Presenter {
-//        return PresenterManageMaintenances(mCallback!!.currentSelectedBike!!, mStateMaintenances.value)
-//    }
     //endregion
 
     //region Lifecycle methods
@@ -109,8 +80,9 @@ class FragmentManageMaintenances : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         FragmentArgs.inject(this)
-        mMaintenances.addAll(mBike.mMaintenances.toList().filter { it.isDone == this.mStateMaintenances.value })
+        App.instance!!.mainThreadBus!!.register(this)
     }
+
 
     override fun onAttach(poContext: Context?) {
         super.onAttach(poContext)
@@ -137,20 +109,13 @@ class FragmentManageMaintenances : Fragment() {
             }
         })
         val loSimpleItemTouchCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
-
-
             override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
                 return false
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, swipeDir: Int) {
                 val position = viewHolder.adapterPosition
-                val loMaintenanceToRemove = mMaintenances.elementAt(position)
-                mMultiRecyclerAdaper!!.delItem(loMaintenanceToRemove)
-
-                /*getPresenter()*/mViewModel.removeMaintenance(loMaintenanceToRemove)
-                mMaintenances.remove(loMaintenanceToRemove)
-                updateList()
+                mViewModel.removeMaintenance(mViewModel.maintenances.value!![position])
                 Snackbar.make(mViewGroupRoot,
                         R.string.text_delete_maitenance,
                         Snackbar.LENGTH_LONG)
@@ -158,16 +123,10 @@ class FragmentManageMaintenances : Fragment() {
                                 object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
                                     override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                                         if (transientBottomBar != null) {
-                                            if(transientBottomBar.isShown){
-                                                super.onDismissed(transientBottomBar, event)
-                                                //In case we cancel the deletion
-                                                if (event == Snackbar.Callback.DISMISS_EVENT_ACTION) {
-                                                    mViewModel.addMaintenance(loMaintenanceToRemove.bike!!, loMaintenanceToRemove.nameMaintenance!!,loMaintenanceToRemove.nbHoursMaintenance,loMaintenanceToRemove.isDone)
-                                                    updateList()
-                                                } else {
-                                                    //Confirm the deletion
-
-                                                }
+                                            super.onDismissed(transientBottomBar, event)
+                                            //In case we cancel the deletion
+                                            if (event == Snackbar.Callback.DISMISS_EVENT_ACTION) {
+                                                mViewModel.cancelRemoveMaintenance()
                                             }
                                         }
                                     }
@@ -177,77 +136,54 @@ class FragmentManageMaintenances : Fragment() {
 
         val loItemTouchHelper = ItemTouchHelper(loSimpleItemTouchCallback)
         loItemTouchHelper.attachToRecyclerView(mRecyclerViewListMaintenances)
-        updateList()
 
-        if(mMaintenances.count() == 0){
-            setViewState(ViewState.NO_MAINTENACE_TO_SHOW)
-        }else{
-            setViewState(ViewState.MAINTENANCES_RETRIEVED)
-        }
-
-        if (mStateMaintenances === StateMaintenances.DONE) {
+        if (mStateMaintenances === StateMaintenance.DONE) {
             mAddMaintenanceFAB.backgroundTintList = ColorStateList
                     .valueOf(ContextCompat.getColor(context!!, R.color.accent_color))
         }
+        initObserveMaintenances()
+        initObserveError()
         return view
-    }
-
-    private fun updateList() {
-        mMultiRecyclerAdaper = SmartAdapter
-                .items(mMaintenances)
-                .map(Maintenance::class.java, MaintenanceCellView::class.java)
-                .into(mRecyclerViewListMaintenances)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         mUnbinder!!.unbind()
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        App.instance?.mainThreadBus?.unregister(this)
+    }
     //endregion
 
     //region View methods
 
+    fun onAskMarkMaitenanceDone(poMaintenance: Maintenance) {
+        val loDialog = MaterialDialog.Builder(context!!)
+                .title(R.string.title_mark_maintenance_done)
+                .iconRes(R.drawable.ic_build_black_24dp)
+                .customView(R.layout.layout_dialog_mark_maintenance_done, true)
+                .positiveText(R.string.positive)
+                .onPositive { poDialog, which ->
+                    val v = poDialog.customView
+                    if (v != null) {
+                        val loEditNbHoursMaintenance = v.findViewById<EditText>(R.id.DialogMarkMaintenanceDone_EditText_NbHoursMaintenance)
 
-//    override fun onRetrieveMaintenancesError() {
-//        //TODO : handle error of retrieving the maintenances
-//    }
-//
-//    override fun onRetrieveMaintenancesSuccess(plMaintenances: List<Maintenance>) {
-//        mMaintenances.clear()
-//        mMaintenances.addAll(plMaintenances)
-//        updateList()
-//    }
-//
-//    override fun onUpdateMaintenance(poMaintenance: Maintenance) {
-//        presenter.getMaintenancesForBike(mCallback!!.currentSelectedBike!!)
-//    }
-//
-//    override fun onAskMarkMaitenanceDone(poMaintenance: Maintenance) {
-//        val loDialog = MaterialDialog.Builder(context!!)
-//                .title(R.string.title_mark_maintenance_done)
-//                //.content(poMaintenance.nameMaintenance)
-//                .iconRes(R.drawable.ic_build_black_24dp)
-//                .customView(R.layout.layout_dialog_mark_maintenance_done, true)
-//                .positiveText(R.string.positive)
-//                .onPositive { poDialog, which ->
-//                    val v = poDialog.customView
-//                    if (v != null) {
-//                        val loEditNbHoursMaintenance = v.findViewById<EditText>(R.id.DialogMarkMaintenanceDone_EditText_NbHoursMaintenance)
-//
-//                        if (loEditNbHoursMaintenance.text.toString().isEmpty()) {
-//                            Toasty.warning(context!!, getString(R.string.toast_please_fill_inputs), Toast.LENGTH_LONG, true).show()
-//                        } else {
-//                            val lfNbHours = java.lang.Float.parseFloat(loEditNbHoursMaintenance.text.toString())
-//                            poMaintenance.nbHoursMaintenance = lfNbHours
-//                            getPresenter().updateMaintenaceToDone(poMaintenance)
-//                            poDialog.dismiss()
-//                        }
-//
-//                    }
-//                }
-//                .build()
-//        loDialog.show()
-//    }
+                        if (loEditNbHoursMaintenance.text.toString().isEmpty()) {
+                            Toasty.warning(context!!, getString(R.string.toast_please_fill_inputs), Toast.LENGTH_LONG, true).show()
+                        } else {
+                            val lfNbHours = java.lang.Float.parseFloat(loEditNbHoursMaintenance.text.toString())
+                            poMaintenance.nbHoursMaintenance = lfNbHours
+                            mViewModel.updateMaintenaceToDone(poMaintenance)
+                            poDialog.dismiss()
+                        }
+
+                    }
+                }
+                .build()
+        loDialog.show()
+    }
     //endregion
 
     //region View events
@@ -260,7 +196,9 @@ class FragmentManageMaintenances : Fragment() {
     //endregion
 
     //region ViewState
+
     private enum class ViewState {
+
         IDLE {
             override fun applyOn(poFragmentManageMaintenances: FragmentManageMaintenances) {
                 poFragmentManageMaintenances.mRecyclerViewListMaintenances.visibility = View.INVISIBLE
@@ -287,9 +225,50 @@ class FragmentManageMaintenances : Fragment() {
         mViewState = peViewState
         mViewState!!.applyOn(this)
     }
+
     //endregion
 
     //region Private Methods
+
+    //region Error handling
+    private fun onErrorRetrievingMaintenances() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    private fun onErrorAddingMaintenance() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    private fun onErrorRemovingMaintenance() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+    //endregion
+
+    private fun initObserveError() {
+        mViewModel.error.observe(this, Observer {
+            when (it) {
+                ManageMaintenancesViewModel.ErrorManageMaintenances.ERROR_COULD_NOT_RETRIEVE_MAINTENANCES -> onErrorRetrievingMaintenances()
+                ManageMaintenancesViewModel.ErrorManageMaintenances.ERROR_ADDING_MAINTENANCE -> onErrorRemovingMaintenance()
+                ManageMaintenancesViewModel.ErrorManageMaintenances.ERROR_REMOVING_MAINTENANCE -> onErrorAddingMaintenance()
+            }
+        })
+    }
+
+
+    private fun initObserveMaintenances() {
+        mViewModel.maintenances.observe(this, Observer { plMaintenances ->
+            plMaintenances!!.sortByDescending { item -> item.nbHoursMaintenance }
+            mMultiRecyclerAdaper = SmartAdapter
+                    .items(plMaintenances)
+                    .map(Maintenance::class.java, MaintenanceCellView::class.java)
+                    .into(mRecyclerViewListMaintenances)
+            if (plMaintenances.count() == 0) {
+                setViewState(ViewState.NO_MAINTENACE_TO_SHOW)
+            } else {
+                setViewState(ViewState.MAINTENANCES_RETRIEVED)
+            }
+        })
+    }
 
     private fun showDialogAddMaintenance(isDone: Boolean) {
         //TODO : refactor this code
@@ -359,4 +338,12 @@ class FragmentManageMaintenances : Fragment() {
         val currentSelectedBike: Bike?
     }
     //endregion Callback methods
+
+    @Subscribe
+    fun onEventMarkMaintenanceDoneReceived(poEvent: EventMarkMaintenanceDone) {
+        if (poEvent.maintenance.isDone == this.mStateMaintenances.value) {
+            onAskMarkMaitenanceDone(poEvent.maintenance)
+        }
+    }
+
 }// Required empty public constructor

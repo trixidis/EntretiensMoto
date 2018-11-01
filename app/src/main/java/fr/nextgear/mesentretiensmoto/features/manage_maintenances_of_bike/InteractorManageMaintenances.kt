@@ -1,4 +1,4 @@
-package fr.nextgear.mesentretiensmoto.mvp.manage_maintenances
+package fr.nextgear.mesentretiensmoto.features.manage_maintenances_of_bike
 
 import android.database.sqlite.SQLiteAbortException
 
@@ -16,11 +16,11 @@ import io.reactivex.Single
  * Created by adrien on 22/09/2017.
  */
 
-class InteractorManageMaintenances : MVPManageMaintenances.Interactor {
+class InteractorManageMaintenances {
 
     //endregion Fields
 
-    override fun addMaintenance(poBike: Bike, psMaintenanceName: String, pfNbHours: Float, isDone: Boolean): Single<Maintenance> {
+    fun addMaintenance(poBike: Bike, psMaintenanceName: String, pfNbHours: Float, isDone: Boolean): Single<Maintenance> {
         return Single.create { poEmitter ->
             val loMaintenancebuilder = Maintenance.Builder()
             loMaintenancebuilder.nameMaintenance(psMaintenanceName)
@@ -40,41 +40,14 @@ class InteractorManageMaintenances : MVPManageMaintenances.Interactor {
         }
     }
 
-    override fun getMaintenancesForBike(poBike: Bike, pbIsDone: Boolean): Observable<List<Maintenance>> {
-        return Observable.create { poEmitter ->
-            val llMaintenances = Maintenance.MaintenanceDao().getMaintenancesForBike(poBike, pbIsDone)
-            if (llMaintenances != null) {
-                Collections.sort<Maintenance>(llMaintenances!!) { t, t1 -> java.lang.Float.compare(t1.nbHoursMaintenance, t.nbHoursMaintenance) }
-            }
-            poEmitter.onNext(llMaintenances!!)
-            poEmitter.onComplete()
-        }
-    }
-
-    override fun removeMaintenance(poMaintenance: Maintenance): Completable {
+    fun removeMaintenance(poMaintenance: Maintenance): Completable {
         return Completable.create { poEmitter ->
             Maintenance.MaintenanceDao().removeMaintenance(poMaintenance)
             poEmitter.onComplete()
         }
     }
 
-    override fun setMaintenanceDone(maintenance: Maintenance): Completable {
-        return Completable.create { poEmitter ->
-            maintenance.isDone = true
-            val res = Maintenance.MaintenanceDao().updateMaintenance(maintenance)
-            if (res == 1) {
-                poEmitter.onComplete()
-            } else {
-                poEmitter.onError(SQLiteAbortException("update object has not been updated"))
-            }
-        }
-    }
-
     companion object {
-
-
-        //region Fields
-
         private val MAINTENANCE_NOT_DONE_NB_HOURS = -1
     }
 }

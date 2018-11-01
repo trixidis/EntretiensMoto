@@ -1,4 +1,4 @@
-package fr.nextgear.mesentretiensmoto.core
+package fr.nextgear.mesentretiensmoto
 
 import android.app.Application
 
@@ -6,10 +6,7 @@ import fr.nextgear.mesentretiensmoto.core.bus.MainThreadBus
 import fr.nextgear.mesentretiensmoto.core.model.Bike
 import fr.nextgear.mesentretiensmoto.features.manage_maintenances_of_bike.ManageMaintenancesViewModel
 import org.koin.android.ext.android.startKoin
-import org.koin.dsl.module.applicationContext
-import org.koin.android.viewmodel.experimental.builder.viewModel
 import org.koin.android.viewmodel.ext.koin.viewModel
-import org.koin.dsl.module.Module
 import org.koin.dsl.module.module
 
 /**

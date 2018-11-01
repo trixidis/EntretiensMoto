@@ -17,7 +17,7 @@ import java.sql.SQLException
  */
 
 @DatabaseTable(tableName = TableContracts.Maintenance.TABLE_NAME)
-class Maintenance(
+data class Maintenance(
 
         @DatabaseField(columnName = TableContracts.Maintenance.NAME, canBeNull = false)
         var nameMaintenance: String? = null,

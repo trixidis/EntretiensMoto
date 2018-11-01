@@ -1,15 +1,11 @@
 package fr.nextgear.mesentretiensmoto.core.database
 
-import android.content.Context
 import android.database.sqlite.SQLiteDatabase
-import android.database.sqlite.SQLiteOpenHelper
 
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper
-import com.j256.ormlite.dao.Dao
 import com.j256.ormlite.support.ConnectionSource
 import com.j256.ormlite.table.TableUtils
-import com.orhanobut.logger.Logger
-import fr.nextgear.mesentretiensmoto.core.App
+import fr.nextgear.mesentretiensmoto.App
 import fr.nextgear.mesentretiensmoto.core.database.TableContracts.DB_NAME
 import fr.nextgear.mesentretiensmoto.core.database.TableContracts.DB_VERSION
 

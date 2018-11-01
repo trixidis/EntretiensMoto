@@ -12,7 +12,7 @@ import com.orhanobut.logger.Logger
 import butterknife.BindView
 import butterknife.ButterKnife
 import fr.nextgear.mesentretiensmoto.R
-import fr.nextgear.mesentretiensmoto.core.App
+import fr.nextgear.mesentretiensmoto.App
 import fr.nextgear.mesentretiensmoto.core.events.EventMarkMaintenanceDone
 import fr.nextgear.mesentretiensmoto.core.model.Maintenance
 import io.nlopez.smartadapters.views.BindableLinearLayout

@@ -1,6 +1,6 @@
 package fr.nextgear.mesentretiensmoto.mvp.manage_bikes
 
-import fr.nextgear.mesentretiensmoto.core.App
+import fr.nextgear.mesentretiensmoto.App
 import fr.nextgear.mesentretiensmoto.core.events.EventGetAllBikesFromSQLiteSucceeded
 import fr.nextgear.mesentretiensmoto.core.model.Bike
 import io.reactivex.Completable

@@ -2,18 +2,15 @@ package fr.nextgear.mesentretiensmoto.core.views
 
 import android.content.Context
 import android.content.Intent
-import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
-
-import com.orhanobut.logger.Logger
 
 import butterknife.BindView
 import butterknife.ButterKnife
 import fr.nextgear.mesentretiensmoto.R
 import fr.nextgear.mesentretiensmoto.core.model.Bike
-import fr.nextgear.mesentretiensmoto.mvp.manage_maintenances.ManageMaintenancesActivity
+import fr.nextgear.mesentretiensmoto.features.manage_maintenances_of_bike.ManageMaintenancesActivity
 import io.nlopez.smartadapters.views.BindableLinearLayout
 
 /**
@@ -50,7 +47,7 @@ class BikeCellView
     override fun bind(poBike: Bike) {
         mBike = poBike
         setOnClickListener {
-                val loIntent= Intent(mContext,ManageMaintenancesActivity::class.java).putExtra("test",mBike)
+                val loIntent= Intent(mContext, ManageMaintenancesActivity::class.java).putExtra("test",mBike)
                 mContext.startActivity(loIntent)
          }
         mTextViewNameBike!!.text = poBike.nameBike

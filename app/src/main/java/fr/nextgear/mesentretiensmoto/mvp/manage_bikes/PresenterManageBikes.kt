@@ -4,7 +4,7 @@ import com.hannesdorfmann.mosby3.mvp.MvpBasePresenter
 import com.orhanobut.logger.Logger
 import com.squareup.otto.Subscribe
 
-import fr.nextgear.mesentretiensmoto.core.App
+import fr.nextgear.mesentretiensmoto.App
 import fr.nextgear.mesentretiensmoto.core.events.EventGetAllBikesFromSQLiteSucceeded
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
