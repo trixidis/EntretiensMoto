@@ -17,7 +17,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
@@ -32,8 +31,8 @@ import com.hannesdorfmann.fragmentargs.annotation.Arg
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs
 import com.squareup.otto.Subscribe
 import es.dmoral.toasty.Toasty
-import fr.nextgear.mesentretiensmoto.R
 import fr.nextgear.mesentretiensmoto.App
+import fr.nextgear.mesentretiensmoto.R
 import fr.nextgear.mesentretiensmoto.core.events.EventMarkMaintenanceDone
 import fr.nextgear.mesentretiensmoto.core.model.Bike
 import fr.nextgear.mesentretiensmoto.core.model.Maintenance
@@ -44,13 +43,12 @@ import io.nlopez.smartadapters.adapters.RecyclerMultiAdapter
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-//endregion
 
-//region Constructor
 @FragmentWithArgs
 class FragmentManageMaintenances : Fragment() {
 
     //region Fields
+
     val mViewModel by viewModel<ManageMaintenancesViewModel> { parametersOf(mBike, mStateMaintenances.value) }
 
     @BindView(R.id.FragmentManageMaintenances_RecyclerView_ListMaintenances)
@@ -71,7 +69,6 @@ class FragmentManageMaintenances : Fragment() {
     private var mUnbinder: Unbinder? = null
     private var mMultiRecyclerAdaper: RecyclerMultiAdapter? = null
     private var mViewState: ViewState? = null
-
 
     //endregion
 
@@ -154,35 +151,6 @@ class FragmentManageMaintenances : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         App.instance?.mainThreadBus?.unregister(this)
-    }
-    //endregion
-
-    //region View methods
-
-    fun onAskMarkMaitenanceDone(poMaintenance: Maintenance) {
-        val loDialog = MaterialDialog.Builder(context!!)
-                .title(R.string.title_mark_maintenance_done)
-                .iconRes(R.drawable.ic_build_black_24dp)
-                .customView(R.layout.layout_dialog_mark_maintenance_done, true)
-                .positiveText(R.string.positive)
-                .onPositive { poDialog, which ->
-                    val v = poDialog.customView
-                    if (v != null) {
-                        val loEditNbHoursMaintenance = v.findViewById<EditText>(R.id.DialogMarkMaintenanceDone_EditText_NbHoursMaintenance)
-
-                        if (loEditNbHoursMaintenance.text.toString().isEmpty()) {
-                            Toasty.warning(context!!, getString(R.string.toast_please_fill_inputs), Toast.LENGTH_LONG, true).show()
-                        } else {
-                            val lfNbHours = java.lang.Float.parseFloat(loEditNbHoursMaintenance.text.toString())
-                            poMaintenance.nbHoursMaintenance = lfNbHours
-                            mViewModel.updateMaintenaceToDone(poMaintenance)
-                            poDialog.dismiss()
-                        }
-
-                    }
-                }
-                .build()
-        loDialog.show()
     }
     //endregion
 
@@ -270,65 +238,90 @@ class FragmentManageMaintenances : Fragment() {
         })
     }
 
+    private fun onAskMarkMaitenanceDone(poMaintenance: Maintenance) {
+        val loDialog = MaterialDialog.Builder(context!!)
+                .title(R.string.title_mark_maintenance_done)
+                .iconRes(R.drawable.ic_build_black_24dp)
+                .customView(R.layout.layout_dialog_mark_maintenance_done, true)
+                .positiveText(R.string.positive)
+                .onPositive { poDialog, which ->
+                    val v = poDialog.customView
+                    if (v != null) {
+                        val loEditNbHoursMaintenance = v.findViewById<EditText>(R.id.DialogMarkMaintenanceDone_EditText_NbHoursMaintenance)
+
+                        if (loEditNbHoursMaintenance.text.toString().isEmpty()) {
+                            Toasty.warning(context!!, getString(R.string.toast_please_fill_inputs), Toast.LENGTH_LONG, true).show()
+                        } else {
+                            val lfNbHours = java.lang.Float.parseFloat(loEditNbHoursMaintenance.text.toString())
+                            poMaintenance.nbHoursMaintenance = lfNbHours
+                            mViewModel.updateMaintenaceToDone(poMaintenance)
+                            poDialog.dismiss()
+                        }
+
+                    }
+                }
+                .build()
+        loDialog.show()
+    }
+
     private fun showDialogAddMaintenance(isDone: Boolean) {
-        //TODO : refactor this code
         if (isDone) {
-            val loDialog = MaterialDialog.Builder(context!!)
-                    .title(R.string.title_add_maintenance)
-                    .iconRes(R.drawable.ic_build_black_24dp)
-                    .customView(R.layout.layout_dialog_add_maintenance_done, true)
-                    .positiveText(R.string.positive)
-                    .onPositive { poDialog, which ->
-                        val v = poDialog.customView
-                        if (v != null) {
-                            val loEditNameMaintenance = v.findViewById<EditText>(R.id.CustomDialog_EditText_NameMaintenance)
-                            val loEditNbHoursMaintenance = v.findViewById<EditText>(R.id.CustomDialog_EditText_NbHoursMaintenance)
-
-                            if (loEditNbHoursMaintenance.text.toString().isEmpty() || loEditNameMaintenance.text.toString().isEmpty()) {
-                                Toasty.warning(context!!, getString(R.string.toast_please_fill_inputs), Toast.LENGTH_LONG, true).show()
-                            } else {
-                                val lsNameMaintenance = loEditNameMaintenance.text.toString()
-                                val lfNbHours = java.lang.Float.parseFloat(loEditNbHoursMaintenance.text.toString())
-                                mViewModel.addMaintenance(mCallback!!.currentSelectedBike!!, lsNameMaintenance, lfNbHours, isDone)
-                                poDialog.dismiss()
-                            }
-
-                        }
-                    }
-                    .build()
-            loDialog.show()
+            showDialogAddMaintenanceDone()
         } else {
-            val loDialog = MaterialDialog.Builder(context!!)
-                    .title(R.string.title_add_maintenance_to_do)
-                    .iconRes(R.drawable.ic_build_black_24dp)
-                    .customView(R.layout.layout_dialog_add_maintenance_not_done, true)
-                    .positiveText(R.string.positive)
-                    .onPositive { poDialog, which ->
-                        val v = poDialog.customView
-                        if (v != null) {
-                            val loEditNameMaintenance = v.findViewById<EditText>(R.id.DialogAddMaintenanceToDo_EditText_NameMaintenance)
-
-                            if (loEditNameMaintenance.text.toString().isEmpty()) {
-                                Toasty.warning(context!!, getString(R.string.toast_please_fill_inputs), Toast.LENGTH_LONG, true).show()
-                            } else {
-                                val lsNameMaintenance = loEditNameMaintenance.text.toString()
-                                mViewModel.addMaintenance(mCallback!!.currentSelectedBike!!, lsNameMaintenance, 0f, isDone)
-                                poDialog.dismiss()
-                            }
-
-                        }
-                    }
-                    .build()
-            loDialog.show()
+            showDialogAddMaintenanceToDo()
         }
     }
 
-    private fun runLayoutAnimation(recyclerView: RecyclerView) {
-        val context = recyclerView.context
-        val controller = AnimationUtils.loadLayoutAnimation(context, R.anim.layout_animation_fall_down)
-        recyclerView.layoutAnimation = controller
-        recyclerView.adapter.notifyDataSetChanged()
-        recyclerView.scheduleLayoutAnimation()
+    private fun showDialogAddMaintenanceToDo() {
+        val loDialog = MaterialDialog.Builder(context!!)
+                .title(R.string.title_add_maintenance_to_do)
+                .iconRes(R.drawable.ic_build_black_24dp)
+                .customView(R.layout.layout_dialog_add_maintenance_not_done, true)
+                .positiveText(R.string.positive)
+                .onPositive { poDialog, which ->
+                    val v = poDialog.customView
+                    if (v != null) {
+                        val loEditNameMaintenance = v.findViewById<EditText>(R.id.DialogAddMaintenanceToDo_EditText_NameMaintenance)
+
+                        if (loEditNameMaintenance.text.toString().isEmpty()) {
+                            Toasty.warning(context!!, getString(R.string.toast_please_fill_inputs), Toast.LENGTH_LONG, true).show()
+                        } else {
+                            val lsNameMaintenance = loEditNameMaintenance.text.toString()
+                            mViewModel.addMaintenance(mCallback!!.currentSelectedBike!!, lsNameMaintenance, 0f, false)
+                            poDialog.dismiss()
+                        }
+
+                    }
+                }
+                .build()
+        loDialog.show()
+    }
+
+    private fun showDialogAddMaintenanceDone() {
+        val loDialog = MaterialDialog.Builder(context!!)
+                .title(R.string.title_add_maintenance)
+                .iconRes(R.drawable.ic_build_black_24dp)
+                .customView(R.layout.layout_dialog_add_maintenance_done, true)
+                .positiveText(R.string.positive)
+                .onPositive { poDialog, which ->
+                    val v = poDialog.customView
+                    if (v != null) {
+                        val loEditNameMaintenance = v.findViewById<EditText>(R.id.CustomDialog_EditText_NameMaintenance)
+                        val loEditNbHoursMaintenance = v.findViewById<EditText>(R.id.CustomDialog_EditText_NbHoursMaintenance)
+
+                        if (loEditNbHoursMaintenance.text.toString().isEmpty() || loEditNameMaintenance.text.toString().isEmpty()) {
+                            Toasty.warning(context!!, getString(R.string.toast_please_fill_inputs), Toast.LENGTH_LONG, true).show()
+                        } else {
+                            val lsNameMaintenance = loEditNameMaintenance.text.toString()
+                            val lfNbHours = loEditNbHoursMaintenance.text.toString().toFloat()
+                            mViewModel.addMaintenance(mCallback!!.currentSelectedBike!!, lsNameMaintenance, lfNbHours, true)
+                            poDialog.dismiss()
+                        }
+
+                    }
+                }
+                .build()
+        loDialog.show()
     }
 
     //endregion Private Methods
@@ -339,6 +332,8 @@ class FragmentManageMaintenances : Fragment() {
     }
     //endregion Callback methods
 
+    //region Events handling
+
     @Subscribe
     fun onEventMarkMaintenanceDoneReceived(poEvent: EventMarkMaintenanceDone) {
         if (poEvent.maintenance.isDone == this.mStateMaintenances.value) {
@@ -346,4 +341,6 @@ class FragmentManageMaintenances : Fragment() {
         }
     }
 
-}// Required empty public constructor
+    //endregion Events handling
+
+}

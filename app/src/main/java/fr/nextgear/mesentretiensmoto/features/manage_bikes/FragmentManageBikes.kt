@@ -1,4 +1,4 @@
-package fr.nextgear.mesentretiensmoto.mvp.manage_bikes
+package fr.nextgear.mesentretiensmoto.features.manage_bikes
 
 
 import android.os.Bundle
@@ -6,17 +6,12 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 
-import com.hannesdorfmann.mosby3.mvp.MvpFragment
-import com.orhanobut.logger.Logger
 import com.yarolegovich.lovelydialog.LovelyTextInputDialog
-
-import java.util.ArrayList
 
 import butterknife.BindView
 import butterknife.ButterKnife
@@ -29,6 +24,7 @@ import io.nlopez.smartadapters.SmartAdapter
 import io.nlopez.smartadapters.adapters.RecyclerMultiAdapter
 
 import android.view.View.GONE
+import org.koin.android.viewmodel.ext.android.viewModel
 
 /**
  * A simple [Fragment] subclass.
@@ -36,77 +32,71 @@ import android.view.View.GONE
 //endregion
 
 //region Constructor
-class FragmentManageBikes : MvpFragment<MVPManageBikes.ViewManageBikes, PresenterManageBikes>(), MVPManageBikes.ViewManageBikes {
+class FragmentManageBikes : Fragment() {
 
 
     //region Fields
+
     @BindView(R.id.fragmentManageBikes_RecyclerView_listBikes)
     lateinit var mRecyclerViewBikes: RecyclerView
     @BindView(R.id.fragmentManageBikes_TextView_NoBikes)
     lateinit  var mTextViewNoBikes: TextView
+
+    private val mViewModel by viewModel<ManageBikesViewModel> ()
+
     private var mMultiRecyclerAdaper: RecyclerMultiAdapter? = null
     private var mUnbinder: Unbinder? = null
+
     //endregion
 
     //region Lifecycle methods
-    override fun createPresenter(): PresenterManageBikes {
-        return PresenterManageBikes()
-    }
-
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.fragment_fragment_manage_bikes, container, false)
         mUnbinder = ButterKnife.bind(this, v)
-        mRecyclerViewBikes!!.layoutManager = LinearLayoutManager(context)
-        mMultiRecyclerAdaper = SmartAdapter.items(ArrayList<Any>()).map(Bike::class.java, BikeCellView::class.java).into(mRecyclerViewBikes!!)
-        mTextViewNoBikes!!.visibility = GONE
+        mRecyclerViewBikes.layoutManager = LinearLayoutManager(context)
+        mTextViewNoBikes.visibility = GONE
+        initObserverOnBikesList()
         return v
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
     }
 
     override fun onResume() {
         super.onResume()
 
-        getPresenter().getBikesSQLiteAndDisplay()
+        mViewModel.getBikesSQLiteAndDisplay()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        mUnbinder!!.unbind()
     }
 
     //endregion
 
     //region Presenter methods
-    override fun showNobikes() {
-        mTextViewNoBikes!!.visibility = View.VISIBLE
+
+    private fun initObserverOnBikesList() {
+        mViewModel.bikes.observe(this,android.arch.lifecycle.Observer {
+            if(it!=null){
+                if(it.count() != 0){
+                    showBikeList(it)
+                }else{
+                    showNobikes()
+                }
+            }
+        })
     }
 
-    override fun showBikeList(bikes: List<Bike>) {
+    private  fun showNobikes() {
+        mTextViewNoBikes.visibility = View.VISIBLE
+    }
+
+    private fun showBikeList(bikes: List<Bike>) {
         if (!bikes.isEmpty()) {
-            mTextViewNoBikes!!.visibility = GONE
+            mTextViewNoBikes.visibility = GONE
         }
-        mMultiRecyclerAdaper!!.clearItems()
-        mMultiRecyclerAdaper!!.addItems(bikes)
-    }
-
-    override fun addBike() {
-        Log.e("tes", "test")
-    }
-
-    override fun deleteBike() {
-
-    }
-
-    override fun onBikeAdded() {
-        getPresenter().getBikesSQLiteAndDisplay()
-    }
-    //endregion
-
-
-    //region User interactions
-    @OnClick(R.id.FragmentManageBikes_FloatingActionButton_AddBike)
-    fun onAddBikeClicked() {
-        giveNameToNewBikeAndAddIt()
+        mMultiRecyclerAdaper = SmartAdapter.items(bikes).map(Bike::class.java, BikeCellView::class.java).into(mRecyclerViewBikes)
     }
 
     private fun giveNameToNewBikeAndAddIt() {
@@ -116,14 +106,19 @@ class FragmentManageBikes : MvpFragment<MVPManageBikes.ViewManageBikes, Presente
                 .setMessage(R.string.message_add_bike_fill_name)
                 .setIcon(R.drawable.ic_motorcycle_white_48dp)
                 .setInputFilter(R.string.text_input_error_message) { text -> !TextUtils.isEmpty(text) }
-                .setConfirmButton(android.R.string.ok) { text -> getPresenter().addBike(text) }
+                .setConfirmButton(android.R.string.ok) { text -> mViewModel.addBike(text) }
                 .show()
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        mUnbinder!!.unbind()
-    }
     //endregion
 
-}// Required empty public constructor
+    //region User interactions
+
+    @OnClick(R.id.FragmentManageBikes_FloatingActionButton_AddBike)
+    fun onAddBikeClicked() {
+        giveNameToNewBikeAndAddIt()
+    }
+
+    //endregion
+
+}

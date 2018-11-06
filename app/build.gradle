@@ -5,7 +5,7 @@ apply plugin: 'kotlin-kapt'
 kapt {
 //    arguments {
 //        arg("dart.henson.package", "fr.nextgear.mesentretiensmoto.mvp.manage_maintenances")
-//        arg("dart.henson.package", "fr.nextgear.mesentretiensmoto.mvp.manage_bikes")
+//        arg("dart.henson.package", "fr.nextgear.mesentretiensmoto.features.manage_bikes")
 //    }
 }
 

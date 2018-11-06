@@ -1,10 +1,9 @@
-package fr.nextgear.mesentretiensmoto.mvp.manage_bikes
+package fr.nextgear.mesentretiensmoto.features.manage_bikes
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 
 import fr.nextgear.mesentretiensmoto.R
-import fr.nextgear.mesentretiensmoto.mvp.manage_bikes.FragmentManageBikes
 
 class ManageBikesActivity : AppCompatActivity() {
 
