@@ -1,10 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/ManageMaintenancesActivity_FrameLayout_Content"
-    tools:context="fr.nextgear.mesentretiensmoto.mvp.manage_maintenances.ManageMaintenancesActivity">
+    tools:context="fr.nextgear.mesentretiensmoto.features.manage_maintenances_of_bike.ManageMaintenancesActivity"
+    android:orientation="vertical">
 
-</FrameLayout>
+        <com.github.florent37.materialviewpager.MaterialViewPager
+            android:id="@+id/materialViewPager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:viewpager_logo="@layout/header_logo"
+            app:viewpager_color="@color/colorPrimary"
+            app:viewpager_headerHeight="200dp"
+            app:viewpager_pagerTitleStrip="@layout/header_tab_viewpager"
+            app:viewpager_headerAlpha="0.3"
+            app:viewpager_hideLogoWithFade="false"
+            app:viewpager_hideToolbarAndTitle="false"
+            app:viewpager_enableToolbarElevation="true"
+            app:viewpager_parallaxHeaderFactor="1.6"
+            app:viewpager_headerAdditionalHeight="20dp"
+            app:viewpager_displayToolbarWhenSwipe="true"
+            app:viewpager_transparentToolbar="false"
+            app:viewpager_animatedHeaderImage="false"
+            app:viewpager_disableToolbar="false"
+            />
+
+
+
+
+
+
+</LinearLayout>
