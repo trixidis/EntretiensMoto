@@ -1,5 +1,6 @@
 package fr.nextgear.mesentretiensmoto.core.model
 
+import com.google.firebase.database.FirebaseDatabase
 import com.j256.ormlite.dao.Dao
 import com.j256.ormlite.dao.DaoManager
 import com.j256.ormlite.dao.ForeignCollection
@@ -15,6 +16,9 @@ import java.io.Serializable
 import fr.nextgear.mesentretiensmoto.core.database.TableContracts
 import java.sql.SQLException
 import java.util.ArrayList
+import com.google.firebase.database.DatabaseReference
+
+
 
 /**
  * Created by adrien on 18/05/2017.
@@ -64,7 +68,18 @@ data class Bike(
 
         fun addBike(poBike: Bike): Int {
             return try {
-                dao.getEmptyForeignCollection<Maintenance>(TableContracts.Bike.MAINTENANCES)
+//               val bike : HashMap<String, Any> = HashMap()
+//                bike["name"] = poBike.nameBike!!
+//                val database = FirebaseDatabase.getInstance()
+//
+//                val myRef = database.getReference("message")
+//
+//                myRef.push().setValue("bikes")
+//                        .addOnSuccessListener {
+//                            Logger.e("cool on a ajouté une moto" )
+//                        }.addOnFailureListener {
+//                            Logger.e("ca a pas marché" )
+//                        }
                 dao.create(poBike)
                 poBike.idBike.toInt()
             } catch (e: SQLException) {
