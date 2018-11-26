@@ -68,18 +68,9 @@ data class Bike(
 
         fun addBike(poBike: Bike): Int {
             return try {
-//               val bike : HashMap<String, Any> = HashMap()
-//                bike["name"] = poBike.nameBike!!
-//                val database = FirebaseDatabase.getInstance()
-//
-//                val myRef = database.getReference("message")
-//
-//                myRef.push().setValue("bikes")
-//                        .addOnSuccessListener {
-//                            Logger.e("cool on a ajouté une moto" )
-//                        }.addOnFailureListener {
-//                            Logger.e("ca a pas marché" )
-//                        }
+                val database = FirebaseDatabase.getInstance()
+                val myRef = database.getReference("users").child("test@Gmail.com").child("bikes").child(poBike.nameBike!!)
+
                 dao.create(poBike)
                 poBike.idBike.toInt()
             } catch (e: SQLException) {

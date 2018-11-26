@@ -27,4 +27,8 @@
     <string name="title_add_maintenance_to_do">Ajout d\'un entretien à faire</string>
     <string name="title_mark_maintenance_done">Marquer cet entretien comme terminé</string>
     <string name="message_add_maintenance_fill_nb_hours">Veuillez renseigner le nombre d\'heures auquel vous avez effectué cet entretien</string>
+    <string name="shared_preferences_use_is_connected">user_connection_status</string>
+    <string name="error_login">Une erreur est survenue</string>
+    <string name="error_title">Erreur</string>
+    <string name="ok">Ok</string>
 </resources>

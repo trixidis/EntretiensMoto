@@ -1,4 +1,4 @@
-package fr.nextgear.mesentretiensmoto.features.manage_maintenances_of_bike
+package fr.nextgear.mesentretiensmoto.features.manageMaintenancesOfBike
 
 
 import android.arch.lifecycle.Observer
@@ -96,7 +96,8 @@ class FragmentManageMaintenances : Fragment() {
         mRecyclerViewListMaintenances.layoutManager = LinearLayoutManager(context)
         mRecyclerViewListMaintenances.addItemDecoration(MaterialViewPagerHeaderDecorator())
         mRecyclerViewListMaintenances.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 if (dy > 0 && mAddMaintenanceFAB.visibility == View.VISIBLE) {
                     mAddMaintenanceFAB.hide()

@@ -1,24 +1,31 @@
 package fr.nextgear.mesentretiensmoto
 
 import android.app.Application
-
+import android.content.Context
 import fr.nextgear.mesentretiensmoto.core.bus.MainThreadBus
 import fr.nextgear.mesentretiensmoto.core.di.ManageBikesmodule
 import fr.nextgear.mesentretiensmoto.core.di.ManageMaintenanceModule
-import fr.nextgear.mesentretiensmoto.core.model.Bike
-import fr.nextgear.mesentretiensmoto.features.manage_maintenances_of_bike.ManageMaintenancesViewModel
-import fr.nextgear.mesentretiensmoto.features.manage_bikes.ManageBikesViewModel
 import org.koin.android.ext.android.startKoin
-import org.koin.android.viewmodel.ext.koin.viewModel
-import org.koin.dsl.module.module
 
 /**
  * Created by adrien on 18/05/2017.
  */
 
 class App : Application() {
+
+
     var mainThreadBus: MainThreadBus? = null
         private set
+
+    var isConnected: Boolean
+        get() {
+            val sharedPref = this.getSharedPreferences(getString(R.string.shared_preferences_use_is_connected), Context.MODE_PRIVATE)
+            return sharedPref.getBoolean(IS_USER_CONNECTED, false)
+        }
+    set(value) {
+        val sharedPref = this.getSharedPreferences(getString(R.string.shared_preferences_use_is_connected), Context.MODE_PRIVATE)
+        sharedPref.edit().putBoolean(IS_USER_CONNECTED,value).apply()
+    }
 
     override fun onCreate() {
         instance = this
@@ -28,6 +35,7 @@ class App : Application() {
     }
 
     companion object {
+        const val IS_USER_CONNECTED = "IS_USER_CONNECTED"
         var instance: App? = null
             private set
     }

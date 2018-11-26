@@ -1,4 +1,4 @@
-package fr.nextgear.mesentretiensmoto.features.manage_maintenances_of_bike
+package fr.nextgear.mesentretiensmoto.features.manageMaintenancesOfBike
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel

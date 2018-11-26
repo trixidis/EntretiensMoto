@@ -1,4 +1,4 @@
-package fr.nextgear.mesentretiensmoto.features.manage_maintenances_of_bike
+package fr.nextgear.mesentretiensmoto.features.manageMaintenancesOfBike
 
 import android.content.Context
 import android.os.Bundle
@@ -6,21 +6,15 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
-
-import com.github.florent37.materialviewpager.MaterialViewPager
-import com.github.florent37.materialviewpager.header.HeaderDesign
-
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.Unbinder
+import com.github.florent37.materialviewpager.MaterialViewPager
+import com.github.florent37.materialviewpager.header.HeaderDesign
 import fr.nextgear.mesentretiensmoto.R
 import fr.nextgear.mesentretiensmoto.core.model.Bike
 import fr.nextgear.mesentretiensmoto.core.model.StateMaintenance
-import fr.nextgear.mesentretiensmoto.features.manage_maintenances_of_bike.FragmentManageMaintenances
-import fr.nextgear.mesentretiensmoto.features.manage_maintenances_of_bike.FragmentManageMaintenancesBuilder
-import se.emilsjolander.intentbuilder.IntentBuilder
 
-@IntentBuilder
 class ManageMaintenancesActivity : AppCompatActivity(), FragmentManageMaintenances.GetBikeFromActivityCallback {
 
     //region Attributes
@@ -42,10 +36,9 @@ class ManageMaintenancesActivity : AppCompatActivity(), FragmentManageMaintenanc
         mContext = this
         removeNotificationBarAndSetFullscreen()
         setContentView(R.layout.activity_manage_maintenances)
-        ButterKnife.bind(this)
-        currentSelectedBike = intent.extras.get("test") as Bike?
-        setupViewPager()
         mUnbinder = ButterKnife.bind(this)
+        currentSelectedBike = intent.extras?.get("test") as Bike?
+        setupViewPager()
 
         mViewPager.setMaterialViewPagerListener { page ->
             when (page) {
@@ -70,29 +63,29 @@ class ManageMaintenancesActivity : AppCompatActivity(), FragmentManageMaintenanc
     //region private Methods
 
     private fun setupViewPager() {
-        mViewPager!!.toolbar.setNavigationOnClickListener { v -> finish() }
-        mViewPager!!.viewPager.adapter = object : FragmentPagerAdapter(supportFragmentManager) {
+        mViewPager.toolbar.setNavigationOnClickListener { finish() }
+        mViewPager.viewPager.adapter = object : FragmentPagerAdapter(supportFragmentManager) {
             override fun getCount(): Int {
                 return 2
             }
 
             override fun getItem(position: Int): Fragment? {
-                when (position) {
-                    0 -> return FragmentManageMaintenancesBuilder(currentSelectedBike!!, StateMaintenance.DONE).build()
-                    1 -> return FragmentManageMaintenancesBuilder(currentSelectedBike!!, StateMaintenance.TO_DO).build()
-                    else -> return null
+                return when (position) {
+                    0 -> FragmentManageMaintenancesBuilder(currentSelectedBike!!, StateMaintenance.DONE).build()
+                    1 -> FragmentManageMaintenancesBuilder(currentSelectedBike!!, StateMaintenance.TO_DO).build()
+                    else -> null
                 }
             }
 
             override fun getPageTitle(position: Int): CharSequence? {
-                when (position) {
-                    0 -> return getString(R.string.title_done)
-                    1 -> return getString(R.string.title_to_do)
-                    else -> return ""
+                return when (position) {
+                    0 -> getString(R.string.title_done)
+                    1 -> getString(R.string.title_to_do)
+                    else -> ""
                 }
             }
         }
-        mViewPager!!.pagerTitleStrip.setViewPager(mViewPager!!.viewPager)
+        mViewPager.pagerTitleStrip.setViewPager(mViewPager.viewPager)
 
     }
 

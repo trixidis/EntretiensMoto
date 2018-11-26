@@ -16,7 +16,7 @@
         android:allowBackup="true">
 
         <activity
-            android:name="fr.nextgear.mesentretiensmoto.features.manage_bikes.ManageBikesActivity"
+            android:name="fr.nextgear.mesentretiensmoto.features.manageBikes.ManageBikesActivity"
             android:label="@string/title_activity_manage_bikes">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,7 +24,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".features.manage_maintenances_of_bike.ManageMaintenancesActivity" />
+        <activity android:name=".features.manageMaintenancesOfBike.ManageMaintenancesActivity" />
     </application>
 
 </manifest>

@@ -1,15 +1,11 @@
-package fr.nextgear.mesentretiensmoto.features.manage_maintenances_of_bike
-
-import android.database.sqlite.SQLiteAbortException
+package fr.nextgear.mesentretiensmoto.features.manageMaintenancesOfBike
 
 import java.sql.Date
 import java.sql.SQLException
-import java.util.Collections
 
 import fr.nextgear.mesentretiensmoto.core.model.Bike
 import fr.nextgear.mesentretiensmoto.core.model.Maintenance
 import io.reactivex.Completable
-import io.reactivex.Observable
 import io.reactivex.Single
 
 /**
@@ -48,7 +44,7 @@ class InteractorManageMaintenances {
     }
 
     companion object {
-        private val MAINTENANCE_NOT_DONE_NB_HOURS = -1
+        private const val MAINTENANCE_NOT_DONE_NB_HOURS = -1
     }
 }
 

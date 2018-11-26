@@ -10,7 +10,7 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import fr.nextgear.mesentretiensmoto.R
 import fr.nextgear.mesentretiensmoto.core.model.Bike
-import fr.nextgear.mesentretiensmoto.features.manage_maintenances_of_bike.ManageMaintenancesActivity
+import fr.nextgear.mesentretiensmoto.features.manageMaintenancesOfBike.ManageMaintenancesActivity
 import io.nlopez.smartadapters.views.BindableLinearLayout
 
 /**

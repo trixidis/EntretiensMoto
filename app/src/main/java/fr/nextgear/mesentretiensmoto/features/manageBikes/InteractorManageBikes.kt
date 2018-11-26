@@ -1,4 +1,4 @@
-package fr.nextgear.mesentretiensmoto.features.manage_bikes
+package fr.nextgear.mesentretiensmoto.features.manageBikes
 
 import fr.nextgear.mesentretiensmoto.core.model.Bike
 import io.reactivex.Completable
@@ -25,7 +25,7 @@ class InteractorManageBikes {
                 val list = Bike.BikeDao().allBikes
                     e.onNext(list)
                     e.onComplete()
-            } catch (poException: NullPointerException) {
+            } catch (poException: KotlinNullPointerException) {
                 e.onError(poException)
             }
         }
