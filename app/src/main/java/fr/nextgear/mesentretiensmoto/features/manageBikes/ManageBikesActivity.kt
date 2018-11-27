@@ -44,6 +44,7 @@ class ManageBikesActivity : AppCompatActivity() {
                 // Successfully signed in
                 val user = FirebaseAuth.getInstance().currentUser
                 App.instance!!.isConnected = true
+                displayUserBikes()
             } else {
                 // Sign in failed. If response is null the user canceled the
                 // sign-in flow using the back button.

@@ -1,6 +1,7 @@
 package fr.nextgear.mesentretiensmoto.core.model
 
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
 import com.j256.ormlite.dao.Dao
 import com.j256.ormlite.dao.DaoManager
 import com.j256.ormlite.dao.ForeignCollection
@@ -16,8 +17,6 @@ import java.io.Serializable
 import fr.nextgear.mesentretiensmoto.core.database.TableContracts
 import java.sql.SQLException
 import java.util.ArrayList
-import com.google.firebase.database.DatabaseReference
-
 
 
 /**
@@ -34,11 +33,18 @@ data class Bike(
 
     //region Fields
 
+    @DatabaseField(columnName = TableContracts.Bike.REF_STR)
+    @get:Exclude
+    var reference: String = ""
+
     @DatabaseField(generatedId = true, columnName = TableContracts.Bike.ID)
     var idBike: Long = 0
 
+
     @ForeignCollectionField(eager = true, columnName = TableContracts.Bike.MAINTENANCES, maxEagerLevel = DEFAULT_MAX_FOREIGN_AUTO_REFRESH_LEVEL)
-    var mMaintenances: ForeignCollection<Maintenance> = Bike.BikeDao.dao.getEmptyForeignCollection(TableContracts.Bike.MAINTENANCES)
+    @get:Exclude
+    var mMaintenances: ForeignCollection<Maintenance> = BikeDao.dao.getEmptyForeignCollection(TableContracts.Bike.MAINTENANCES)
+
 
     //endregion
 
@@ -67,17 +73,20 @@ data class Bike(
             }
 
         fun addBike(poBike: Bike): Int {
+            TODO("ajouter les motos sur firebase correctement dans le viewmodel et non dans le dao ")
             return try {
-                val database = FirebaseDatabase.getInstance()
-                val myRef = database.getReference("users").child("test@Gmail.com").child("bikes").child(poBike.nameBike!!)
-
-                dao.create(poBike)
+                val user = FirebaseAuth.getInstance().currentUser
+                if (user != null) {
+                    val database = FirebaseDatabase.getInstance().getReference("users")
+                    poBike.reference = database.child(user.uid).child("bikes").push().key!!
+                    dao.create(poBike)
+                    database.child(user.uid).child("bikes").child(poBike.reference).setValue(poBike)
+                }
                 poBike.idBike.toInt()
             } catch (e: SQLException) {
                 e.printStackTrace()
                 -1
             }
-
         }
 
         fun updateBike(bike: Bike): Int {

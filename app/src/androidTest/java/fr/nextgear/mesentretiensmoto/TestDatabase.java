@@ -32,7 +32,7 @@ public class TestDatabase {
 
             loMaintenance = new Maintenance.Builder()
                     .nameMaintenance("test")
-                    .date(new Date(1, 1, 1))
+                    .dateMillis(new Date(1, 1, 1))
                     .nbHoursMaintenance(50)
                     .bike(new Bike())
                     .build();

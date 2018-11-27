@@ -16,6 +16,7 @@ import fr.nextgear.mesentretiensmoto.App
 import fr.nextgear.mesentretiensmoto.core.events.EventMarkMaintenanceDone
 import fr.nextgear.mesentretiensmoto.core.model.Maintenance
 import io.nlopez.smartadapters.views.BindableLinearLayout
+import java.sql.Date
 
 class MaintenanceCellView
 //endregion
@@ -49,7 +50,7 @@ class MaintenanceCellView
             mTextViewNbHoursMaintenance!!.visibility = View.VISIBLE
             mTextViewNbHoursMaintenance!!.text = String.format(FORMAT, poMaintenance.nbHoursMaintenance)
         }
-        mTextViewDateMaintenance!!.text = android.text.format.DateFormat.format(DATE_FORMAT, poMaintenance.dateMaintenance)
+        mTextViewDateMaintenance!!.text = android.text.format.DateFormat.format(DATE_FORMAT, Date(poMaintenance.dateMaintenance!!))
         if (!poMaintenance.isDone) {
             mLayout!!.setOnClickListener { view ->
                 MaterialDialog.Builder(mContext)

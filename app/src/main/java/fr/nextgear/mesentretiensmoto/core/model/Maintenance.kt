@@ -1,16 +1,20 @@
 package fr.nextgear.mesentretiensmoto.core.model
 
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.Exclude
+import com.google.firebase.database.FirebaseDatabase
 import com.j256.ormlite.dao.Dao
 import com.j256.ormlite.field.DatabaseField
 import com.j256.ormlite.table.DatabaseTable
-import com.orhanobut.logger.Logger
 import fr.nextgear.mesentretiensmoto.core.database.SQLiteAppHelper
 
 import java.io.Serializable
-import java.sql.Date
 
 import fr.nextgear.mesentretiensmoto.core.database.TableContracts
+import fr.nextgear.mesentretiensmoto.core.firebase.FirebaseContract
 import java.sql.SQLException
+
 
 /**
  * Created by adrien on 14/06/2017.
@@ -31,14 +35,18 @@ data class Maintenance(
     @DatabaseField(generatedId = true, columnName = TableContracts.Maintenance.ID)
     var idMaintenance: Long = 0
 
-
     @DatabaseField(columnName = TableContracts.Maintenance.NB_HOURS, canBeNull = false)
     var nbHoursMaintenance: Float = 0.toFloat()
 
+    @DatabaseField(columnName = TableContracts.Maintenance.REF_STR)
+    @get:Exclude
+    var reference: String = ""
+
     @DatabaseField(columnName = TableContracts.Maintenance.DATE, canBeNull = false)
-    var dateMaintenance: Date? = null
+    var dateMaintenance: Long? = 0
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true, columnName = TableContracts.Maintenance.BIKE_ID)
+    @get:Exclude
     var bike: Bike? = null
 
 
@@ -48,12 +56,12 @@ data class Maintenance(
 
         private var nameMaintenance: String? = null
         private var nbHoursMaintenance: Float = 0.toFloat()
-        private var dateMaintenance: Date? = null
+        private var dateMaintenance: Long? = null
         private var bike: Bike? = null
         private var isDone: Boolean = false
 
-        fun date(poDate: Date): Builder {
-            this.dateMaintenance = poDate
+        fun dateMillis(plMillis: Long): Builder {
+            this.dateMaintenance = plMillis
             return this
         }
 
@@ -103,7 +111,23 @@ data class Maintenance(
 
         fun addMaintenance(poMaintenance: Maintenance): Int {
             try {
-                return dao.create(poMaintenance)
+                val res = dao.create(poMaintenance)
+                ifUserConnectedDo {
+                    val database = FirebaseDatabase.getInstance().getReference(FirebaseContract.USERS)
+                    poMaintenance.reference = database.child(it.uid)
+                            .child(FirebaseContract.BIKES)
+                            .child(poMaintenance.bike?.reference!!)
+                            .child(FirebaseContract.MAINTENANCES)
+                            .push().key!!
+
+                    database.child(it.uid)
+                            .child(FirebaseContract.BIKES)
+                            .child(poMaintenance.bike?.reference!!)
+                            .child(FirebaseContract.MAINTENANCES)
+                            .child(poMaintenance.reference)
+                            .setValue(poMaintenance)
+                }
+                return res
             } catch (e: SQLException) {
                 e.printStackTrace()
                 return -1
@@ -140,6 +164,15 @@ data class Maintenance(
 
         fun removeMaintenance(poMaintenance: Maintenance): Int {
             try {
+                ifUserConnectedDo {
+                    val database = FirebaseDatabase.getInstance().getReference(FirebaseContract.USERS)
+                    database.child(it.uid)
+                            .child(FirebaseContract.BIKES)
+                            .child(poMaintenance.bike?.reference!!)
+                            .child(FirebaseContract.MAINTENANCES)
+                            .child(poMaintenance.reference)
+                            .removeValue()
+                }
                 return dao.delete(poMaintenance)
             } catch (e: SQLException) {
                 e.printStackTrace()
@@ -147,5 +180,15 @@ data class Maintenance(
             }
 
         }
+
+
+        fun ifUserConnectedDo(poTreatment: (user: FirebaseUser) -> Unit) {
+            val user = FirebaseAuth.getInstance().currentUser
+            if (user != null) {
+                poTreatment(user)
+            }
+
+        }
+
     }
 }

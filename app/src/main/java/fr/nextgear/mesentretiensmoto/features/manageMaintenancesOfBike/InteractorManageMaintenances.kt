@@ -20,7 +20,7 @@ class InteractorManageMaintenances {
         return Single.create { poEmitter ->
             val loMaintenancebuilder = Maintenance.Builder()
             loMaintenancebuilder.nameMaintenance(psMaintenanceName)
-                    .date(Date(System.currentTimeMillis()))
+                    .dateMillis(System.currentTimeMillis())
                     //if maintenance is done we give the numbers of hours filled by the user else its set to -1
                     .nbHoursMaintenance(if (isDone) pfNbHours else MAINTENANCE_NOT_DONE_NB_HOURS.toFloat())
                     .bike(poBike)
