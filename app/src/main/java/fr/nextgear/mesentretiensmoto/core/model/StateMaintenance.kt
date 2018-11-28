@@ -9,7 +9,6 @@ enum class StateMaintenance {
             get() = false
         },
         DONE {
-
             override val value: Boolean
             get() = true
         };

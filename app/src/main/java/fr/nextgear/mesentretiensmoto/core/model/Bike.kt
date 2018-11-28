@@ -73,15 +73,8 @@ data class Bike(
             }
 
         fun addBike(poBike: Bike): Int {
-            TODO("ajouter les motos sur firebase correctement dans le viewmodel et non dans le dao ")
             return try {
-                val user = FirebaseAuth.getInstance().currentUser
-                if (user != null) {
-                    val database = FirebaseDatabase.getInstance().getReference("users")
-                    poBike.reference = database.child(user.uid).child("bikes").push().key!!
-                    dao.create(poBike)
-                    database.child(user.uid).child("bikes").child(poBike.reference).setValue(poBike)
-                }
+                dao.create(poBike)
                 poBike.idBike.toInt()
             } catch (e: SQLException) {
                 e.printStackTrace()
@@ -97,6 +90,15 @@ data class Bike(
                 -1
             }
 
+        }
+
+        fun findByReference(key: String?): Boolean {
+            return try {
+                return !dao.queryBuilder().where().eq(TableContracts.Bike.REF_STR,key).query().isEmpty()
+            } catch (e: SQLException) {
+                e.printStackTrace()
+                false
+            }
         }
     }
 

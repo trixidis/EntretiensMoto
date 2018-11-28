@@ -2,10 +2,16 @@ package fr.nextgear.mesentretiensmoto.features.manageMaintenancesOfBike
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.ChildEventListener
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
 import com.orhanobut.logger.Logger
 import com.squareup.otto.Subscribe
 import fr.nextgear.mesentretiensmoto.App
 import fr.nextgear.mesentretiensmoto.core.events.EventAddMaintenance
+import fr.nextgear.mesentretiensmoto.core.firebase.FirebaseContract
 import fr.nextgear.mesentretiensmoto.core.model.Bike
 import fr.nextgear.mesentretiensmoto.core.model.Maintenance
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -30,6 +36,49 @@ class ManageMaintenancesViewModel(val poBike: Bike, val isMaintenancesDone: Bool
         App.instance!!.mainThreadBus!!.register(this)
         updateMaintenances()
         error.value = ErrorManageMaintenances.NONE
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user != null) {
+            val database = FirebaseDatabase.getInstance().getReference(FirebaseContract.USERS)
+            database.child(user.uid)
+                    .child(FirebaseContract.BIKES)
+                    .child(poBike.reference)
+                    .child(FirebaseContract.MAINTENANCES)
+                    .addChildEventListener(object : ChildEventListener {
+                override fun onCancelled(p0: DatabaseError) {
+                }
+
+                override fun onChildMoved(p0: DataSnapshot, p1: String?) {
+                }
+
+                override fun onChildChanged(p0: DataSnapshot, p1: String?) {
+                }
+
+                override fun onChildAdded(p0: DataSnapshot, p1: String?) {
+                    if (!Maintenance.MaintenanceDao().findByReference(p0.key)) {
+                        val loMaintenance = p0.getValue(Maintenance::class.java)
+                        if (loMaintenance != null) {
+                            loMaintenance.bike = poBike
+                            loMaintenance.reference= p0.key!!
+                            if(loMaintenance.isDone == isMaintenancesDone){
+                                mInteractorManageMaintenances.saveMaintenanceFromApi(loMaintenance)
+                                        .subscribeOn(Schedulers.io())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe({ addMaintenanceAndNotify(it) }
+                                        ) { throwable ->
+                                            Logger.e(throwable.message!!)
+                                            throwable.printStackTrace()
+                                        }
+                            }
+                        }
+                    }
+                }
+
+                override fun onChildRemoved(p0: DataSnapshot) {
+                }
+
+            })
+        }
+
     }
 
     override fun onCleared() {
@@ -38,8 +87,10 @@ class ManageMaintenancesViewModel(val poBike: Bike, val isMaintenancesDone: Bool
     }
 
     private fun updateMaintenances() {
-        maintenances.value = ArrayList()
-        maintenances.value!!.addAll(poBike.mMaintenances.filter { it.isDone == isMaintenancesDone })
+        if(maintenances.value == null){
+            maintenances.value = ArrayList()
+        }
+        maintenances.value!!.addAll(Maintenance.MaintenanceDao().getMaintenancesForBike(poBike,isMaintenancesDone)!!)
     }
 
     fun addMaintenance(poBike: Bike, psMaintenanceName: String, pfNbHours: Float, pbIsDone: Boolean) {
@@ -108,8 +159,10 @@ class ManageMaintenancesViewModel(val poBike: Bike, val isMaintenancesDone: Bool
     }
 
     private fun addMaintenanceAndNotify(poMaintenance: Maintenance) {
-        maintenances.value!!.add(poMaintenance)
-        maintenances.value = maintenances.value
+        if(poMaintenance.isDone == isMaintenancesDone) {
+            maintenances.value!!.add(poMaintenance)
+            maintenances.value = maintenances.value
+        }
     }
 
     private fun removeMaintenanceAndNotify(poMaintenance: Maintenance) {

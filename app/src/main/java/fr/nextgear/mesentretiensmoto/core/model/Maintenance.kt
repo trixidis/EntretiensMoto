@@ -110,44 +110,29 @@ data class Maintenance(
         fun update(loMaintenance: Maintenance) = dao.update(loMaintenance)
 
         fun addMaintenance(poMaintenance: Maintenance): Int {
-            try {
+            return try {
                 val res = dao.create(poMaintenance)
-                ifUserConnectedDo {
-                    val database = FirebaseDatabase.getInstance().getReference(FirebaseContract.USERS)
-                    poMaintenance.reference = database.child(it.uid)
-                            .child(FirebaseContract.BIKES)
-                            .child(poMaintenance.bike?.reference!!)
-                            .child(FirebaseContract.MAINTENANCES)
-                            .push().key!!
-
-                    database.child(it.uid)
-                            .child(FirebaseContract.BIKES)
-                            .child(poMaintenance.bike?.reference!!)
-                            .child(FirebaseContract.MAINTENANCES)
-                            .child(poMaintenance.reference)
-                            .setValue(poMaintenance)
-                }
-                return res
+                res
             } catch (e: SQLException) {
                 e.printStackTrace()
-                return -1
+                -1
             }
 
         }
 
         fun updateMaintenance(poMaintenance: Maintenance): Int {
-            try {
-                return dao.update(poMaintenance)
+            return try {
+                dao.update(poMaintenance)
             } catch (e: SQLException) {
                 e.printStackTrace()
-                return -1
+                -1
             }
 
         }
 
         fun getMaintenancesForBike(poBike: Bike, pbIsDone: Boolean): List<Maintenance>? {
-            try {
-                return dao
+            return try {
+                dao
                         .queryBuilder()
                         .where()
                         .eq(TableContracts.Maintenance.BIKE_ID, poBike.idBike)
@@ -157,37 +142,28 @@ data class Maintenance(
 
             } catch (e: SQLException) {
                 e.printStackTrace()
-                return null
+                null
             }
 
         }
 
         fun removeMaintenance(poMaintenance: Maintenance): Int {
-            try {
-                ifUserConnectedDo {
-                    val database = FirebaseDatabase.getInstance().getReference(FirebaseContract.USERS)
-                    database.child(it.uid)
-                            .child(FirebaseContract.BIKES)
-                            .child(poMaintenance.bike?.reference!!)
-                            .child(FirebaseContract.MAINTENANCES)
-                            .child(poMaintenance.reference)
-                            .removeValue()
-                }
-                return dao.delete(poMaintenance)
+            return try {
+                dao.delete(poMaintenance)
             } catch (e: SQLException) {
                 e.printStackTrace()
-                return -1
+                -1
             }
 
         }
 
-
-        fun ifUserConnectedDo(poTreatment: (user: FirebaseUser) -> Unit) {
-            val user = FirebaseAuth.getInstance().currentUser
-            if (user != null) {
-                poTreatment(user)
+        fun findByReference(key: String?): Boolean {
+            return try {
+                return !dao.queryBuilder().where().eq(TableContracts.Maintenance.REF_STR,key).query().isEmpty()
+            } catch (e: SQLException) {
+                e.printStackTrace()
+                false
             }
-
         }
 
     }

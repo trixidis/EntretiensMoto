@@ -139,9 +139,13 @@ class FragmentManageMaintenances : Fragment() {
             mAddMaintenanceFAB.backgroundTintList = ColorStateList
                     .valueOf(ContextCompat.getColor(context!!, R.color.accent_color))
         }
-        initObserveMaintenances()
         initObserveError()
         return view
+    }
+
+    override fun onResume() {
+        super.onResume()
+        initObserveMaintenances()
     }
 
     override fun onDestroyView() {
@@ -201,16 +205,14 @@ class FragmentManageMaintenances : Fragment() {
 
     //region Error handling
     private fun onErrorRetrievingMaintenances() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        Toast.makeText(context, R.string.error_retrieving_maintenances, Toast.LENGTH_LONG).show()
     }
 
     private fun onErrorAddingMaintenance() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+        Toast.makeText(context, R.string.error_adding_maintenances, Toast.LENGTH_LONG).show()    }
 
     private fun onErrorRemovingMaintenance() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+        Toast.makeText(context, R.string.error_removing_maintenances, Toast.LENGTH_LONG).show()    }
     //endregion
 
     private fun initObserveError() {
