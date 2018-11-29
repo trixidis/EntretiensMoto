@@ -3,6 +3,10 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
 android {
+    aaptOptions {
+        cruncherEnabled = false
+    }
+
     compileSdkVersion 27
     buildToolsVersion '27.0.3'
     defaultConfig {
@@ -30,6 +34,7 @@ android {
 def AAVersion = '4.4.0'
 def koin_version = '1.0.1'
 def androidArchitectureVersion = "1.1.1"
+
 
 dependencies {
 
