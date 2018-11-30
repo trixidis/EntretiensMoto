@@ -17,12 +17,9 @@ import io.nlopez.smartadapters.views.BindableLinearLayout
  * Created by adrien on 18/05/2017.
  */
 
-class BikeCellView
-//endregion
+class BikeCellView(private val mContext: Context) : BindableLinearLayout<Bike>(mContext) {
 
-//region Constructor
-(//region Fields
-        private val mContext: Context) : BindableLinearLayout<Bike>(mContext) {
+    //region Fields
     private var mBike: Bike? = null
 
     @BindView(R.id.manage_bike_cell_TextView_nameBike)
@@ -47,10 +44,11 @@ class BikeCellView
     override fun bind(poBike: Bike) {
         mBike = poBike
         setOnClickListener {
-                val loIntent= Intent(mContext, ManageMaintenancesActivity::class.java).putExtra("test",mBike)
-                mContext.startActivity(loIntent)
-         }
-        mTextViewNameBike!!.text = poBike.nameBike
+            val loIntent = Intent(mContext, ManageMaintenancesActivity::class.java).putExtra(ManageMaintenancesActivity.EXTRA_BIKE, mBike)
+            mContext.startActivity(loIntent)
+        }
+        mTextViewNameBike.text = poBike.nameBike
     }
     //endregion
+
 }

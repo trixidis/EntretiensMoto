@@ -30,7 +30,7 @@
     <string name="shared_preferences_use_is_connected">user_connection_status</string>
     <string name="error_login">Une erreur est survenue</string>
     <string name="error_title">Erreur</string>
-    <string name="ok">Ok</string>
+    <string name="ok">OK</string>
     <string name="error_retrieving_maintenances">Erreur de récupération des entretiens</string>
     <string name="error_adding_maintenances">Erreur pendant l\'ajout d\'un entretien</string>
     <string name="error_removing_maintenances">Erreur pendant la suppression d\'un entretien</string>

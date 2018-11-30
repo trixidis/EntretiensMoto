@@ -40,14 +40,10 @@ data class Bike(
     @DatabaseField(generatedId = true, columnName = TableContracts.Bike.ID)
     var idBike: Long = 0
 
-
-    @ForeignCollectionField(eager = true, columnName = TableContracts.Bike.MAINTENANCES, maxEagerLevel = DEFAULT_MAX_FOREIGN_AUTO_REFRESH_LEVEL)
-    @get:Exclude
-    var mMaintenances: ForeignCollection<Maintenance> = BikeDao.dao.getEmptyForeignCollection(TableContracts.Bike.MAINTENANCES)
+    //endregion Fields
 
 
-    //endregion
-
+    //region DAO
 
     class BikeDao {
 
@@ -59,8 +55,6 @@ data class Bike(
             dao = SQLiteAppHelper.getDao(Bike::class.java)
         }
 
-        fun update(loBike: Bike) = dao.update(loBike)
-
         val allBikes: List<Bike>
             get() {
                 return try {
@@ -69,7 +63,6 @@ data class Bike(
                     Logger.e(e.message!!)
                     ArrayList()
                 }
-
             }
 
         fun addBike(poBike: Bike): Int {
@@ -82,16 +75,6 @@ data class Bike(
             }
         }
 
-        fun updateBike(bike: Bike): Int {
-            return try {
-                return dao.update(bike)
-            } catch (e: SQLException) {
-                e.printStackTrace()
-                -1
-            }
-
-        }
-
         fun findByReference(key: String?): Boolean {
             return try {
                 return !dao.queryBuilder().where().eq(TableContracts.Bike.REF_STR,key).query().isEmpty()
@@ -101,5 +84,7 @@ data class Bike(
             }
         }
     }
+
+    //endregion DAO
 
 }

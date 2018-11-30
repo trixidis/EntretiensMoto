@@ -15,9 +15,12 @@ import io.reactivex.schedulers.Schedulers
 
 class ManageBikesViewModel : ViewModel() {
 
+    //region Attributes
     private val mInteractorManageBikes = InteractorManageBikes()
     val bikes: MutableLiveData<List<Bike>> = MutableLiveData()
+    //endregion
 
+    //region Initializer
     init {
         bikes.value = ArrayList()
         val user = FirebaseAuth.getInstance().currentUser
@@ -56,7 +59,9 @@ class ManageBikesViewModel : ViewModel() {
             })
         }
     }
+    //endregion
 
+    //region ViewModel Methods
     fun getBikesSQLiteAndDisplay() {
         mInteractorManageBikes.bikesFromSQLiteDatabase
                 .subscribeOn(Schedulers.newThread())
@@ -76,5 +81,6 @@ class ManageBikesViewModel : ViewModel() {
                     throwable.printStackTrace()
                 }
     }
+    //endregion
 
 }

@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="action_bike_cell_clicked" type="id">5424</item>
+    <item name="action_bike_cell_clicked" type="id" />
 </resources>

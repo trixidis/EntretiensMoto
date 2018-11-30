@@ -21,6 +21,8 @@ import fr.nextgear.mesentretiensmoto.core.model.Maintenance
 
 object SQLiteAppHelper : OrmLiteSqliteOpenHelper(App.instance, DB_NAME, null, DB_VERSION) {
 
+    //region Overriden API
+
     override fun onCreate(database: SQLiteDatabase, connectionSource: ConnectionSource) {
         try {
             TableUtils.createTableIfNotExists(connectionSource, Maintenance::class.java)
@@ -41,6 +43,7 @@ object SQLiteAppHelper : OrmLiteSqliteOpenHelper(App.instance, DB_NAME, null, DB
         }
 
     }
-    //endregion
+
+    //endregion Overriden API
 
 }

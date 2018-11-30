@@ -8,5 +8,4 @@ interface FirebaseContract {
         const val MAINTENANCES : String = "maintenances"
     }
 
-
 }

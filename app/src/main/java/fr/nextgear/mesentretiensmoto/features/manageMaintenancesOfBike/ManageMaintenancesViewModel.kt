@@ -19,6 +19,7 @@ import io.reactivex.schedulers.Schedulers
 
 class ManageMaintenancesViewModel(val poBike: Bike, val isMaintenancesDone: Boolean) : ViewModel() {
 
+    //region Attributes
     enum class ErrorManageMaintenances {
         NONE,
         ERROR_COULD_NOT_RETRIEVE_MAINTENANCES,
@@ -31,7 +32,9 @@ class ManageMaintenancesViewModel(val poBike: Bike, val isMaintenancesDone: Bool
     val maintenances: MutableLiveData<ArrayList<Maintenance>> = MutableLiveData()
     val error: MutableLiveData<ErrorManageMaintenances> = MutableLiveData()
     var lastMaintenanceRemoved: Maintenance? = null
+    //endregion
 
+    //region Initializer
     init {
         App.instance!!.mainThreadBus!!.register(this)
         updateMaintenances()
@@ -80,19 +83,16 @@ class ManageMaintenancesViewModel(val poBike: Bike, val isMaintenancesDone: Bool
         }
 
     }
+    //endregion
 
+    //region Lifecycle Methods
     override fun onCleared() {
         super.onCleared()
         App.instance!!.mainThreadBus!!.unregister(this)
     }
+    //endregion
 
-    private fun updateMaintenances() {
-        if(maintenances.value == null){
-            maintenances.value = ArrayList()
-        }
-        maintenances.value!!.addAll(Maintenance.MaintenanceDao().getMaintenancesForBike(poBike,isMaintenancesDone)!!)
-    }
-
+    //region Public API
     fun addMaintenance(poBike: Bike, psMaintenanceName: String, pfNbHours: Float, pbIsDone: Boolean) {
         mInteractorManageMaintenances.addMaintenance(poBike, psMaintenanceName, pfNbHours, pbIsDone)
                 .subscribeOn(Schedulers.newThread())
@@ -157,6 +157,16 @@ class ManageMaintenancesViewModel(val poBike: Bike, val isMaintenancesDone: Bool
                     }
                 }
     }
+    //endregion
+
+    //region Private API
+    private fun updateMaintenances() {
+        if(maintenances.value == null){
+            maintenances.value = ArrayList()
+        }
+        maintenances.value!!.addAll(Maintenance.MaintenanceDao().getMaintenancesForBike(poBike,isMaintenancesDone)!!)
+    }
+
 
     private fun addMaintenanceAndNotify(poMaintenance: Maintenance) {
         if(poMaintenance.isDone == isMaintenancesDone) {
@@ -169,12 +179,15 @@ class ManageMaintenancesViewModel(val poBike: Bike, val isMaintenancesDone: Bool
         maintenances.value!!.remove(poMaintenance)
         maintenances.value = maintenances.value
     }
+    //endregion
 
+    //region Events handling
     @Subscribe
     fun onEventAddMaintenanceDoneReceived(poEvent: EventAddMaintenance) {
         if (isMaintenancesDone && poEvent.poMaintenanceDone.isDone) {
             addMaintenance(poEvent.poMaintenanceDone)
         }
     }
+    //endregion
 
 }

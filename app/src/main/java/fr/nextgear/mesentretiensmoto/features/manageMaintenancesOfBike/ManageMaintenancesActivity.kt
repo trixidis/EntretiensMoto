@@ -17,6 +17,10 @@ import fr.nextgear.mesentretiensmoto.core.model.StateMaintenance
 
 class ManageMaintenancesActivity : AppCompatActivity(), FragmentManageMaintenances.GetBikeFromActivityCallback {
 
+    companion object {
+        const val EXTRA_BIKE = "extra_bike"
+    }
+
     //region Attributes
 
     @BindView(R.id.materialViewPager)
@@ -37,7 +41,7 @@ class ManageMaintenancesActivity : AppCompatActivity(), FragmentManageMaintenanc
         removeNotificationBarAndSetFullscreen()
         setContentView(R.layout.activity_manage_maintenances)
         mUnbinder = ButterKnife.bind(this)
-        currentSelectedBike = intent.extras?.get("test") as Bike?
+        currentSelectedBike = intent.extras?.get(EXTRA_BIKE) as Bike?
         setupViewPager()
 
         mViewPager.setMaterialViewPagerListener { page ->

@@ -34,7 +34,6 @@ import org.koin.android.viewmodel.ext.android.viewModel
 //region Constructor
 class FragmentManageBikes : Fragment() {
 
-
     //region Fields
 
     @BindView(R.id.fragmentManageBikes_RecyclerView_listBikes)
@@ -63,7 +62,6 @@ class FragmentManageBikes : Fragment() {
 
     override fun onResume() {
         super.onResume()
-
         mViewModel.getBikesSQLiteAndDisplay()
     }
 
@@ -82,13 +80,13 @@ class FragmentManageBikes : Fragment() {
                 if(it.count() != 0){
                     showBikeList(it)
                 }else{
-                    showNobikes()
+                    showNoBikes()
                 }
             }
         })
     }
 
-    private  fun showNobikes() {
+    private  fun showNoBikes() {
         mTextViewNoBikes.visibility = View.VISIBLE
     }
 

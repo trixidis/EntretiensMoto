@@ -52,6 +52,7 @@ data class Maintenance(
 
     //endregion
 
+    //region Builder
     class Builder {
 
         private var nameMaintenance: String? = null
@@ -96,7 +97,9 @@ data class Maintenance(
         }
 
     }
+    //endregion
 
+    //region DAO
     class MaintenanceDao {
 
         companion object {
@@ -107,22 +110,10 @@ data class Maintenance(
             dao = SQLiteAppHelper.getDao(Maintenance::class.java)
         }
 
-        fun update(loMaintenance: Maintenance) = dao.update(loMaintenance)
-
         fun addMaintenance(poMaintenance: Maintenance): Int {
             return try {
                 val res = dao.create(poMaintenance)
                 res
-            } catch (e: SQLException) {
-                e.printStackTrace()
-                -1
-            }
-
-        }
-
-        fun updateMaintenance(poMaintenance: Maintenance): Int {
-            return try {
-                dao.update(poMaintenance)
             } catch (e: SQLException) {
                 e.printStackTrace()
                 -1
@@ -167,4 +158,5 @@ data class Maintenance(
         }
 
     }
+    //endregion
 }

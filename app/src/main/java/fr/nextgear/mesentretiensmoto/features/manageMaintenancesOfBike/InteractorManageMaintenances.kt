@@ -18,7 +18,6 @@ import io.reactivex.Single
 
 class InteractorManageMaintenances {
 
-
     //region Constants
 
     companion object {

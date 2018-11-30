@@ -18,19 +18,22 @@ import fr.nextgear.mesentretiensmoto.core.model.Maintenance
 import io.nlopez.smartadapters.views.BindableLinearLayout
 import java.sql.Date
 
-class MaintenanceCellView
-//endregion
+class MaintenanceCellView(private val mContext: Context) : BindableLinearLayout<Maintenance>(mContext) {
 
-//region Constructor
-(private val mContext: Context) : BindableLinearLayout<Maintenance>(mContext) {
+    //region Constants
+    companion object {
+        private const val FORMAT = "%s H"
+        private const val DATE_FORMAT = "dd/MM/yyyy"
+    }
+    //endregion
 
+    //region Attributes
     @BindView(R.id.manage_maintenance_cell_TextView_nameMaintenance)
     lateinit var mTextViewNameMaintenance: TextView
     @BindView(R.id.manage_maintenance_cell_GroupView)
     lateinit var mLayout: ViewGroup
     @BindView(R.id.manage_maintenance_cell_TextView_nbHoursMaintenance)
     lateinit var mTextViewNbHoursMaintenance: TextView
-
     @BindView(R.id.manage_maintenance_cell_TextView_dateMaintenance)
     lateinit var mTextViewDateMaintenance: TextView
     //endregion
@@ -45,20 +48,19 @@ class MaintenanceCellView
     }
 
     override fun bind(poMaintenance: Maintenance) {
-        mTextViewNameMaintenance!!.text = poMaintenance.nameMaintenance
+        mTextViewNameMaintenance.text = poMaintenance.nameMaintenance
         if (poMaintenance.isDone) {
-            mTextViewNbHoursMaintenance!!.visibility = View.VISIBLE
-            mTextViewNbHoursMaintenance!!.text = String.format(FORMAT, poMaintenance.nbHoursMaintenance)
+            mTextViewNbHoursMaintenance.visibility = View.VISIBLE
+            mTextViewNbHoursMaintenance.text = String.format(FORMAT, poMaintenance.nbHoursMaintenance)
         }
-        mTextViewDateMaintenance!!.text = android.text.format.DateFormat.format(DATE_FORMAT, Date(poMaintenance.dateMaintenance!!))
+        mTextViewDateMaintenance.text = android.text.format.DateFormat.format(DATE_FORMAT, Date(poMaintenance.dateMaintenance!!))
         if (!poMaintenance.isDone) {
-            mLayout!!.setOnClickListener { view ->
+            mLayout.setOnClickListener {
                 MaterialDialog.Builder(mContext)
                         .content(R.string.ask_maintenance_done)
                         .positiveText(R.string.yes)
                         .negativeText(R.string.no)
-                        .onPositive { dialog, which -> App.instance!!.mainThreadBus!!.post(EventMarkMaintenanceDone(poMaintenance)) }
-                        .onNegative { dialog, which -> Logger.e("remain not done ") }
+                        .onPositive { _, _ -> App.instance!!.mainThreadBus!!.post(EventMarkMaintenanceDone(poMaintenance)) }
                         .build()
                         .show()
             }
@@ -71,11 +73,7 @@ class MaintenanceCellView
         layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 
-    companion object {
-
-        //region Fields
-        private val FORMAT = "%s H"
-        private val DATE_FORMAT = "dd/MM/yyyy"
-    }
     //endregion
+
+
 }
