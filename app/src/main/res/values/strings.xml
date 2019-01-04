@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Mes entretiens moto</string>
 
-    <string name="bike_holder">bike</string>
+    <string name="bike_holder" translatable="false">bike</string>
     <string name="title_add_bike">Ajout de moto</string>
     <string name="message_add_bike_fill_name">Veuillez renseigner le nom de la moto à ajouter</string>
     <string name="text_input_error_message">Saisie invalide</string>
@@ -27,10 +27,10 @@
     <string name="title_add_maintenance_to_do">Ajout d\'un entretien à faire</string>
     <string name="title_mark_maintenance_done">Marquer cet entretien comme terminé</string>
     <string name="message_add_maintenance_fill_nb_hours">Veuillez renseigner le nombre d\'heures auquel vous avez effectué cet entretien</string>
-    <string name="shared_preferences_use_is_connected">user_connection_status</string>
+    <string name="shared_preferences_use_is_connected" translatable="false">user_connection_status</string>
     <string name="error_login">Une erreur est survenue</string>
     <string name="error_title">Erreur</string>
-    <string name="ok">OK</string>
+    <string name="ok" translatable="false">OK</string>
     <string name="error_retrieving_maintenances">Erreur de récupération des entretiens</string>
     <string name="error_adding_maintenances">Erreur pendant l\'ajout d\'un entretien</string>
     <string name="error_removing_maintenances">Erreur pendant la suppression d\'un entretien</string>

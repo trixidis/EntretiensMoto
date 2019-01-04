@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">My bikes maintenance</string>
+    <string name="add_maintenance_done">Maintenance done</string>
+    <string name="add_maintenance_to_do">Maintenance to do</string>
+    <string name="ask_maintenance_done">Mark this maintenance as done ?</string>
+    <string name="cancel">Cancel</string>
+    <string name="error_adding_maintenances">Error while adding a maintenance</string>
+    <string name="error_login">An error occured</string>
+    <string name="error_removing_maintenances">Error while removing a maintenance</string>
+    <string name="hint_no_bikes">You have not added any bike for now</string>
+    <string name="message_add_maintenance_fill_name">Please fill the type of maintenance to add</string>
+    <string name="message_add_bike_fill_name">Please fill the name of the bike to add</string>
+    <string name="error_title">Error</string>
+    <string name="error_retrieving_maintenances">Error while getting maintenances</string>
+    <string name="hint_maintenance_nb_hours">Number of hours</string>
+    <string name="hint_maintenance_type">Maintenance type</string>
+    <string name="no">No</string>
+    <string name="message_add_maintenance_fill_nb_hours">" Please enter the number of hours you did this maintenance"</string>
+    <string name="positive">Add</string>
+    <string name="text_delete_maitenance">Maintenance removed</string>
+    <string name="text_input_error_message">Invalid input</string>
+    <string name="text_no_maintenance_to_show">"No maintenance for this bike "</string>
+    <string name="title_activity_manage_bikes">My bikes</string>
+    <string name="title_activity_manage_maintenances">Maintenances</string>
+    <string name="title_add_bike">Adding a bike</string>
+    <string name="title_add_maintenance">Adding a maintenance</string>
+    <string name="title_add_maintenance_to_do">Adding a maintenance to do</string>
+    <string name="title_done">Done</string>
+    <string name="title_mark_maintenance_done">Mark this maintenance as done</string>
+    <string name="title_to_do">To do</string>
+    <string name="toast_please_fill_inputs">Please fill correctly the fields !</string>
+    <string name="yes">Yes</string>
+</resources>
