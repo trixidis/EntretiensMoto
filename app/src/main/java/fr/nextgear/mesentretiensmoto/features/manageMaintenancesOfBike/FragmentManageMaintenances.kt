@@ -117,7 +117,7 @@ class FragmentManageMaintenances : Fragment() {
                 Snackbar.make(mViewGroupRoot,
                         R.string.text_delete_maitenance,
                         Snackbar.LENGTH_LONG)
-                        .setAction(R.string.cancel) { view -> mMultiRecyclerAdaper!!.notifyDataSetChanged() }.addCallback(
+                        .setAction(R.string.cancel) { _ -> mMultiRecyclerAdaper!!.notifyDataSetChanged() }.addCallback(
                                 object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
                                     override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                                         if (transientBottomBar != null) {
@@ -247,7 +247,7 @@ class FragmentManageMaintenances : Fragment() {
                 .iconRes(R.drawable.ic_build_black_24dp)
                 .customView(R.layout.layout_dialog_mark_maintenance_done, true)
                 .positiveText(R.string.positive)
-                .onPositive { poDialog, which ->
+                .onPositive { poDialog, _ ->
                     val v = poDialog.customView
                     if (v != null) {
                         val loEditNbHoursMaintenance = v.findViewById<EditText>(R.id.DialogMarkMaintenanceDone_EditText_NbHoursMaintenance)
@@ -306,7 +306,7 @@ class FragmentManageMaintenances : Fragment() {
                 .iconRes(R.drawable.ic_build_black_24dp)
                 .customView(R.layout.layout_dialog_add_maintenance_done, true)
                 .positiveText(R.string.positive)
-                .onPositive { poDialog, which ->
+                .onPositive { poDialog, _ ->
                     val v = poDialog.customView
                     if (v != null) {
                         val loEditNameMaintenance = v.findViewById<EditText>(R.id.CustomDialog_EditText_NameMaintenance)
