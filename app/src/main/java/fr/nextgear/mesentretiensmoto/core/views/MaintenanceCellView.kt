@@ -50,11 +50,11 @@ class MaintenanceCellView(private val mContext: Context) : BindableLinearLayout<
     override fun bind(poMaintenance: Maintenance) {
         mTextViewNameMaintenance.text = poMaintenance.nameMaintenance
         if (poMaintenance.isDone) {
-            mTextViewNbHoursMaintenance.visibility = View.VISIBLE
+            mTextViewDateMaintenance.text = android.text.format.DateFormat.format(DATE_FORMAT, Date(poMaintenance.dateMaintenance!!))
             mTextViewNbHoursMaintenance.text = String.format(FORMAT, poMaintenance.nbHoursMaintenance)
-        }
-        mTextViewDateMaintenance.text = android.text.format.DateFormat.format(DATE_FORMAT, Date(poMaintenance.dateMaintenance!!))
-        if (!poMaintenance.isDone) {
+            mTextViewDateMaintenance.visibility = View.VISIBLE
+            mTextViewNbHoursMaintenance.visibility = View.VISIBLE
+        } else {
             mLayout.setOnClickListener {
                 MaterialDialog.Builder(mContext)
                         .content(R.string.ask_maintenance_done)
