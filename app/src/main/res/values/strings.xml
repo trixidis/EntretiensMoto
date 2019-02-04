@@ -34,4 +34,7 @@
     <string name="error_retrieving_maintenances">Erreur de récupération des entretiens</string>
     <string name="error_adding_maintenances">Erreur pendant l\'ajout d\'un entretien</string>
     <string name="error_removing_maintenances">Erreur pendant la suppression d\'un entretien</string>
+    <string name="km">Kilomètres</string>
+    <string name="hours">Heures</string>
+    <string name="count_bike_method_change">Compter en :</string>
 </resources>

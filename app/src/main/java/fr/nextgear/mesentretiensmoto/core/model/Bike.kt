@@ -43,6 +43,17 @@ data class Bike(
     //endregion Fields
 
 
+
+    //region MethodCount
+
+    enum class MethodCount{
+        KM,
+        HOURS
+    }
+
+    //endregion MethodCount
+
+
     //region DAO
 
     class BikeDao {

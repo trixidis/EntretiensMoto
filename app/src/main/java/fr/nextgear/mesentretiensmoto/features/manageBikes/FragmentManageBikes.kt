@@ -24,6 +24,8 @@ import io.nlopez.smartadapters.SmartAdapter
 import io.nlopez.smartadapters.adapters.RecyclerMultiAdapter
 
 import android.view.View.GONE
+import com.orhanobut.logger.Logger
+import io.nlopez.smartadapters.utils.ViewEventListener
 import org.koin.android.viewmodel.ext.android.viewModel
 
 /**
@@ -39,9 +41,9 @@ class FragmentManageBikes : Fragment() {
     @BindView(R.id.fragmentManageBikes_RecyclerView_listBikes)
     lateinit var mRecyclerViewBikes: RecyclerView
     @BindView(R.id.fragmentManageBikes_TextView_NoBikes)
-    lateinit  var mTextViewNoBikes: TextView
+    lateinit var mTextViewNoBikes: TextView
 
-    private val mViewModel by viewModel<ManageBikesViewModel> ()
+    private val mViewModel by viewModel<ManageBikesViewModel>()
 
     private var mMultiRecyclerAdaper: RecyclerMultiAdapter? = null
     private var mUnbinder: Unbinder? = null
@@ -75,18 +77,18 @@ class FragmentManageBikes : Fragment() {
     //region Presenter methods
 
     private fun initObserverOnBikesList() {
-        mViewModel.bikes.observe(this,android.arch.lifecycle.Observer {
-            if(it!=null){
-                if(it.count() != 0){
+        mViewModel.bikes.observe(this, android.arch.lifecycle.Observer {
+            if (it != null) {
+                if (it.count() != 0) {
                     showBikeList(it)
-                }else{
+                } else {
                     showNoBikes()
                 }
             }
         })
     }
 
-    private  fun showNoBikes() {
+    private fun showNoBikes() {
         mTextViewNoBikes.visibility = View.VISIBLE
     }
 
@@ -94,7 +96,10 @@ class FragmentManageBikes : Fragment() {
         if (!bikes.isEmpty()) {
             mTextViewNoBikes.visibility = GONE
         }
-        mMultiRecyclerAdaper = SmartAdapter.items(bikes).map(Bike::class.java, BikeCellView::class.java).into(mRecyclerViewBikes)
+        mMultiRecyclerAdaper = SmartAdapter
+                .items(bikes)
+                .map(Bike::class.java, BikeCellView::class.java)
+                .into(mRecyclerViewBikes)
     }
 
     private fun giveNameToNewBikeAndAddIt() {
