@@ -14,6 +14,7 @@ import butterknife.ButterKnife
 import fr.nextgear.mesentretiensmoto.R
 import fr.nextgear.mesentretiensmoto.App
 import fr.nextgear.mesentretiensmoto.core.events.EventMarkMaintenanceDone
+import fr.nextgear.mesentretiensmoto.core.model.Bike
 import fr.nextgear.mesentretiensmoto.core.model.Maintenance
 import io.nlopez.smartadapters.views.BindableLinearLayout
 import java.sql.Date
@@ -23,6 +24,7 @@ class MaintenanceCellView(private val mContext: Context) : BindableLinearLayout<
     //region Constants
     companion object {
         private const val FORMAT = "%s H"
+        private const val FORMAT_KM = "%s KM"
         private const val DATE_FORMAT = "dd/MM/yyyy"
     }
     //endregion
@@ -51,8 +53,13 @@ class MaintenanceCellView(private val mContext: Context) : BindableLinearLayout<
         mTextViewNameMaintenance.text = poMaintenance.nameMaintenance
         if (poMaintenance.isDone) {
             mTextViewDateMaintenance.text = android.text.format.DateFormat.format(DATE_FORMAT, Date(poMaintenance.dateMaintenance!!))
-            mTextViewNbHoursMaintenance.text = String.format(FORMAT, poMaintenance.nbHoursMaintenance)
-            mTextViewDateMaintenance.visibility = View.VISIBLE
+            mTextViewNbHoursMaintenance.text =
+                    if (poMaintenance.bike?.countingMethod == Bike.MethodCount.HOURS)
+                        String.format(FORMAT, poMaintenance.nbHoursMaintenance)
+                    else
+                        String.format(FORMAT_KM, poMaintenance.nbHoursMaintenance.toInt().toString())
+
+                mTextViewDateMaintenance.visibility = View.VISIBLE
             mTextViewNbHoursMaintenance.visibility = View.VISIBLE
         } else {
             mLayout.setOnClickListener {

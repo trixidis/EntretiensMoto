@@ -40,6 +40,9 @@ data class Bike(
     @DatabaseField(generatedId = true, columnName = TableContracts.Bike.ID)
     var idBike: Long = 0
 
+    @DatabaseField(columnName = TableContracts.Bike.COUNTING_METHOD, canBeNull = false)
+    var countingMethod: MethodCount = MethodCount.HOURS
+
     //endregion Fields
 
 
@@ -92,6 +95,15 @@ data class Bike(
             } catch (e: SQLException) {
                 e.printStackTrace()
                 false
+            }
+        }
+
+        fun updateBike(bike : Bike):Int{
+            return try {
+                dao.update(bike)
+            } catch (e: SQLException) {
+                e.printStackTrace()
+                -1
             }
         }
     }

@@ -9,7 +9,7 @@ import android.provider.BaseColumns
 object TableContracts {
 
     const val DB_NAME = "maintenances_bike.sqlite"
-    const val DB_VERSION = 12
+    const val DB_VERSION = 13
 
     object Bike : BaseColumns {
         const val TABLE_NAME = "bike"
@@ -17,6 +17,7 @@ object TableContracts {
         const val NAME = "name_bike"
         const val MAINTENANCES = "maintenances_bike"
         const val REF_STR = "reference_bike"
+        const val COUNTING_METHOD = "counting_method_bike"
     }
 
     object Maintenance : BaseColumns {

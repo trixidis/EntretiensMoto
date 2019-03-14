@@ -9,6 +9,7 @@ import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
 import fr.nextgear.mesentretiensmoto.App
+import fr.nextgear.mesentretiensmoto.BuildConfig
 
 import fr.nextgear.mesentretiensmoto.R
 
@@ -28,12 +29,18 @@ class ManageBikesActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
-        if (!App.instance!!.isConnected) {
-            // Create and launch sign-in intent
-            signInUser()
-        } else {
+        if (BuildConfig.DEBUG) {
             displayUserBikes()
+        } else {
+            if (!App.instance!!.isConnected) {
+                // Create and launch sign-in intent
+                signInUser()
+            } else {
+                displayUserBikes()
+            }
         }
+
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -48,7 +55,7 @@ class ManageBikesActivity : AppCompatActivity() {
             } else {
                 // Sign in failed. If response is null the user canceled the
                 // sign-in flow using the back button.
-                if(response != null){
+                if (response != null) {
                     onErrorLogin()
                 }
             }
@@ -71,7 +78,7 @@ class ManageBikesActivity : AppCompatActivity() {
     //region Private API
 
     private fun displayUserBikes() {
-        if(supportFragmentManager.findFragmentById(R.id.manageBikesActivity_LinearLayout_container)==null){
+        if (supportFragmentManager.findFragmentById(R.id.manageBikesActivity_LinearLayout_container) == null) {
             val fragment = FragmentManageBikes()
             fragment.retainInstance = true
             supportFragmentManager
@@ -90,8 +97,6 @@ class ManageBikesActivity : AppCompatActivity() {
     }
 
     //region Private API
-
-
 
 
 }

@@ -8,31 +8,26 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CompoundButton
 import android.widget.LinearLayout
 import android.widget.TextView
 import fr.nextgear.mesentretiensmoto.R
 import fr.nextgear.mesentretiensmoto.core.model.Bike
+import kotlinx.android.synthetic.main.layout_modify_bike.view.*
 
-class DialogModifyBike(bike: Bike, context : Context) : LinearLayout(context) {
+class DialogModifyBike(bike: Bike, context: Context) : LinearLayout(context) {
 
     init {
         View.inflate(context, R.layout.layout_modify_bike, this)
         layoutParams = ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT).apply {
-
-            val editTextNameBike = findViewById<TextInputEditText>(R.id.LayoutModifyBike_TextInputEditText_NameBike)
-            val textViewKm = findViewById<TextView>(R.id.LayoutModifyBike_TextView_KM)
-            val textViewHours = findViewById<TextView>(R.id.LayoutModifyBike_TextView_Hrs)
-
-            editTextNameBike.setText(bike.nameBike)
-            textViewKm.setOnClickListener {
-                it.setBackgroundColor(Color.CYAN)
-                textViewHours.setBackgroundColor(Color.TRANSPARENT)
+            LayoutModifyBike_TextInputEditText_NameBike.setText(bike.nameBike)
+            toggleButtonModifyCountingMethod.isChecked = bike.countingMethod == Bike.MethodCount.HOURS
+            toggleButtonModifyCountingMethod.setOnCheckedChangeListener { _, it ->
+                bike.countingMethod = if (it) Bike.MethodCount.HOURS else Bike.MethodCount.KM
+                Bike.BikeDao().updateBike(bike)
             }
-            textViewHours.setOnClickListener {
-                it.setBackgroundColor(Color.CYAN)
-                textViewKm.setBackgroundColor(Color.TRANSPARENT)
-            }
-            editTextNameBike.addTextChangedListener(object: TextWatcher{
+
+            LayoutModifyBike_TextInputEditText_NameBike.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
                 }
 
@@ -40,15 +35,11 @@ class DialogModifyBike(bike: Bike, context : Context) : LinearLayout(context) {
                 }
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    bike.nameBike=s.toString()
+                    bike.nameBike = s.toString()
                 }
-
             })
         }
     }
-
-
-
 
 
 }

@@ -35,6 +35,13 @@ object SQLiteAppHelper : OrmLiteSqliteOpenHelper(App.instance, DB_NAME, null, DB
 
     override fun onUpgrade(database: SQLiteDatabase, connectionSource: ConnectionSource, oldVersion: Int, newVersion: Int) {
         try {
+            if (oldVersion < 13) {
+                val dao = SQLiteAppHelper.getDao(Bike::class.java)
+                // we added the TableContracts.Bike.COUNTING_METHOD column in version 13
+                dao.executeRaw("ALTER TABLE `${TableContracts.Bike.TABLE_NAME}` ADD COLUMN ${TableContracts.Bike.COUNTING_METHOD} INTEGER;")
+            }
+
+
             TableUtils.dropTable<Bike, Any>(connectionSource, Bike::class.java, true)
             TableUtils.dropTable<Maintenance, Any>(connectionSource, Maintenance::class.java, true)
             onCreate(database, connectionSource)
