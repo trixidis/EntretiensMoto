@@ -4,19 +4,14 @@ import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import android.widget.TextView
-
 import com.afollestad.materialdialogs.MaterialDialog
-import com.orhanobut.logger.Logger
-
-import butterknife.BindView
-import butterknife.ButterKnife
-import fr.nextgear.mesentretiensmoto.R
 import fr.nextgear.mesentretiensmoto.App
+import fr.nextgear.mesentretiensmoto.R
 import fr.nextgear.mesentretiensmoto.core.events.EventMarkMaintenanceDone
 import fr.nextgear.mesentretiensmoto.core.model.Bike
 import fr.nextgear.mesentretiensmoto.core.model.Maintenance
 import io.nlopez.smartadapters.views.BindableLinearLayout
+import kotlinx.android.synthetic.main.manage_maintenance_cell.view.*
 import java.sql.Date
 
 class MaintenanceCellView(private val mContext: Context) : BindableLinearLayout<Maintenance>(mContext) {
@@ -29,17 +24,6 @@ class MaintenanceCellView(private val mContext: Context) : BindableLinearLayout<
     }
     //endregion
 
-    //region Attributes
-    @BindView(R.id.manage_maintenance_cell_TextView_nameMaintenance)
-    lateinit var mTextViewNameMaintenance: TextView
-    @BindView(R.id.manage_maintenance_cell_GroupView)
-    lateinit var mLayout: ViewGroup
-    @BindView(R.id.manage_maintenance_cell_TextView_nbHoursMaintenance)
-    lateinit var mTextViewNbHoursMaintenance: TextView
-    @BindView(R.id.manage_maintenance_cell_TextView_dateMaintenance)
-    lateinit var mTextViewDateMaintenance: TextView
-    //endregion
-
     //region Lifecycle events
     override fun getOrientation(): Int {
         return LinearLayout.VERTICAL
@@ -50,19 +34,19 @@ class MaintenanceCellView(private val mContext: Context) : BindableLinearLayout<
     }
 
     override fun bind(poMaintenance: Maintenance) {
-        mTextViewNameMaintenance.text = poMaintenance.nameMaintenance
+        manage_maintenance_cell_TextView_nameMaintenance.text = poMaintenance.nameMaintenance
         if (poMaintenance.isDone) {
-            mTextViewDateMaintenance.text = android.text.format.DateFormat.format(DATE_FORMAT, Date(poMaintenance.dateMaintenance!!))
-            mTextViewNbHoursMaintenance.text =
+            manage_maintenance_cell_TextView_dateMaintenance.text = android.text.format.DateFormat.format(DATE_FORMAT, Date(poMaintenance.dateMaintenance!!))
+            manage_maintenance_cell_TextView_nbHoursMaintenance.text =
                     if (poMaintenance.bike?.countingMethod == Bike.MethodCount.HOURS)
                         String.format(FORMAT, poMaintenance.nbHoursMaintenance)
                     else
                         String.format(FORMAT_KM, poMaintenance.nbHoursMaintenance.toInt().toString())
 
-                mTextViewDateMaintenance.visibility = View.VISIBLE
-            mTextViewNbHoursMaintenance.visibility = View.VISIBLE
+                manage_maintenance_cell_TextView_dateMaintenance.visibility = View.VISIBLE
+            manage_maintenance_cell_TextView_nbHoursMaintenance.visibility = View.VISIBLE
         } else {
-            mLayout.setOnClickListener {
+            manage_maintenance_cell_GroupView.setOnClickListener {
                 MaterialDialog.Builder(mContext)
                         .content(R.string.ask_maintenance_done)
                         .positiveText(R.string.yes)
@@ -76,7 +60,6 @@ class MaintenanceCellView(private val mContext: Context) : BindableLinearLayout<
 
     override fun onViewInflated() {
         super.onViewInflated()
-        ButterKnife.bind(this)
         layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 

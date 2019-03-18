@@ -6,14 +6,11 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
-import butterknife.BindView
-import butterknife.ButterKnife
-import butterknife.Unbinder
-import com.github.florent37.materialviewpager.MaterialViewPager
 import com.github.florent37.materialviewpager.header.HeaderDesign
 import fr.nextgear.mesentretiensmoto.R
 import fr.nextgear.mesentretiensmoto.core.model.Bike
 import fr.nextgear.mesentretiensmoto.core.model.StateMaintenance
+import kotlinx.android.synthetic.main.activity_manage_maintenances.*
 
 class ManageMaintenancesActivity : AppCompatActivity(), FragmentManageMaintenances.GetBikeFromActivityCallback {
 
@@ -23,13 +20,9 @@ class ManageMaintenancesActivity : AppCompatActivity(), FragmentManageMaintenanc
 
     //region Attributes
 
-    @BindView(R.id.materialViewPager)
-    lateinit var mViewPager: MaterialViewPager
-
     override var currentSelectedBike: Bike? = null
 
     private var mContext: Context? = null
-    private var mUnbinder: Unbinder? = null
 
     //endregion Attributes
 
@@ -40,11 +33,10 @@ class ManageMaintenancesActivity : AppCompatActivity(), FragmentManageMaintenanc
         mContext = this
         removeNotificationBarAndSetFullscreen()
         setContentView(R.layout.activity_manage_maintenances)
-        mUnbinder = ButterKnife.bind(this)
         currentSelectedBike = intent.extras?.get(EXTRA_BIKE) as Bike?
         setupViewPager()
 
-        mViewPager.setMaterialViewPagerListener { page ->
+        materialViewPager.setMaterialViewPagerListener { page ->
             when (page) {
                 0 ->  HeaderDesign.fromColorResAndDrawable( R.color.blue,ContextCompat.getDrawable(mContext!!, R.drawable.backgournd_mechanic))
                 1 ->  HeaderDesign.fromColorResAndDrawable( R.color.green,ContextCompat.getDrawable(mContext!!, R.drawable.list))
@@ -56,19 +48,13 @@ class ManageMaintenancesActivity : AppCompatActivity(), FragmentManageMaintenanc
 
     }
 
-
-    override fun onDestroy() {
-        super.onDestroy()
-        mUnbinder!!.unbind()
-    }
-
     //endregion Lifecycle Methods
 
     //region private Methods
 
     private fun setupViewPager() {
-        mViewPager.toolbar.setNavigationOnClickListener { finish() }
-        mViewPager.viewPager.adapter = object : FragmentPagerAdapter(supportFragmentManager) {
+        materialViewPager.toolbar.setNavigationOnClickListener { finish() }
+        materialViewPager.viewPager.adapter = object : FragmentPagerAdapter(supportFragmentManager) {
             override fun getCount(): Int {
                 return 2
             }
@@ -89,14 +75,13 @@ class ManageMaintenancesActivity : AppCompatActivity(), FragmentManageMaintenanc
                 }
             }
         }
-        mViewPager.pagerTitleStrip.setViewPager(mViewPager.viewPager)
+        materialViewPager.pagerTitleStrip.setViewPager(materialViewPager.viewPager)
 
     }
 
     private fun removeNotificationBarAndSetFullscreen() {
         this.supportActionBar!!.hide()
     }
-
 
     //endregion private Methods
 

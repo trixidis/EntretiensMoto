@@ -31,4 +31,9 @@
     <string name="title_to_do">To do</string>
     <string name="toast_please_fill_inputs">Please fill correctly the fields !</string>
     <string name="yes">Yes</string>
+    <string name="count_bike_method_change">Count by :</string>
+    <string name="hours">Hours</string>
+    <string name="km">Kilometers</string>
+    <string name="message_add_maintenance_fill_nb_km">" Please enter the number of kilometers you did this maintenance"</string>
+    <string name="hint_maintenance_nb_km">Number of kilometers</string>
 </resources>

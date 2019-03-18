@@ -1,23 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/manage_bike_cell_LinearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:id="@+id/manage_bike_cell_LinearLayout">
+    android:orientation="vertical">
 
     <android.support.v7.widget.CardView
-        android:layout_margin="8dp"
         android:layout_width="match_parent"
-        android:layout_height="100dp">
+        android:layout_height="100dp"
+        android:layout_margin="8dp">
 
-        <TextView
-            android:id="@+id/manage_bike_cell_TextView_nameBike"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center|left"
+            android:layout_height="match_parent"
             android:layout_marginLeft="15dp"
             android:padding="6dp"
-            android:text="@string/bike_holder" />
+            android:weightSum="100">
+
+            <TextView
+                android:id="@+id/manage_bike_cell_TextView_nameBike"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/bike_holder"
+                android:layout_weight="95"/>
+
+            <ImageButton
+                android:id="@+id/imageButtonEditBike"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@color/fui_transparent"
+                android:src="@drawable/ic_baseline_edit_24px"
+                android:layout_weight="5"/>
+
+        </LinearLayout>
+
 
     </android.support.v7.widget.CardView>
 </LinearLayout>
