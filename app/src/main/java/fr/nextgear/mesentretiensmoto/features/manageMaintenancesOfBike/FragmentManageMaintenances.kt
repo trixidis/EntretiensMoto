@@ -27,6 +27,7 @@ import com.squareup.otto.Subscribe
 import es.dmoral.toasty.Toasty
 import fr.nextgear.mesentretiensmoto.App
 import fr.nextgear.mesentretiensmoto.R
+import fr.nextgear.mesentretiensmoto.core.bus.MainThreadBus
 import fr.nextgear.mesentretiensmoto.core.events.EventMarkMaintenanceDone
 import fr.nextgear.mesentretiensmoto.core.model.Bike
 import fr.nextgear.mesentretiensmoto.core.model.Maintenance
@@ -64,7 +65,7 @@ class FragmentManageMaintenances : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         FragmentArgs.inject(this)
-        App.instance!!.mainThreadBus!!.register(this)
+        MainThreadBus.register(this)
     }
 
 
@@ -143,7 +144,7 @@ class FragmentManageMaintenances : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        App.instance?.mainThreadBus?.unregister(this)
+        MainThreadBus.unregister(this)
     }
     //endregion
 
@@ -260,7 +261,7 @@ class FragmentManageMaintenances : Fragment() {
                 .iconRes(R.drawable.ic_build_black_24dp)
                 .customView(R.layout.layout_dialog_add_maintenance_not_done, true)
                 .positiveText(R.string.positive)
-                .onPositive { poDialog, which ->
+                .onPositive { poDialog, _ ->
                     val v = poDialog.customView
                     if (v != null) {
                         val loEditNameMaintenance = v.findViewById<EditText>(R.id.DialogAddMaintenanceToDo_EditText_NameMaintenance)

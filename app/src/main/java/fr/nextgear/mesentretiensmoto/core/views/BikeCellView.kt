@@ -2,11 +2,16 @@ package fr.nextgear.mesentretiensmoto.core.views
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.ColorFilter
+import android.support.v4.content.ContextCompat
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.afollestad.materialdialogs.MaterialDialog
 import com.orhanobut.logger.Logger
 import fr.nextgear.mesentretiensmoto.R
+import fr.nextgear.mesentretiensmoto.core.bus.MainThreadBus
+import fr.nextgear.mesentretiensmoto.core.events.EventRefreshBikesList
 import fr.nextgear.mesentretiensmoto.core.model.Bike
 import fr.nextgear.mesentretiensmoto.features.manageMaintenancesOfBike.ManageMaintenancesActivity
 import io.nlopez.smartadapters.views.BindableLinearLayout
@@ -21,7 +26,6 @@ class BikeCellView(private val mContext: Context) : BindableLinearLayout<Bike>(m
     //region Fields
     private var mBike: Bike? = null
 
-    //TODO: Ajouter le champ pour savoir en quoi compter en BDD et dans la classe
     //endregion
 
     //region Lifecycle methods
@@ -58,9 +62,12 @@ class BikeCellView(private val mContext: Context) : BindableLinearLayout<Bike>(m
     private fun showEditBikeDialog(poBike: Bike) {
         MaterialDialog.Builder(context)
                 .customView(DialogModifyBike(poBike, context), false)
+                .dismissListener {
+                    //sending en event to notify the bikes list to refresh
+                    MainThreadBus.post(EventRefreshBikesList())
+                }
                 .build()
                 .show()
-        Logger.e("on vient de cliquer sur une moto pour en afficher ses infos ")
     }
     //endregion
 

@@ -7,6 +7,7 @@ import android.widget.LinearLayout
 import com.afollestad.materialdialogs.MaterialDialog
 import fr.nextgear.mesentretiensmoto.App
 import fr.nextgear.mesentretiensmoto.R
+import fr.nextgear.mesentretiensmoto.core.bus.MainThreadBus
 import fr.nextgear.mesentretiensmoto.core.events.EventMarkMaintenanceDone
 import fr.nextgear.mesentretiensmoto.core.model.Bike
 import fr.nextgear.mesentretiensmoto.core.model.Maintenance
@@ -51,7 +52,7 @@ class MaintenanceCellView(private val mContext: Context) : BindableLinearLayout<
                         .content(R.string.ask_maintenance_done)
                         .positiveText(R.string.yes)
                         .negativeText(R.string.no)
-                        .onPositive { _, _ -> App.instance!!.mainThreadBus!!.post(EventMarkMaintenanceDone(poMaintenance)) }
+                        .onPositive { _, _ -> MainThreadBus.post(EventMarkMaintenanceDone(poMaintenance)) }
                         .build()
                         .show()
             }

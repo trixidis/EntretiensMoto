@@ -9,8 +9,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.ViewGroup
+import com.squareup.otto.Subscribe
 import com.yarolegovich.lovelydialog.LovelyTextInputDialog
 import fr.nextgear.mesentretiensmoto.R
+import fr.nextgear.mesentretiensmoto.core.bus.MainThreadBus
+import fr.nextgear.mesentretiensmoto.core.events.EventRefreshBikesList
 import fr.nextgear.mesentretiensmoto.core.model.Bike
 import fr.nextgear.mesentretiensmoto.core.views.BikeCellView
 import io.nlopez.smartadapters.SmartAdapter
@@ -38,8 +41,7 @@ class FragmentManageBikes : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        val v = inflater.inflate(R.layout.fragment_fragment_manage_bikes, container, false)
-        return v
+        return inflater.inflate(R.layout.fragment_fragment_manage_bikes, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -49,8 +51,17 @@ class FragmentManageBikes : Fragment() {
         initObserverOnBikesList()
         FragmentManageBikes_FloatingActionButton_AddBike.setOnClickListener {
             giveNameToNewBikeAndAddIt()
-
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        MainThreadBus.register(this)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        MainThreadBus.unregister(this)
     }
 
     override fun onResume() {
@@ -100,5 +111,10 @@ class FragmentManageBikes : Fragment() {
     }
 
     //endregion
+
+    @Subscribe
+    fun onEventRefreshBikesList(poEvent : EventRefreshBikesList){
+        mViewModel.getBikesSQLiteAndDisplay()
+    }
 
 }

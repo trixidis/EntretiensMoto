@@ -10,6 +10,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.orhanobut.logger.Logger
 import com.squareup.otto.Subscribe
 import fr.nextgear.mesentretiensmoto.App
+import fr.nextgear.mesentretiensmoto.core.bus.MainThreadBus
 import fr.nextgear.mesentretiensmoto.core.events.EventAddMaintenance
 import fr.nextgear.mesentretiensmoto.core.firebase.FirebaseContract
 import fr.nextgear.mesentretiensmoto.core.model.Bike
@@ -36,7 +37,7 @@ class ManageMaintenancesViewModel(val poBike: Bike, val isMaintenancesDone: Bool
 
     //region Initializer
     init {
-        App.instance!!.mainThreadBus!!.register(this)
+        MainThreadBus.register(this)
         updateMaintenances()
         error.value = ErrorManageMaintenances.NONE
         val user = FirebaseAuth.getInstance().currentUser
@@ -47,39 +48,39 @@ class ManageMaintenancesViewModel(val poBike: Bike, val isMaintenancesDone: Bool
                     .child(poBike.reference)
                     .child(FirebaseContract.MAINTENANCES)
                     .addChildEventListener(object : ChildEventListener {
-                override fun onCancelled(p0: DatabaseError) {
-                }
+                        override fun onCancelled(p0: DatabaseError) {
+                        }
 
-                override fun onChildMoved(p0: DataSnapshot, p1: String?) {
-                }
+                        override fun onChildMoved(p0: DataSnapshot, p1: String?) {
+                        }
 
-                override fun onChildChanged(p0: DataSnapshot, p1: String?) {
-                }
+                        override fun onChildChanged(p0: DataSnapshot, p1: String?) {
+                        }
 
-                override fun onChildAdded(p0: DataSnapshot, p1: String?) {
-                    if (!Maintenance.MaintenanceDao().findByReference(p0.key)) {
-                        val loMaintenance = p0.getValue(Maintenance::class.java)
-                        if (loMaintenance != null) {
-                            loMaintenance.bike = poBike
-                            loMaintenance.reference= p0.key!!
-                            if(loMaintenance.isDone == isMaintenancesDone){
-                                mInteractorManageMaintenances.saveMaintenanceFromApi(loMaintenance)
-                                        .subscribeOn(Schedulers.io())
-                                        .observeOn(AndroidSchedulers.mainThread())
-                                        .subscribe({ addMaintenanceAndNotify(it) }
-                                        ) { throwable ->
-                                            Logger.e(throwable.message!!)
-                                            throwable.printStackTrace()
-                                        }
+                        override fun onChildAdded(p0: DataSnapshot, p1: String?) {
+                            if (!Maintenance.MaintenanceDao().findByReference(p0.key)) {
+                                val loMaintenance = p0.getValue(Maintenance::class.java)
+                                if (loMaintenance != null) {
+                                    loMaintenance.bike = poBike
+                                    loMaintenance.reference = p0.key!!
+                                    if (loMaintenance.isDone == isMaintenancesDone) {
+                                        mInteractorManageMaintenances.saveMaintenanceFromApi(loMaintenance)
+                                                .subscribeOn(Schedulers.io())
+                                                .observeOn(AndroidSchedulers.mainThread())
+                                                .subscribe({ addMaintenanceAndNotify(it) }
+                                                ) { throwable ->
+                                                    Logger.e(throwable.message!!)
+                                                    throwable.printStackTrace()
+                                                }
+                                    }
+                                }
                             }
                         }
-                    }
-                }
 
-                override fun onChildRemoved(p0: DataSnapshot) {
-                }
+                        override fun onChildRemoved(p0: DataSnapshot) {
+                        }
 
-            })
+                    })
         }
 
     }
@@ -88,7 +89,7 @@ class ManageMaintenancesViewModel(val poBike: Bike, val isMaintenancesDone: Bool
     //region Lifecycle Methods
     override fun onCleared() {
         super.onCleared()
-        App.instance!!.mainThreadBus!!.unregister(this)
+        MainThreadBus.unregister(this)
     }
     //endregion
 
@@ -150,26 +151,22 @@ class ManageMaintenancesViewModel(val poBike: Bike, val isMaintenancesDone: Bool
                     removeMaintenanceAndNotify(poMaintenance)
                     poMaintenance.isDone = true
                     val event = EventAddMaintenance(poMaintenance)
-                    if (App.instance != null) {
-                        if (App.instance!!.mainThreadBus != null) {
-                            App.instance!!.mainThreadBus!!.post(event)
-                        }
-                    }
+                    MainThreadBus.post(event)
                 }
     }
     //endregion
 
     //region Private API
     private fun updateMaintenances() {
-        if(maintenances.value == null){
+        if (maintenances.value == null) {
             maintenances.value = ArrayList()
         }
-        maintenances.value!!.addAll(Maintenance.MaintenanceDao().getMaintenancesForBike(poBike,isMaintenancesDone)!!)
+        maintenances.value!!.addAll(Maintenance.MaintenanceDao().getMaintenancesForBike(poBike, isMaintenancesDone)!!)
     }
 
 
     private fun addMaintenanceAndNotify(poMaintenance: Maintenance) {
-        if(poMaintenance.isDone == isMaintenancesDone) {
+        if (poMaintenance.isDone == isMaintenancesDone) {
             maintenances.value!!.add(poMaintenance)
             maintenances.value = maintenances.value
         }

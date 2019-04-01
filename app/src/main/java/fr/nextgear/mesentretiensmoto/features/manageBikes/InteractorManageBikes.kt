@@ -2,6 +2,7 @@ package fr.nextgear.mesentretiensmoto.features.manageBikes
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import fr.nextgear.mesentretiensmoto.core.database.TableContracts
 import fr.nextgear.mesentretiensmoto.core.firebase.FirebaseContract
 import fr.nextgear.mesentretiensmoto.core.model.Bike
 import io.reactivex.Completable

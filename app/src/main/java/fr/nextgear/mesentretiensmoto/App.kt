@@ -2,6 +2,8 @@ package fr.nextgear.mesentretiensmoto
 
 import android.app.Application
 import android.content.Context
+import com.orhanobut.logger.AndroidLogAdapter
+import com.orhanobut.logger.Logger
 import fr.nextgear.mesentretiensmoto.core.bus.MainThreadBus
 import fr.nextgear.mesentretiensmoto.core.di.ManageBikesmodule
 import fr.nextgear.mesentretiensmoto.core.di.ManageMaintenanceModule
@@ -12,10 +14,7 @@ import org.koin.android.ext.android.startKoin
  */
 
 class App : Application() {
-
-
-    var mainThreadBus: MainThreadBus? = null
-        private set
+    
 
     var isConnected: Boolean
         get() {
@@ -28,8 +27,8 @@ class App : Application() {
     }
 
     override fun onCreate() {
+        Logger.addLogAdapter(AndroidLogAdapter())
         instance = this
-        mainThreadBus = MainThreadBus()
         super.onCreate()
         startKoin(this, listOf(ManageMaintenanceModule, ManageBikesmodule))
     }
