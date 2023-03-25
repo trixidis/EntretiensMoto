@@ -4,13 +4,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.FirebaseDatabase
 import fr.nextgear.mesentretiensmoto.core.firebase.FirebaseContract
-import java.sql.SQLException
-
 import fr.nextgear.mesentretiensmoto.core.model.Bike
 import fr.nextgear.mesentretiensmoto.core.model.Maintenance
-import io.reactivex.Completable
-import io.reactivex.Observable
-import io.reactivex.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import java.sql.SQLException
 
 /**
  * Created by adrien on 22/09/2017.
@@ -28,43 +26,36 @@ class InteractorManageMaintenances {
 
     //endregion Public API
 
-    fun addMaintenance(poBike: Bike, psMaintenanceName: String, pfNbHours: Float, isDone: Boolean): Single<Maintenance> {
-        return Single.create { poEmitter ->
-            val loMaintenanceBuilder = Maintenance.Builder()
-            loMaintenanceBuilder.nameMaintenance(psMaintenanceName)
-                    .dateMillis(System.currentTimeMillis())
-                    .nbHoursMaintenance(if (isDone) pfNbHours else MAINTENANCE_NOT_DONE_NB_HOURS.toFloat())
-                    .bike(poBike)
-                    .isDone(isDone)
-            val loMaintenance = loMaintenanceBuilder.build()
-            addMaintenanceOnApi(loMaintenance)
-            val result = Maintenance.MaintenanceDao().addMaintenance(loMaintenance)
-            if (result == 1) {
-                poEmitter.onSuccess(loMaintenance)
-            } else {
-                poEmitter.onError(SQLException())
-            }
-
+    fun addMaintenance(poBike: Bike, psMaintenanceName: String, pfNbHours: Float, isDone: Boolean): Flow<Maintenance> = flow {
+        val loMaintenanceBuilder = Maintenance.Builder()
+        loMaintenanceBuilder.nameMaintenance(psMaintenanceName)
+            .dateMillis(System.currentTimeMillis())
+            .nbHoursMaintenance(if (isDone) pfNbHours else MAINTENANCE_NOT_DONE_NB_HOURS.toFloat())
+            .bike(poBike)
+            .isDone(isDone)
+        val loMaintenance = loMaintenanceBuilder.build()
+        addMaintenanceOnApi(loMaintenance)
+        val result = Maintenance.MaintenanceDao().addMaintenance(loMaintenance)
+        if (result == 1) {
+            emit(loMaintenance)
+        } else {
+            throw SQLException()
         }
     }
 
-    fun removeMaintenance(poMaintenance: Maintenance): Completable {
-        return Completable.create { poEmitter ->
-            Maintenance.MaintenanceDao().removeMaintenance(poMaintenance)
-            removeMaintenanceOnApi(poMaintenance)
-            poEmitter.onComplete()
-        }
+
+    fun removeMaintenance(poMaintenance: Maintenance): Flow<Unit> = flow {
+        Maintenance.MaintenanceDao().removeMaintenance(poMaintenance)
+        removeMaintenanceOnApi(poMaintenance)
+        emit(Unit)
     }
 
-    fun saveMaintenanceFromApi(poMaintenance: Maintenance): Observable<Maintenance> {
-        return Observable.create { poEmitter ->
-            val result = Maintenance.MaintenanceDao().addMaintenance(poMaintenance)
-            if (result == 1) {
-                poEmitter.onNext(poMaintenance)
-                poEmitter.onComplete()
-            } else {
-                poEmitter.onError(SQLException())
-            }
+    fun saveMaintenanceFromApi(poMaintenance: Maintenance): Flow<Maintenance> = flow {
+        val result = Maintenance.MaintenanceDao().addMaintenance(poMaintenance)
+        if (result == 1) {
+            emit(poMaintenance)
+        } else {
+            throw SQLException()
         }
     }
 

@@ -2,13 +2,14 @@ package fr.nextgear.mesentretiensmoto
 
 import android.app.Application
 import android.content.Context
-import fr.nextgear.mesentretiensmoto.core.di.ManageBikesmodule
-import fr.nextgear.mesentretiensmoto.core.di.ManageMaintenanceModule
+import com.google.firebase.FirebaseApp
+import dagger.hilt.android.HiltAndroidApp
 
 /**
  * Created by adrien on 18/05/2017.
  */
 
+@HiltAndroidApp
 class App : Application() {
     
 
@@ -24,6 +25,7 @@ class App : Application() {
 
     override fun onCreate() {
         instance = this
+        FirebaseApp.initializeApp(this)
         super.onCreate()
     }
 

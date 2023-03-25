@@ -1,18 +1,15 @@
 package fr.nextgear.mesentretiensmoto.core.database
 
 import android.database.sqlite.SQLiteDatabase
-
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper
 import com.j256.ormlite.support.ConnectionSource
 import com.j256.ormlite.table.TableUtils
 import fr.nextgear.mesentretiensmoto.App
 import fr.nextgear.mesentretiensmoto.core.database.TableContracts.DB_NAME
 import fr.nextgear.mesentretiensmoto.core.database.TableContracts.DB_VERSION
-
-import java.sql.SQLException
-
 import fr.nextgear.mesentretiensmoto.core.model.Bike
 import fr.nextgear.mesentretiensmoto.core.model.Maintenance
+import java.sql.SQLException
 
 /**
  * Created by adrien on 18/05/2017.

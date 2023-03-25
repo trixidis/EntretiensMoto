@@ -1,6 +1,5 @@
-package fr.nextgear.mesentretiensmoto.features.manageBikes
+package fr.nextgear.mesentretiensmoto.features.manageMaintenancesOfBike
 
-import ManageBikes
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,9 +10,15 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import fr.nextgear.mesentretiensmoto.features.manageBikes.ui.theme.EntretiensMotoTheme
+import fr.nextgear.mesentretiensmoto.core.model.StateMaintenance
+import fr.nextgear.mesentretiensmoto.features.manageMaintenancesOfBike.ui.ManageMaintenanceListView
+import fr.nextgear.mesentretiensmoto.features.manageMaintenancesOfBike.ui.theme.EntretiensMotoTheme
 
-class MainActivity : ComponentActivity() {
+class ManageMaintenanceListActivity : ComponentActivity() {
+
+    companion object{
+        val EXTRA_BIKE = "EXTRA_BIKE"
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -23,7 +28,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    ManageBikes()
+                    ManageMaintenanceListView(mStateMaintenances = StateMaintenance.TO_DO)
                 }
             }
         }

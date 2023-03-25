@@ -1,25 +1,28 @@
 package fr.nextgear.mesentretiensmoto.features.manageMaintenancesOfBike
 
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
+import android.util.Log
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.orhanobut.logger.Logger
-import com.squareup.otto.Subscribe
-import fr.nextgear.mesentretiensmoto.App
-import fr.nextgear.mesentretiensmoto.core.bus.MainThreadBus
+import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.nextgear.mesentretiensmoto.core.events.EventAddMaintenance
 import fr.nextgear.mesentretiensmoto.core.firebase.FirebaseContract
 import fr.nextgear.mesentretiensmoto.core.model.Bike
 import fr.nextgear.mesentretiensmoto.core.model.Maintenance
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ManageMaintenancesViewModel(val poBike: Bike, val isMaintenancesDone: Boolean) : ViewModel() {
+@HiltViewModel
+class ManageMaintenancesViewModel @Inject constructor() : ViewModel() {
 
+    val poBike: Bike = Bike("test")
+    val isMaintenancesDone: Boolean = false
     //region Attributes
     enum class ErrorManageMaintenances {
         NONE,
@@ -28,7 +31,8 @@ class ManageMaintenancesViewModel(val poBike: Bike, val isMaintenancesDone: Bool
         ERROR_REMOVING_MAINTENANCE
     }
 
-    private val mInteractorManageMaintenances: InteractorManageMaintenances = InteractorManageMaintenances()
+    private val mInteractorManageMaintenances: InteractorManageMaintenances =
+        InteractorManageMaintenances()
 
     val maintenances: MutableLiveData<ArrayList<Maintenance>> = MutableLiveData()
     val error: MutableLiveData<ErrorManageMaintenances> = MutableLiveData()
@@ -37,50 +41,54 @@ class ManageMaintenancesViewModel(val poBike: Bike, val isMaintenancesDone: Bool
 
     //region Initializer
     init {
-        MainThreadBus.register(this)
+//        MainThreadBus.register(this)
         updateMaintenances()
         error.value = ErrorManageMaintenances.NONE
         val user = FirebaseAuth.getInstance().currentUser
         if (user != null) {
             val database = FirebaseDatabase.getInstance().getReference(FirebaseContract.USERS)
             database.child(user.uid)
-                    .child(FirebaseContract.BIKES)
-                    .child(poBike.reference)
-                    .child(FirebaseContract.MAINTENANCES)
-                    .addChildEventListener(object : ChildEventListener {
-                        override fun onCancelled(p0: DatabaseError) {
-                        }
+                .child(FirebaseContract.BIKES)
+                .child(poBike.reference)
+                .child(FirebaseContract.MAINTENANCES)
+                .addChildEventListener(object : ChildEventListener {
+                    override fun onCancelled(p0: DatabaseError) {
+                    }
 
-                        override fun onChildMoved(p0: DataSnapshot, p1: String?) {
-                        }
+                    override fun onChildMoved(p0: DataSnapshot, p1: String?) {
+                    }
 
-                        override fun onChildChanged(p0: DataSnapshot, p1: String?) {
-                        }
+                    override fun onChildChanged(p0: DataSnapshot, p1: String?) {
+                    }
 
-                        override fun onChildAdded(p0: DataSnapshot, p1: String?) {
+                    override fun onChildAdded(p0: DataSnapshot, p1: String?) {
+                        viewModelScope.launch {
                             if (!Maintenance.MaintenanceDao().findByReference(p0.key)) {
                                 val loMaintenance = p0.getValue(Maintenance::class.java)
                                 if (loMaintenance != null) {
                                     loMaintenance.bike = poBike
                                     loMaintenance.reference = p0.key!!
                                     if (loMaintenance.isDone == isMaintenancesDone) {
-                                        mInteractorManageMaintenances.saveMaintenanceFromApi(loMaintenance)
-                                                .subscribeOn(Schedulers.io())
-                                                .observeOn(AndroidSchedulers.mainThread())
-                                                .subscribe({ addMaintenanceAndNotify(it) }
-                                                ) { throwable ->
-                                                    Logger.e(throwable.message!!)
-                                                    throwable.printStackTrace()
-                                                }
+                                        mInteractorManageMaintenances.saveMaintenanceFromApi(
+                                            loMaintenance
+                                        )
+                                            .catch { throwable ->
+                                                Log.e("Error", throwable.message!!)
+                                                throwable.printStackTrace()
+                                            }
+                                            .collect { addMaintenanceAndNotify(it) }
+
                                     }
                                 }
                             }
                         }
 
-                        override fun onChildRemoved(p0: DataSnapshot) {
-                        }
+                    }
 
-                    })
+                    override fun onChildRemoved(p0: DataSnapshot) {
+                    }
+
+                })
         }
 
     }
@@ -89,32 +97,50 @@ class ManageMaintenancesViewModel(val poBike: Bike, val isMaintenancesDone: Bool
     //region Lifecycle Methods
     override fun onCleared() {
         super.onCleared()
-        MainThreadBus.unregister(this)
+//        MainThreadBus.unregister(this)
     }
     //endregion
 
     //region Public API
-    fun addMaintenance(poBike: Bike, psMaintenanceName: String, pfNbHours: Float, pbIsDone: Boolean) {
-        mInteractorManageMaintenances.addMaintenance(poBike, psMaintenanceName, pfNbHours, pbIsDone)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ poMaintenance ->
-                    addMaintenanceAndNotify(poMaintenance)
-                }) { throwable ->
-                    this.error.value = ErrorManageMaintenances.ERROR_ADDING_MAINTENANCE
+    fun addMaintenance(
+        poBike: Bike,
+        psMaintenanceName: String,
+        pfNbHours: Float,
+        pbIsDone: Boolean
+    ) {
+        viewModelScope.launch {
+            mInteractorManageMaintenances.addMaintenance(
+                poBike,
+                psMaintenanceName,
+                pfNbHours,
+                pbIsDone
+            )
+                .catch { throwable ->
+                    error.value = ErrorManageMaintenances.ERROR_ADDING_MAINTENANCE
                 }
+                .collect { poMaintenance ->
+                    addMaintenanceAndNotify(poMaintenance)
+                }
+        }
+
     }
 
-    fun addMaintenance(poMaintenance: Maintenance) {
-        mInteractorManageMaintenances.addMaintenance(poMaintenance.bike!!, poMaintenance.nameMaintenance!!, poMaintenance.nbHoursMaintenance, poMaintenance.isDone)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ poMaintenance ->
+     fun addMaintenance(poMaintenance: Maintenance) {
+        viewModelScope.launch {
+            mInteractorManageMaintenances.addMaintenance(
+                poMaintenance.bike!!,
+                poMaintenance.nameMaintenance!!,
+                poMaintenance.nbHoursMaintenance,
+                poMaintenance.isDone
+            )
+                .catch { throwable ->
+                    Log.e("Error",throwable.message!!)
+                    error.value = ErrorManageMaintenances.ERROR_ADDING_MAINTENANCE
+                }
+                .collect { poMaintenance ->
                     addMaintenanceAndNotify(poMaintenance)
-                }, { error ->
-                    Logger.e(error.message!!)
-                    this.error.value = ErrorManageMaintenances.ERROR_ADDING_MAINTENANCE
-                })
+                }
+        }
     }
 
 
@@ -127,16 +153,18 @@ class ManageMaintenancesViewModel(val poBike: Bike, val isMaintenancesDone: Bool
 
 
     fun removeMaintenance(poMaintenanceToRemove: Maintenance) {
-        mInteractorManageMaintenances.removeMaintenance(poMaintenanceToRemove)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.newThread())
-                .subscribe({
+        viewModelScope.launch {
+
+
+            mInteractorManageMaintenances.removeMaintenance(poMaintenanceToRemove)
+                .catch { throwable ->
+                    error.value = ErrorManageMaintenances.ERROR_REMOVING_MAINTENANCE
+                }
+                .collect {
                     lastMaintenanceRemoved = poMaintenanceToRemove
                     removeMaintenanceAndNotify(poMaintenanceToRemove)
                 }
-                        , { throwable ->
-                    this.error.value = ErrorManageMaintenances.ERROR_REMOVING_MAINTENANCE
-                })
+        }
     }
 
     /**
@@ -144,15 +172,15 @@ class ManageMaintenancesViewModel(val poBike: Bike, val isMaintenancesDone: Bool
      * for the TO_DO maintenance and add it to the viewModel that look out for the DONE ones.
      */
     fun updateMaintenaceToDone(poMaintenance: Maintenance) {
-        mInteractorManageMaintenances.removeMaintenance(poMaintenance)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.newThread())
-                .subscribe {
-                    removeMaintenanceAndNotify(poMaintenance)
-                    poMaintenance.isDone = true
-                    val event = EventAddMaintenance(poMaintenance)
-                    MainThreadBus.post(event)
-                }
+        viewModelScope.launch {  mInteractorManageMaintenances.removeMaintenance(poMaintenance)
+            .collect{
+                removeMaintenanceAndNotify(poMaintenance)
+                poMaintenance.isDone = true
+                val event = EventAddMaintenance(poMaintenance)
+//                MainThreadBus.post(event)
+            }
+
+        }
     }
     //endregion
 
@@ -161,7 +189,9 @@ class ManageMaintenancesViewModel(val poBike: Bike, val isMaintenancesDone: Bool
         if (maintenances.value == null) {
             maintenances.value = ArrayList()
         }
-        maintenances.value!!.addAll(Maintenance.MaintenanceDao().getMaintenancesForBike(poBike, isMaintenancesDone)!!)
+        maintenances.value!!.addAll(
+            Maintenance.MaintenanceDao().getMaintenancesForBike(poBike, isMaintenancesDone)!!
+        )
     }
 
 
@@ -179,12 +209,12 @@ class ManageMaintenancesViewModel(val poBike: Bike, val isMaintenancesDone: Bool
     //endregion
 
     //region Events handling
-    @Subscribe
-    fun onEventAddMaintenanceDoneReceived(poEvent: EventAddMaintenance) {
-        if (isMaintenancesDone && poEvent.poMaintenanceDone.isDone) {
-            addMaintenance(poEvent.poMaintenanceDone)
-        }
-    }
+//    @Subscribe
+//    fun onEventAddMaintenanceDoneReceived(poEvent: EventAddMaintenance) {
+//        if (isMaintenancesDone && poEvent.poMaintenanceDone.isDone) {
+//            addMaintenance(poEvent.poMaintenanceDone)
+//        }
+//    }
     //endregion
 
 }

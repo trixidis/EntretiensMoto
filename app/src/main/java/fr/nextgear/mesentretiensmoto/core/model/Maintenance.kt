@@ -1,18 +1,12 @@
 package fr.nextgear.mesentretiensmoto.core.model
 
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.Exclude
-import com.google.firebase.database.FirebaseDatabase
 import com.j256.ormlite.dao.Dao
 import com.j256.ormlite.field.DatabaseField
 import com.j256.ormlite.table.DatabaseTable
 import fr.nextgear.mesentretiensmoto.core.database.SQLiteAppHelper
-
-import java.io.Serializable
-
 import fr.nextgear.mesentretiensmoto.core.database.TableContracts
-import fr.nextgear.mesentretiensmoto.core.firebase.FirebaseContract
+import java.io.Serializable
 import java.sql.SQLException
 
 

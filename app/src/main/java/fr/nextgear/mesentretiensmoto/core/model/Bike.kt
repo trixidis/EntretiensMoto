@@ -1,22 +1,14 @@
 package fr.nextgear.mesentretiensmoto.core.model
 
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import android.util.Log
+import com.google.firebase.database.Exclude
 import com.j256.ormlite.dao.Dao
-import com.j256.ormlite.dao.DaoManager
-import com.j256.ormlite.dao.ForeignCollection
 import com.j256.ormlite.field.DatabaseField
-import com.j256.ormlite.field.DatabaseField.DEFAULT_MAX_FOREIGN_AUTO_REFRESH_LEVEL
-import com.j256.ormlite.field.ForeignCollectionField
 import com.j256.ormlite.table.DatabaseTable
-import com.orhanobut.logger.Logger
 import fr.nextgear.mesentretiensmoto.core.database.SQLiteAppHelper
-
-import java.io.Serializable
-
 import fr.nextgear.mesentretiensmoto.core.database.TableContracts
+import java.io.Serializable
 import java.sql.SQLException
-import java.util.ArrayList
 
 
 /**
@@ -74,7 +66,7 @@ data class Bike(
                 return try {
                     dao.queryForAll()
                 } catch (e: SQLException) {
-                    Logger.e(e.message!!)
+                    Log.e("Error",e.message!!)
                     ArrayList()
                 }
             }

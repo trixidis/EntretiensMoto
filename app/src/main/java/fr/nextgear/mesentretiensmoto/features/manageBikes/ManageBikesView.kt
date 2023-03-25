@@ -14,15 +14,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import fr.nextgear.mesentretiensmoto.R
 import fr.nextgear.mesentretiensmoto.core.model.Bike
 import fr.nextgear.mesentretiensmoto.features.manageBikes.ManageBikesViewModel
 
 @Composable
-fun ManageBikes() {
-    val viewModel: ManageBikesViewModel = viewModel()
+fun ManageBikesView(viewModel: ManageBikesViewModel = hiltViewModel() ) {
+
     val bikes: List<Bike> by viewModel.bikes.observeAsState(listOf())
 
     Scaffold(
@@ -44,7 +43,9 @@ fun ManageBikes() {
                         Text(
                             text = stringResource(R.string.message_no_bikes),
                             style = MaterialTheme.typography.h5,
-                            modifier = Modifier.fillMaxWidth().padding(16.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
                             textAlign = TextAlign.Center
                         )
                     } else {

@@ -40,4 +40,9 @@
     <string name="hours">Heures</string>
     <string name="count_bike_method_change">Compter en :</string>
     <string name="message_no_bikes">Aucune moto</string>
+    <string name="title_activity_manage_maintenance_list">ManageMaintenanceListActivity</string>
+    <string name="hint_bike_name">Moto</string>
+    <string name="message_modify_bike_counting_method">"Compter en :"</string>
+    <string name="content_description_add">Add</string>
+    <string name="content_description_back">Back</string>
 </resources>
