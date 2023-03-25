@@ -1,11 +1,21 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'kotlin-kapt'
+plugins {
+    id("org.jetbrains.kotlin.android")
+    id 'com.android.application'
 
+}
 android {
+    def compose_version = "1.4.0"
+    def kotlin_version = "1.7.21"
     signingConfigs {
         release
+    }
+    buildFeatures {
+        compose true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion compose_version
+        kotlinCompilerVersion kotlin_version
     }
     buildTypes {
         release {
@@ -14,21 +24,32 @@ android {
             signingConfig signingConfigs.release
         }
     }
-    compileSdkVersion 28
-    buildToolsVersion '28.0.3'
+    compileSdkVersion 33
     defaultConfig {
         applicationId "fr.nextgear.mesentretiensmoto"
-        minSdkVersion 16
-        targetSdkVersion 28
+        minSdkVersion 21
+        targetSdkVersion 33
         multiDexEnabled true
         versionCode 3
         versionName "1.1"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        vectorDrawables {
+            useSupportLibrary true
+        }
     }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    namespace 'fr.nextgear.mesentretiensmoto'
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
     }
 
 }
@@ -57,65 +78,61 @@ def koinVersion = '1.0.2'
 def androidArchitectureVersion = "1.1.1"
 
 dependencies {
+    def compose_version = "1.4.0"
+
+    implementation 'androidx.activity:activity-compose:1.3.1'
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
+
+    implementation 'com.google.android.material:material:1.8.0'
+    debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
+    def lifecycle_version = "2.5.1"
+    def arch_version = "2.1.0"
+
+    // ViewModel
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
+    // ViewModel utilities for Compose
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
+    // LiveData
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
+    // Lifecycles only (without ViewModel or LiveData)
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
+
+    // Saved state module for ViewModel
+    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycle_version"
+
+
+    // optional - Test helpers for LiveData
+    testImplementation "androidx.arch.core:core-testing:$arch_version"
+
+    // optional - Test helpers for Lifecycle runtime
+    testImplementation "androidx.lifecycle:lifecycle-runtime-testing:$lifecycle_version"
+
+
+
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     // Plain MVP
-    implementation 'com.android.support:appcompat-v7:28.0.0'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
-    implementation 'com.hannesdorfmann.mosby3:mvp:3.1.0'
-    implementation 'se.emilsjolander:intentbuilder-api:0.14.0'
-    implementation 'io.nlopez.smartadapters:library:1.3.1'
     implementation 'au.com.datasymphony:EasyFlow:1.3.1'
-    implementation 'com.android.support:support-v4:28.0.0'
     implementation 'com.j256.ormlite:ormlite-android:5.0'
-    implementation 'com.orhanobut:logger:2.2.0'
-    implementation 'com.squareup:otto:1.3.8'
-    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.3'
-    implementation 'com.yarolegovich:lovely-dialog:1.0.7'
-    implementation 'com.android.support:design:28.0.0'
-    implementation 'com.android.support:cardview-v7:28.0.0'
-    implementation "org.koin:koin-android-viewmodel:$koinVersion"
-    implementation "android.arch.lifecycle:extensions:$androidArchitectureVersion"
-    testImplementation 'junit:junit:4.12'
-    kapt 'se.emilsjolander:intentbuilder-compiler:0.14.0'
-    implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
-    implementation 'com.github.GrenderG:Toasty:1.4.0'
-    implementation 'com.github.clans:fab:1.6.4'
-    androidTestImplementation 'com.android.support:support-annotations:28.0.0'
-    androidTestImplementation('com.android.support.test.espresso:espresso-core:3.0.1') {
-        exclude group: 'com.google.guava', module: 'guava'
-    }
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.github.ignaciotcrespo:frutilla:0.7.1'
-    androidTestImplementation('com.google.truth:truth:0.39') {
-        exclude group: 'com.google.guava', module: 'guava'
-    }
-    kapt "org.androidannotations:androidannotations:$AAVersion"
-    implementation "org.androidannotations:androidannotations-api:$AAVersion"
-    implementation('com.github.florent37:materialviewpager:1.2.3') {
-        transitive = true
-    }
-    testImplementation "org.koin:koin-test:$koinVersion"
-    testImplementation "android.arch.core:core-testing:$androidArchitectureVersion"
-    testImplementation 'com.google.truth:truth:0.39'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.mockito:mockito-core:2.21.0'
     //dependencies
     implementation 'com.flaviofaria:kenburnsview:1.0.7'
-    implementation 'com.jpardogo.materialtabstrip:library:1.1.0'
     implementation 'com.github.bumptech.glide:glide:4.6.0'
     implementation 'com.hannesdorfmann.fragmentargs:annotation:3.0.2'
-    kapt 'com.hannesdorfmann.fragmentargs:processor:3.0.2'
-    implementation 'com.google.firebase:firebase-core:16.0.5'
-    implementation 'com.google.firebase:firebase-database:16.0.5'
-    implementation 'com.google.firebase:firebase-auth:16.0.5'
-    implementation 'com.firebaseui:firebase-ui-auth:4.1.0'
-    implementation 'com.google.android.gms:play-services-auth:16.0.1'
-}
-repositories {
-    mavenCentral()
+    implementation 'com.google.firebase:firebase-core:21.1.1'
+    implementation 'com.google.firebase:firebase-database:20.1.0'
+    implementation 'com.google.firebase:firebase-auth:21.1.0'
+    implementation 'com.google.android.gms:play-services-auth:20.4.1'
+    implementation "androidx.compose.ui:ui:$compose_version"
+    implementation "androidx.compose.material:material:$compose_version"
+    implementation "androidx.compose.ui:ui-tooling:$compose_version"
+    implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
+    implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
 }
 
-apply plugin: 'com.google.gms.google-services'
+
+
 
 
 

@@ -1,120 +1,103 @@
-package fr.nextgear.mesentretiensmoto.features.manageBikes
-
-
-import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
-import android.text.TextUtils
-import android.view.LayoutInflater
-import android.view.View
-import android.view.View.GONE
-import android.view.ViewGroup
-import com.squareup.otto.Subscribe
-import com.yarolegovich.lovelydialog.LovelyTextInputDialog
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.viewmodel.compose.viewModel
 import fr.nextgear.mesentretiensmoto.R
-import fr.nextgear.mesentretiensmoto.core.bus.MainThreadBus
-import fr.nextgear.mesentretiensmoto.core.events.EventRefreshBikesList
 import fr.nextgear.mesentretiensmoto.core.model.Bike
-import fr.nextgear.mesentretiensmoto.core.views.BikeCellView
-import io.nlopez.smartadapters.SmartAdapter
-import io.nlopez.smartadapters.adapters.RecyclerMultiAdapter
-import kotlinx.android.synthetic.main.fragment_fragment_manage_bikes.*
-import org.koin.android.viewmodel.ext.android.viewModel
+import fr.nextgear.mesentretiensmoto.features.manageBikes.ManageBikesViewModel
 
-/**
- * A simple [Fragment] subclass.
- */
-//endregion
+@Composable
+fun ManageBikes() {
+    val viewModel: ManageBikesViewModel = viewModel()
+    val bikes: List<Bike> by viewModel.bikes.observeAsState(listOf())
 
-//region Constructor
-class FragmentManageBikes : Fragment() {
-
-    //region Fields
-
-    private val mViewModel by viewModel<ManageBikesViewModel>()
-
-    private var mMultiRecyclerAdaper: RecyclerMultiAdapter? = null
-
-    //endregion
-
-    //region Lifecycle methods
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_fragment_manage_bikes, container, false)
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        fragmentManageBikes_RecyclerView_listBikes.layoutManager = LinearLayoutManager(context)
-        fragmentManageBikes_TextView_NoBikes.visibility = GONE
-        initObserverOnBikesList()
-        FragmentManageBikes_FloatingActionButton_AddBike.setOnClickListener {
-            giveNameToNewBikeAndAddIt()
-        }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        MainThreadBus.register(this)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        MainThreadBus.unregister(this)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        mViewModel.getBikesSQLiteAndDisplay()
-    }
-
-    //endregion
-
-    //region Presenter methods
-
-    private fun initObserverOnBikesList() {
-        mViewModel.bikes.observe(this, android.arch.lifecycle.Observer {
-            if (it != null) {
-                if (it.count() != 0) {
-                    showBikeList(it)
-                } else {
-                    showNoBikes()
-                }
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+//                    giveNameToNewBikeAndAddIt()
+                          },
+                backgroundColor = MaterialTheme.colors.primary
+            ) {
+                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.title_add_bike))
             }
-        })
-    }
-
-    private fun showNoBikes() {
-        fragmentManageBikes_TextView_NoBikes.visibility = View.VISIBLE
-    }
-
-    private fun showBikeList(bikes: List<Bike>) {
-        if (!bikes.isEmpty()) {
-            fragmentManageBikes_TextView_NoBikes.visibility = GONE
         }
-        mMultiRecyclerAdaper = SmartAdapter
-                .items(bikes)
-                .map(Bike::class.java, BikeCellView::class.java)
-                .into(fragmentManageBikes_RecyclerView_listBikes)
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(it)){
+                    if (bikes.isEmpty()) {
+                        Text(
+                            text = stringResource(R.string.message_no_bikes),
+                            style = MaterialTheme.typography.h5,
+                            modifier = Modifier.fillMaxWidth().padding(16.dp),
+                            textAlign = TextAlign.Center
+                        )
+                    } else {
+                        LazyColumn {
+                            items(bikes) { bike ->
+                                BikeCellView(bike = bike)
+                            }
+                        }
+                    }
+                }
+
     }
 
-    private fun giveNameToNewBikeAndAddIt() {
-        LovelyTextInputDialog(context, R.style.EditTextTintTheme)
-                .setTopColorRes(R.color.darkGreen)
-                .setTitle(R.string.title_add_bike)
-                .setMessage(R.string.message_add_bike_fill_name)
-                .setIcon(R.drawable.ic_motorcycle_white_48dp)
-                .setInputFilter(R.string.text_input_error_message) { text -> !TextUtils.isEmpty(text) }
-                .setConfirmButton(android.R.string.ok) { text -> mViewModel.addBike(text) }
-                .show()
+//         Dialog(
+//            LocalContext.current,
+//            BottomSheet(LayoutMode.WrapContent)
+//        )
+//        dialog.show {
+//            title(R.string.title_add_bike)
+//            message(R.string.message_add_bike_fill_name)
+//            input(
+//                hintRes = R.string.hint_add_bike,
+//                inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_NORMAL
+//            ) { _, text ->
+//                viewModel.addBike(text.toString())
+//            }
+//            positiveButton(R.string.dialog_ok)
+//            negativeButton(R.string.dialog_cancel)
+//        }
+//
+
+    DisposableEffect(Unit) {
+        viewModel.getBikesSQLiteAndDisplay()
+        onDispose { }
     }
+}
 
-    //endregion
-
-    @Subscribe
-    fun onEventRefreshBikesList(poEvent : EventRefreshBikesList){
-        mViewModel.getBikesSQLiteAndDisplay()
+@Composable
+fun BikeCellView(bike: Bike) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            bike.nameBike?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.h5,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Start
+                )
+            }
+        }
     }
-
 }

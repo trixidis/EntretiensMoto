@@ -2,12 +2,8 @@ package fr.nextgear.mesentretiensmoto
 
 import android.app.Application
 import android.content.Context
-import com.orhanobut.logger.AndroidLogAdapter
-import com.orhanobut.logger.Logger
-import fr.nextgear.mesentretiensmoto.core.bus.MainThreadBus
 import fr.nextgear.mesentretiensmoto.core.di.ManageBikesmodule
 import fr.nextgear.mesentretiensmoto.core.di.ManageMaintenanceModule
-import org.koin.android.ext.android.startKoin
 
 /**
  * Created by adrien on 18/05/2017.
@@ -27,10 +23,8 @@ class App : Application() {
     }
 
     override fun onCreate() {
-        Logger.addLogAdapter(AndroidLogAdapter())
         instance = this
         super.onCreate()
-        startKoin(this, listOf(ManageMaintenanceModule, ManageBikesmodule))
     }
 
     companion object {

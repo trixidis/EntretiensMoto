@@ -2,9 +2,9 @@ package fr.nextgear.mesentretiensmoto.features.manageMaintenancesOfBike
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentPagerAdapter
-import android.support.v4.content.ContextCompat
+import androidx.core.app.Fragment
+import androidx.core.app.FragmentPagerAdapter
+import androidx.core.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import com.github.florent37.materialviewpager.header.HeaderDesign
 import fr.nextgear.mesentretiensmoto.R

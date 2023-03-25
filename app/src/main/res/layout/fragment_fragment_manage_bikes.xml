@@ -1,4 +1,4 @@
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -14,19 +14,6 @@
         android:textAlignment="center"
         android:id="@+id/fragmentManageBikes_TextView_NoBikes"/>
 
-    <android.support.v7.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/fragmentManageBikes_RecyclerView_listBikes"/>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/FragmentManageBikes_FloatingActionButton_AddBike"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
-        android:layout_margin="@dimen/ld_side_margin"
-        android:src="@drawable/ic_add_white_24dp"
-        />
 
 
-</android.support.design.widget.CoordinatorLayout>
+</LinearLayout>

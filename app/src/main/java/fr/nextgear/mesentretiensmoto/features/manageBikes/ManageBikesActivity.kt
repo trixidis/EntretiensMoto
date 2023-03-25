@@ -13,7 +13,7 @@ import fr.nextgear.mesentretiensmoto.BuildConfig
 
 import fr.nextgear.mesentretiensmoto.R
 
-class ManageBikesActivity : AppCompatActivity() {
+class ManageBikesActivity : Activity() {
 
     //region Attributes
     companion object {
