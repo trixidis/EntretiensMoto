@@ -21,7 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import fr.nextgear.mesentretiensmoto.core.model.Bike
-import fr.nextgear.mesentretiensmoto.features.manageMaintenancesOfBike.ManageMaintenanceListActivity
+import fr.nextgear.mesentretiensmoto.presentation.manageMaintenancesOfBike.ManageMaintenanceListActivity
 
 /**
  * Created by adrien on 18/05/2017.
@@ -38,7 +38,8 @@ fun BikeCellView(poBike: Bike, mContext: Context) {
     Column(
         modifier = Modifier.fillMaxWidth().combinedClickable(
             onClick = {
-                val loIntent = Intent(mContext, ManageMaintenanceListActivity::class.java).putExtra(ManageMaintenanceListActivity.EXTRA_BIKE, mBike.value)
+                val loIntent = Intent(mContext, fr.nextgear.mesentretiensmoto.presentation.manageMaintenancesOfBike.ManageMaintenanceListActivity::class.java).putExtra(
+                    fr.nextgear.mesentretiensmoto.presentation.manageMaintenancesOfBike.ManageMaintenanceListActivity.EXTRA_BIKE, mBike.value)
                 mContext.startActivity(loIntent)
             },
             onLongClick = {

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/manageBikesActivity_LinearLayout_container"
-    tools:context=".features.manageBikes.ManageBikesActivity"
+    tools:context=".presentation.manageBikes.ManageBikesActivity"
     android:orientation="vertical">
 
 </FrameLayout>
