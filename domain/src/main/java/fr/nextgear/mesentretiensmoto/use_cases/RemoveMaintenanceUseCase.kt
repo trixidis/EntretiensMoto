@@ -5,10 +5,10 @@ import fr.nextgear.mesentretiensmoto.model.Result
 import fr.nextgear.mesentretiensmoto.repository.BikeRepository
 import javax.inject.Inject
 
-class GetMaintenancesForBikeUseCase @Inject constructor(
+class RemoveMaintenanceUseCase @Inject constructor(
     private val bikeRepository: BikeRepository
 ) {
 
-    suspend operator fun invoke(bikeId: String): Result<List<MaintenanceDomain>> =
-        bikeRepository.getMaintenancesForBike(bikeId)
+    suspend operator fun invoke(bikeId:String, poMaintenance : MaintenanceDomain):Result<Boolean> =
+        bikeRepository.removeMaintenanceForBike(bikeId,poMaintenance)
 }

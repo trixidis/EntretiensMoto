@@ -1,4 +1,6 @@
 package fr.nextgear.mesentretiensmoto.model
 
-data class MaintenanceDomain(val name:String) {
+import java.util.Date
+
+data class MaintenanceDomain(val name: String, val nbHours: Float, var isDone: Boolean, val date : Date = Date()) {
 }

@@ -2,7 +2,6 @@ package fr.nextgear.mesentretiensmoto
 
 import android.app.Application
 import android.content.Context
-import com.google.firebase.FirebaseApp
 import dagger.hilt.android.HiltAndroidApp
 
 /**
@@ -25,7 +24,6 @@ class App : Application() {
 
     override fun onCreate() {
         instance = this
-        FirebaseApp.initializeApp(this)
         super.onCreate()
     }
 

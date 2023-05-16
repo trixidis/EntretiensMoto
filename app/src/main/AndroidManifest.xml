@@ -10,16 +10,7 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true">
         <activity
-            android:name=".presentation.manageMaintenancesOfBike.ManageMaintenanceListActivity"
-            android:exported="false"
-            android:label="@string/title_activity_manage_maintenance_list"
-            android:theme="@style/Theme.EntretiensMoto">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
-            android:name=".presentation.manageBikes.ManageBikesActivity"
+            android:name=".core.ManageBikesActivity"
             android:exported="true"
             android:label="@string/title_activity_manage_bikes"
             android:theme="@style/Theme.EntretiensMoto">

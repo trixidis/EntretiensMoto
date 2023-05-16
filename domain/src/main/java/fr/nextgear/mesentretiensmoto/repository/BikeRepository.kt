@@ -2,6 +2,7 @@ package fr.nextgear.mesentretiensmoto.repository
 
 import fr.nextgear.mesentretiensmoto.model.BikeDomain
 import fr.nextgear.mesentretiensmoto.model.MaintenanceDomain
+import fr.nextgear.mesentretiensmoto.model.Result
 
 interface BikeRepository {
 
@@ -12,4 +13,15 @@ interface BikeRepository {
         bikeId: String,
         poMaintenanceDomain: MaintenanceDomain
     ): Result<MaintenanceDomain>
+
+    suspend fun removeMaintenanceForBike(
+        bikeId: String,
+        poMaintenanceDomain: MaintenanceDomain
+    ): Result<Boolean>
+
+    suspend fun updateMaintenanceToDone(
+        poMaintenanceDomain: MaintenanceDomain
+    ): Result<MaintenanceDomain>
+
+    suspend fun addBike(poBike: BikeDomain) : Result<BikeDomain>
 }

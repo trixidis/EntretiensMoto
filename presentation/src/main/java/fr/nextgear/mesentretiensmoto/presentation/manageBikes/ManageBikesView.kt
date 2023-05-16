@@ -1,44 +1,52 @@
-import android.content.Intent
-import androidx.activity.compose.ManagedActivityResultLauncher
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Button
+import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.ApiException
-import com.google.firebase.auth.AuthResult
-import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
-import fr.nextgear.mesentretiensmoto.R
-import fr.nextgear.mesentretiensmoto.core.model.Bike
-import fr.nextgear.mesentretiensmoto.presentation.manageBikes.LoginState
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import fr.nextgear.mesentretiensmoto.model.BikeDomain
+import fr.nextgear.mesentretiensmoto.presentation.R
+import fr.nextgear.mesentretiensmoto.presentation.manageBikes.BikesUiState
 import fr.nextgear.mesentretiensmoto.presentation.manageBikes.ManageBikesViewModel
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 
 @Composable
-fun ManageBikesView(viewModel: ManageBikesViewModel = hiltViewModel()) {
+fun ManageBikesView(navController: NavController,viewModel: ManageBikesViewModel = hiltViewModel()) {
 
-    val bikes: List<Bike> by viewModel.bikes.observeAsState(listOf())
+    val uiState = viewModel.uiState.collectAsState()
     val showDialog = remember{
         mutableStateOf(false)
     }
@@ -65,62 +73,47 @@ fun ManageBikesView(viewModel: ManageBikesViewModel = hiltViewModel()) {
                 )
             }
         }
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(it)
-        ) {
-            if (bikes.isEmpty()) {
-                Text(
-                    text = stringResource(R.string.message_no_bikes),
-                    style = MaterialTheme.typography.h5,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    textAlign = TextAlign.Center
-                )
-            } else {
-                LazyColumn {
-                    items(bikes) { bike ->
-                        BikeCellView(bike = bike)
+    ) {padding ->
+        uiState.value.let {
+
+
+            when (it) {
+
+
+                is BikesUiState.Failed -> Box(modifier = Modifier.padding(padding))
+                is BikesUiState.GotResults -> {
+                    val bikes = (uiState.value as BikesUiState.GotResults).bikes
+                    Column(
+                        modifier = Modifier
+                            .padding(padding)
+                    ) {
+                        if (bikes.isEmpty()) {
+                            Text(
+                                text = stringResource(R.string.message_no_bikes),
+                                style = MaterialTheme.typography.h5,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                textAlign = TextAlign.Center
+                            )
+                        } else {
+                            LazyColumn {
+                                items(bikes) { bike ->
+                                    BikeCellView(bike = bike,navController)
+                                }
+                            }
+                        }
                     }
                 }
+
+                BikesUiState.Idle -> Box(modifier = Modifier.padding(padding))
+                BikesUiState.Loading -> CircularProgressIndicator()
             }
         }
 
     }
 
 
-
-
-    DisposableEffect(Unit) {
-        viewModel.getBikesSQLiteAndDisplay()
-        onDispose { }
-    }
-
-    when (viewModel.loginState.collectAsState().value) {
-        LoginState.LOGGED_IN -> {
-
-
-        }
-        LoginState.LOGGED_OUT -> {
-            val launcher = rememberFirebaseAuthLauncher(
-                onAuthComplete = viewModel::onAuthComplete,
-                onAuthError = viewModel::onAuthError
-            )
-            val token = stringResource(R.string.default_web_client_id)
-            val context = LocalContext.current
-            val gso =
-                GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    .requestIdToken(token)
-                    .requestEmail()
-                    .build()
-            val googleSignInClient = GoogleSignIn.getClient(context, gso)
-            SideEffect {
-                launcher.launch(googleSignInClient.signInIntent)
-            }
-        }
-    }
 
 
 
@@ -173,44 +166,27 @@ fun CustomDialog(onAddClick: (String) -> Unit,onDismiss : () -> Unit) {
     }
 }
 
-
 @Composable
-fun rememberFirebaseAuthLauncher(
-    onAuthComplete: (AuthResult) -> Unit,
-    onAuthError: (ApiException) -> Unit
-): ManagedActivityResultLauncher<Intent, ActivityResult> {
-    val scope = rememberCoroutineScope()
-    return rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-        try {
-            val account = task.getResult(ApiException::class.java)!!
-            val credential = GoogleAuthProvider.getCredential(account.idToken!!, null)
-            scope.launch {
-                val authResult = Firebase.auth.signInWithCredential(credential).await()
-                onAuthComplete(authResult)
-            }
-        } catch (e: ApiException) {
-            onAuthError(e)
-        }
-    }
-}
-
-@Composable
-fun BikeCellView(bike: Bike) {
+fun BikeCellView(bike: BikeDomain,navController: NavController) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
+            .clickable {
+                navigateToMaintenancesOfBike(bike, navController)
+            }
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            bike.nameBike?.let {
-                Text(
-                    text = it,
-                    style = MaterialTheme.typography.h5,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Start
-                )
-            }
+            Text(
+                text = bike.name,
+                style = MaterialTheme.typography.h5,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Start
+            )
         }
     }
+}
+
+fun navigateToMaintenancesOfBike(bike: BikeDomain, navController: NavController) {
+    navController.navigate("maintenances/${bike.id}")
 }

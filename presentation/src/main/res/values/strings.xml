@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="bike_holder" translatable="false">bike</string>
+    <string name="title_add_bike">Ajout de moto</string>
+    <string name="message_add_bike_fill_name">Veuillez renseigner le nom de la moto à ajouter</string>
+    <string name="text_input_error_message">Saisie invalide</string>
+    <string name="title_add_maintenance">Ajout d\'un entretien</string>
+    <string name="message_add_maintenance_fill_name">Veuillez renseigner le type d\'entretien à ajouter</string>
+    <string name="positive">Ajouter</string>
+    <string name="hint_maintenance_type">Type d\'entretien</string>
+    <string name="hint_maintenance_nb_hours">Nombre d\'heures</string>
+    <string name="hint_maintenance_nb_km">Nombre de kilomètres</string>
+    <string name="text_no_maintenance_to_show">Aucun entretien pour cette moto</string>
+    <string name="title_activity_manage_bikes">Mes motos</string>
+    <string name="title_activity_manage_maintenances">Entretiens</string>
+    <string name="text_delete_maitenance">Entretien supprimé</string>
+    <string name="cancel">Annuler</string>
+    <string name="toast_please_fill_inputs">Veuillez remplir correctement les champs !</string>
+    <string name="hint_no_bikes">Vous n\'avez pour l\'instant ajouté aucune moto</string>
+    <string name="add_maintenance_done">Entretien effectué</string>
+    <string name="add_maintenance_to_do">Entretien à faire</string>
+    <string name="title_done">Faits</string>
+    <string name="title_to_do">A faire</string>
+    <string name="ask_maintenance_done">Marquer cet entretien comme terminé ?</string>
+    <string name="yes">Oui</string>
+    <string name="no">Non</string>
+    <string name="title_add_maintenance_to_do">Ajout d\'un entretien à faire</string>
+    <string name="title_mark_maintenance_done">Marquer cet entretien comme terminé</string>
+    <string name="message_add_maintenance_fill_nb_hours">Veuillez renseigner le nombre d\'heures auquel vous avez effectué cet entretien</string>
+    <string name="message_add_maintenance_fill_nb_km">Veuillez renseigner le nombre de kilomètres auquel vous avez effectué cet entretien</string>
+    <string name="shared_preferences_use_is_connected" translatable="false">user_connection_status</string>
+    <string name="error_login">Une erreur est survenue</string>
+    <string name="error_title">Erreur</string>
+    <string name="ok" translatable="false">OK</string>
+    <string name="error_retrieving_maintenances">Erreur de récupération des entretiens</string>
+    <string name="error_adding_maintenances">Erreur pendant l\'ajout d\'un entretien</string>
+    <string name="error_removing_maintenances">Erreur pendant la suppression d\'un entretien</string>
+    <string name="km">Kilomètres</string>
+    <string name="hours">Heures</string>
+    <string name="count_bike_method_change">Compter en :</string>
+    <string name="message_no_bikes">Aucune moto</string>
+    <string name="title_activity_manage_maintenance_list">ManageMaintenanceListActivity</string>
+    <string name="hint_bike_name">Moto</string>
+    <string name="message_modify_bike_counting_method">"Compter en :"</string>
+    <string name="content_description_add">Add</string>
+    <string name="content_description_back">Back</string>
+    <string name="your_web_client_id">test</string>
+</resources>
