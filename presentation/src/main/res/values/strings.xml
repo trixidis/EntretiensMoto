@@ -45,4 +45,6 @@
     <string name="content_description_add">Add</string>
     <string name="content_description_back">Back</string>
     <string name="your_web_client_id">test</string>
+    <string name="error">Une erreur est survenue</string>
+    <string name="success">Succès</string>
 </resources>

@@ -1,5 +1,7 @@
 package fr.nextgear.mesentretiensmoto.data.repositories
 
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import fr.nextgear.mesentretiensmoto.model.BikeDomain
 import fr.nextgear.mesentretiensmoto.model.MaintenanceDomain
 import fr.nextgear.mesentretiensmoto.model.Result

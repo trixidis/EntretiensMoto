@@ -88,6 +88,7 @@ dependencies {
     implementation project(":data")
     implementation project(":domain")
     implementation project(":presentation")
+    implementation 'com.google.firebase:firebase-auth-ktx:22.0.0'
 
     def compose_version = "1.4.3"
 

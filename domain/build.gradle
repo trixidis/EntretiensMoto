@@ -1,23 +1,50 @@
 plugins {
-    id 'java-library'
-    id 'org.jetbrains.kotlin.jvm'
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_7
-    targetCompatibility = JavaVersion.VERSION_1_7
+android {
+    namespace = "fr.nextgear.mesentretiensmoto.domain"
+    compileSdk = 33
+
+    defaultConfig {
+        minSdk = 21
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
+    }
+
+
+    composeOptions {
+        kotlinCompilerExtensionVersion= "1.4.0"
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
+
 
 dependencies {
 
    // implementation "com.github.davidepanidev:kotlin-extensions:$kotlin_extensions_version"
 
     implementation "com.google.dagger:dagger:$dagger_version"
+    implementation 'com.google.android.gms:play-services-auth:20.5.0'
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
 
     testImplementation "junit:junit:$junit_version"
   //  testImplementation "io.strikt:strikt-core:$strikt_version"
     testImplementation "io.mockk:mockk:$mockk_version"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_test_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1"
+    implementation(platform("com.google.firebase:firebase-bom:32.0.0"))
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.android.gms:play-services-auth:20.5.0")
+
+
 }
