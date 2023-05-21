@@ -1,14 +1,19 @@
 package fr.nextgear.mesentretiensmoto.data.repositories
 
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.ktx.Firebase
 import fr.nextgear.mesentretiensmoto.model.BikeDomain
 import fr.nextgear.mesentretiensmoto.model.MaintenanceDomain
 import fr.nextgear.mesentretiensmoto.model.Result
+import fr.nextgear.mesentretiensmoto.repository.AuthRepository
 import fr.nextgear.mesentretiensmoto.repository.BikeRepository
 import javax.inject.Inject
 
-class FakeBikeRepositoryImpl @Inject constructor() : BikeRepository {
+class FakeBikeRepositoryImpl @Inject constructor(
+    private val authRepository: AuthRepository,
+    private val database: DatabaseReference
+) : BikeRepository {
     val bikes = mutableListOf(
     BikeDomain("CRF 300",id = "1"),
     BikeDomain("XLS 125",id="2")
