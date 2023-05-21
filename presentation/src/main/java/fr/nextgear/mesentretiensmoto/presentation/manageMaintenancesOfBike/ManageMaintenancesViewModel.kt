@@ -15,7 +15,10 @@ import fr.nextgear.mesentretiensmoto.use_cases.UpdateMaintenanceToDoneUseCase
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -50,10 +53,15 @@ class ManageMaintenancesViewModel @Inject constructor(
     }
     private fun getMaintenances() {
         viewModelScope.launch {
-            when (val result = getMaintenancesForBikeUseCase(poBike.id)) {
-                is Result.Failure -> _uiState.emit(ManageMaintenancesUiState.GotError(result.error))
-                is Result.Success -> _uiState.emit(ManageMaintenancesUiState.GotResults(result.value))
-            }
+            _uiState.emit(ManageMaintenancesUiState.Loading)
+            getMaintenancesForBikeUseCase(poBike.id)
+                .onEach {result ->
+                    when (result) {
+                        is Result.Failure -> _uiState.emit(ManageMaintenancesUiState.GotError(result.error))
+                        is Result.Success -> _uiState.emit(ManageMaintenancesUiState.GotResults(result.value))
+                    }
+                }.stateIn(viewModelScope)
+                .collect()
         }
     }
 

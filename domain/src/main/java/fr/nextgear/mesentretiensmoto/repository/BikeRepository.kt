@@ -9,7 +9,7 @@ interface BikeRepository {
 
     suspend fun getBikes(): Flow<Result<List<BikeDomain>>>
 
-    suspend fun getMaintenancesForBike(bikeId: String): Result<List<MaintenanceDomain>>
+    suspend fun getMaintenancesForBike(bikeId: String): Flow<Result<List<MaintenanceDomain>>>
     suspend fun addMaintenanceForBike(
         bikeId: String,
         poMaintenanceDomain: MaintenanceDomain

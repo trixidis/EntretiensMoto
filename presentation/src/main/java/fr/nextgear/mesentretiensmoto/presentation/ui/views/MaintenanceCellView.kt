@@ -3,6 +3,7 @@ package fr.nextgear.mesentretiensmoto.presentation.ui.views
 import android.text.format.DateFormat
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Card
@@ -24,7 +25,7 @@ fun MaintenanceCellView(maintenance: MaintenanceDomain,poBike:BikeDomain) {
     val context = LocalContext.current
     Column(
         verticalArrangement = Arrangement.Center,
-        modifier = Modifier.padding(8.dp)
+        modifier = Modifier.padding(8.dp).fillMaxSize()
     ) {
         Text(
             text = maintenance.name,
@@ -54,7 +55,7 @@ fun MaintenanceCellView(maintenance: MaintenanceDomain,poBike:BikeDomain) {
 //                        negativeButton(R.string.no)
 //                    }
 //                },
-                shape = MaterialTheme.shapes.small,
+                shape = MaterialTheme.shapes.large,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(

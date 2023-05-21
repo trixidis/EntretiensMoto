@@ -40,8 +40,10 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import fr.nextgear.mesentretiensmoto.model.BikeDomain
 import fr.nextgear.mesentretiensmoto.presentation.R
+import fr.nextgear.mesentretiensmoto.presentation.components.LoadingView
 import fr.nextgear.mesentretiensmoto.presentation.manageBikes.BikesUiState
 import fr.nextgear.mesentretiensmoto.presentation.manageBikes.ManageBikesViewModel
+import fr.nextgear.mesentretiensmoto.presentation.navigation.Routes
 
 @Composable
 fun ManageBikesView(navController: NavController,viewModel: ManageBikesViewModel = hiltViewModel()) {
@@ -108,7 +110,7 @@ fun ManageBikesView(navController: NavController,viewModel: ManageBikesViewModel
                 }
 
                 BikesUiState.Idle -> Box(modifier = Modifier.padding(padding))
-                BikesUiState.Loading -> CircularProgressIndicator()
+                BikesUiState.Loading -> LoadingView()
             }
         }
 
@@ -189,5 +191,5 @@ fun BikeCellView(bike: BikeDomain,navController: NavController) {
 }
 
 fun navigateToMaintenancesOfBike(bike: BikeDomain, navController: NavController) {
-    navController.navigate("maintenances/${bike.id}")
+    navController.navigate(Routes.MaintenanceRoute(bike.id).path)
 }

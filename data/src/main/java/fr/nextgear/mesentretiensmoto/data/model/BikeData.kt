@@ -1,4 +1,4 @@
-package fr.nextgear.mesentretiensmoto.data
+package fr.nextgear.mesentretiensmoto.data.model
 
 import fr.nextgear.mesentretiensmoto.model.BikeDomain
 import fr.nextgear.mesentretiensmoto.model.MethodCount

@@ -14,11 +14,11 @@ import fr.nextgear.mesentretiensmoto.presentation.manageMaintenancesOfBike.Manag
 fun NavigationApp() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "login") {
-        composable("bikes") { ManageBikesView(navController) }
-        composable("login") { LoginView(navController) }
+        composable(Routes.BikeRoute().path) { ManageBikesView(navController) }
+        composable(Routes.LoginRoute().path) { LoginView(navController) }
         composable(
-            "maintenances/{bikeId}",
-            arguments = listOf(navArgument("bikeId") { type = NavType.StringType })
+            MAINTENANCE_ROUTE_WITH_PARAM,
+            arguments = listOf(navArgument(BIKE_ID_PARAM) { type = NavType.StringType })
         ) {
             ManageMaintenancesView()
         }

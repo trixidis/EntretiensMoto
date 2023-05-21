@@ -2,6 +2,7 @@ package fr.nextgear.mesentretiensmoto.presentation.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -83,7 +84,7 @@ fun ManageMaintenanceListView(
         }
     ) {
         Column(
-            modifier = Modifier.verticalScroll(scrollState).padding(it)
+            modifier = Modifier.fillMaxSize().verticalScroll(scrollState).padding(it)
         ) {
             if (listMaintenances.isNullOrEmpty()) {
                 Text(

@@ -40,6 +40,8 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.GoogleAuthProvider.getCredential
 import fr.nextgear.mesentretiensmoto.model.Result
 import fr.nextgear.mesentretiensmoto.presentation.R
+import fr.nextgear.mesentretiensmoto.presentation.components.LoadingView
+import fr.nextgear.mesentretiensmoto.presentation.navigation.Routes
 
 @Composable
 fun LoginView(navController: NavHostController, vm: LoginViewModel = hiltViewModel()) {
@@ -156,9 +158,7 @@ fun OneTapSignIn(
 
 @Composable
 private fun NavigateToBikesScreen(navController: NavController) = navController.navigate("bikes") {
-    popUpTo(navController.graph.id) {
-        inclusive = true
-    }
+
 }
 
 
@@ -200,16 +200,6 @@ fun SigninView(
 
 }
 
-@Composable
-fun LoadingView() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        CircularProgressIndicator()
-    }
-}
 
 @Composable
 fun ErrorView() {
@@ -224,6 +214,9 @@ fun ErrorView() {
 
 
 fun navigateToBikesView(navController: NavController) {
-    navController.navigate("bikes")
-
+    navController.navigate(Routes.BikeRoute().path){
+        popUpTo(navController.graph.id) {
+            inclusive = true
+        }
+    }
 }
