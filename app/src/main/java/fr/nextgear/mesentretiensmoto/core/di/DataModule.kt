@@ -1,17 +1,19 @@
 package fr.nextgear.mesentretiensmoto.core.di
 
-import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import fr.nextgear.mesentretiensmoto.data.repositories.FakeBikeRepositoryImpl
+import fr.nextgear.mesentretiensmoto.data.repositories.BikeRepositoryImpl
 import fr.nextgear.mesentretiensmoto.repository.AuthRepository
 import fr.nextgear.mesentretiensmoto.repository.BikeRepository
 import fr.nextgear.mesentretiensmoto.use_cases.auth.AuthUseCases
 import fr.nextgear.mesentretiensmoto.use_cases.auth.GetAuthStateUseCase
+import fr.nextgear.mesentretiensmoto.use_cases.auth.OneTapSignInUseCase
 import fr.nextgear.mesentretiensmoto.use_cases.auth.SignInUseCase
 import fr.nextgear.mesentretiensmoto.use_cases.auth.SignOutUseCase
 
@@ -20,13 +22,18 @@ import fr.nextgear.mesentretiensmoto.use_cases.auth.SignOutUseCase
 abstract class DataModule {
 
     @Binds
-    abstract fun bindsBikeRepository(bikeRepositoryImpl : FakeBikeRepositoryImpl):BikeRepository
+    abstract fun bindsBikeRepository(bikeRepositoryImpl: BikeRepositoryImpl): BikeRepository
 
 }
 
 @Module
 @InstallIn(SingletonComponent::class)
-class DataModuleConcrete{
+class DataModuleConcrete {
+
+    @Provides
+    fun providesDatabaseReference(): DatabaseReference  {
+        return Firebase.database.reference
+    }
 
 
     @Provides
@@ -35,6 +42,7 @@ class DataModuleConcrete{
     ) = AuthUseCases(
         getAuthState = GetAuthStateUseCase(repo),
         signIn = SignInUseCase(repo),
-        signOut = SignOutUseCase(repo)
+        signOut = SignOutUseCase(repo),
+        oneTapSignInUseCase = OneTapSignInUseCase(repo)
     )
 }

@@ -2,6 +2,7 @@ package fr.nextgear.mesentretiensmoto.repository
 
 import com.google.android.gms.auth.api.identity.BeginSignInResult
 import com.google.firebase.auth.AuthCredential
+import com.google.firebase.auth.FirebaseUser
 import fr.nextgear.mesentretiensmoto.model.Result
 
 typealias OneTapSignInResponse = Result<BeginSignInResult>
@@ -16,4 +17,6 @@ interface AuthRepository {
         suspend fun firebaseSignInWithGoogle(googleCredential: AuthCredential): SignInWithGoogleResponse
 
         suspend fun signOut() :SignOutResponse
+
+        suspend fun currentUser() : FirebaseUser?
 }

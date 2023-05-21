@@ -54,6 +54,7 @@ fun ManageBikesView(navController: NavController,viewModel: ManageBikesViewModel
     if(showDialog.value){
         CustomDialog(onAddClick ={
             viewModel.addBike(it)
+            showDialog.value = false
         }, onDismiss = {
             showDialog.value = false
         })

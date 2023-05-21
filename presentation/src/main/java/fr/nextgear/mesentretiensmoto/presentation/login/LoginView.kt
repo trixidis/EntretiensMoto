@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -141,7 +142,7 @@ fun OneTapSignIn(
     launch: (result: BeginSignInResult) -> Unit
 ) {
     when(val oneTapSignInResponse = viewModel.oneTapSignInResponse) {
-        null -> CircularProgressIndicator()
+        null -> Box(modifier = Modifier.size(0.dp))
         is Result.Success -> oneTapSignInResponse.value.let {
             LaunchedEffect(it) {
                 launch(it)
@@ -188,12 +189,12 @@ fun SigninView(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        TextField(value = mailValue.value, onValueChange = onMailChanged)
-        TextField(value = passwordValue.value, onValueChange = onPasswordChanged)
+        //TextField(value = mailValue.value, onValueChange = onMailChanged)
+        //TextField(value = passwordValue.value, onValueChange = onPasswordChanged)
 
 
         Button(onClick = onSigninClicked) {
-            Text("Login")
+            Text(stringResource(id = R.string.google_login))
         }
     }
 

@@ -3,10 +3,11 @@ package fr.nextgear.mesentretiensmoto.repository
 import fr.nextgear.mesentretiensmoto.model.BikeDomain
 import fr.nextgear.mesentretiensmoto.model.MaintenanceDomain
 import fr.nextgear.mesentretiensmoto.model.Result
+import kotlinx.coroutines.flow.Flow
 
 interface BikeRepository {
 
-    suspend fun getBikes(): Result<List<BikeDomain>>
+    suspend fun getBikes(): Flow<Result<List<BikeDomain>>>
 
     suspend fun getMaintenancesForBike(bikeId: String): Result<List<MaintenanceDomain>>
     suspend fun addMaintenanceForBike(

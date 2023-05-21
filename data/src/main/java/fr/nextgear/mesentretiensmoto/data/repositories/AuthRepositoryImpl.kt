@@ -4,6 +4,7 @@ import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import fr.nextgear.mesentretiensmoto.model.Result
 import fr.nextgear.mesentretiensmoto.repository.AuthRepository
 import fr.nextgear.mesentretiensmoto.repository.OneTapSignInResponse
@@ -17,6 +18,7 @@ import javax.inject.Singleton
 //Names
 const val SIGN_IN_REQUEST = "signInRequest"
 const val SIGN_UP_REQUEST = "signUpRequest"
+
 @Singleton
 class AuthRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth,
@@ -53,7 +55,7 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun signOut() : SignOutResponse {
+    override suspend fun signOut(): SignOutResponse {
         return try {
             val authResult = auth.signOut()
             Result.Success(true)
@@ -61,6 +63,8 @@ class AuthRepositoryImpl @Inject constructor(
             Result.Failure(e)
         }
     }
+
+    override suspend fun currentUser(): FirebaseUser? = auth.currentUser
 
 
 }

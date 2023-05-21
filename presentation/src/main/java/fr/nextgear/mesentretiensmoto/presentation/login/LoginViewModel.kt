@@ -34,6 +34,14 @@ class LoginViewModel @Inject constructor(
     var signInWithGoogleResponse by mutableStateOf<SignInWithGoogleResponse>(Result.Success(false))
         private set
 
+
+    init {
+        if(useCases.getAuthState.invoke()){
+            signInWithGoogleResponse = Result.Success(true)
+        }
+    }
+
+
     fun onMailChanged(psValue : String){
         mail.value=psValue
     }
@@ -46,20 +54,25 @@ class LoginViewModel @Inject constructor(
 
     fun oneTapSignIn() = viewModelScope.launch {
         oneTapSignInResponse = null
-        oneTapSignInResponse = useCases.signIn()
+       // oneTapSignInResponse = useCases.signIn()
     }
+
+
 
     fun signInWithGoogle(googleCredential: AuthCredential) = viewModelScope.launch {
         oneTapSignInResponse = null
-        //signInWithGoogleResponse = useCases.signIn.firebaseSignInWithGoogle(googleCredential)
+        signInWithGoogleResponse = useCases.signIn(googleCredential)
     }
 
     fun signIn() =
         viewModelScope.launch {
             _uiState.emit(LoginUiState.Loading)
-            when (val result = useCases.signIn()) {
+            when (val result = useCases.oneTapSignInUseCase()) {
                 is Result.Failure -> _uiState.emit(LoginUiState.Failure)
-                is Result.Success -> _uiState.emit(LoginUiState.Success)
+                is Result.Success -> {
+                    oneTapSignInResponse = result
+                    //_uiState.emit(LoginUiState.Success)
+                }
             }
         }
 

@@ -11,6 +11,8 @@ import fr.nextgear.mesentretiensmoto.use_cases.GetBikesUseCase
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -39,20 +41,23 @@ class ManageBikesViewModel @Inject constructor(
     private fun getBikes() {
         viewModelScope.launch {
             _uiState.emit(BikesUiState.Loading)
-            when(val result = getBikesUseCase()){
-                is Result.Failure -> _uiState.emit(BikesUiState.Failed(result.error))
-                is Result.Success -> _uiState.emit(BikesUiState.GotResults(result.value))
-            }
+            getBikesUseCase().onEach {
+                when (val result = it) {
+                    is Result.Failure -> _uiState.emit(BikesUiState.Failed(result.error))
+                    is Result.Success -> _uiState.emit(BikesUiState.GotResults(result.value))
+                }
+            }.collect()
         }
     }
 
     fun addBike(psNameBike: String) {
         viewModelScope.launch {
-            when(val result = addBikesUseCase(BikeDomain(psNameBike))){
+            when (val result = addBikesUseCase(BikeDomain(psNameBike))) {
                 is Result.Failure -> _uiEvents.send(BikesUiEvents.AddBikeFailed)
                 is Result.Success -> _uiEvents.send(BikesUiEvents.AddBikeSuccessful)
             }
         }
+        getBikes()
         //endregion
 
     }
