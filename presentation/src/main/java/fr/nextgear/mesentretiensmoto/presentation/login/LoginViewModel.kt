@@ -1,6 +1,7 @@
 package fr.nextgear.mesentretiensmoto.presentation.login
 
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -31,37 +32,38 @@ class LoginViewModel @Inject constructor(
 
     var oneTapSignInResponse by mutableStateOf<OneTapSignInResponse?>(null)
         private set
-    var signInWithGoogleResponse by mutableStateOf<SignInWithGoogleResponse>(Result.Success(false))
-        private set
-
+    private var _signInWithGoogleResponse: MutableStateFlow<SignInWithGoogleResponse> =
+        MutableStateFlow(Result.Success(false))
+    val signInWithGoogleResponse = _signInWithGoogleResponse.asStateFlow()
 
     init {
-        if(useCases.getAuthState.invoke()){
-            signInWithGoogleResponse = Result.Success(true)
+        viewModelScope.launch {
+            if (useCases.getAuthState.invoke()) {
+                _signInWithGoogleResponse.emit(Result.Success(true))
+            }
         }
     }
 
 
-    fun onMailChanged(psValue : String){
-        mail.value=psValue
+    fun onMailChanged(psValue: String) {
+        mail.value = psValue
     }
 
-    fun onPasswordChanged(psValue : String){
-        password.value=psValue
+    fun onPasswordChanged(psValue: String) {
+        password.value = psValue
     }
 
     val isUserAuthenticated get() = useCases.getAuthState.invoke()
 
     fun oneTapSignIn() = viewModelScope.launch {
         oneTapSignInResponse = null
-       // oneTapSignInResponse = useCases.signIn()
+        // oneTapSignInResponse = useCases.signIn()
     }
-
 
 
     fun signInWithGoogle(googleCredential: AuthCredential) = viewModelScope.launch {
         oneTapSignInResponse = null
-        signInWithGoogleResponse = useCases.signIn(googleCredential)
+        _signInWithGoogleResponse.emit(useCases.signIn(googleCredential))
     }
 
     fun signIn() =

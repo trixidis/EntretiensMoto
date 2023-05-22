@@ -40,8 +40,10 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.GoogleAuthProvider.getCredential
 import fr.nextgear.mesentretiensmoto.model.Result
 import fr.nextgear.mesentretiensmoto.presentation.R
+import fr.nextgear.mesentretiensmoto.presentation.components.ErrorView
 import fr.nextgear.mesentretiensmoto.presentation.components.LoadingView
 import fr.nextgear.mesentretiensmoto.presentation.navigation.Routes
+import fr.nextgear.mesentretiensmoto.repository.SignInWithGoogleResponse
 
 @Composable
 fun LoginView(navController: NavHostController, vm: LoginViewModel = hiltViewModel()) {
@@ -90,6 +92,7 @@ fun LoginView(navController: NavHostController, vm: LoginViewModel = hiltViewMod
     )
 
     SignInWithGoogle(
+        signInWithGoogleResponse = vm.signInWithGoogleResponse.collectAsState(),
         navigateToHomeScreen = { signedIn ->
             if (signedIn) {
                 navigateToBikesView(navController)
@@ -102,18 +105,19 @@ fun LoginView(navController: NavHostController, vm: LoginViewModel = hiltViewMod
 
 @Composable
 fun SignInWithGoogle(
-    viewModel: LoginViewModel = hiltViewModel(),
+    signInWithGoogleResponse : State<SignInWithGoogleResponse>,
     navigateToHomeScreen: (signedIn: Boolean) -> Unit
 ) {
-    when(val signInWithGoogleResponse = viewModel.signInWithGoogleResponse) {
-        is Result.Failure -> ErrorView()
-        is Result.Success -> signInWithGoogleResponse.let { signedIn ->
+    when(val response = signInWithGoogleResponse.value) {
+        is Result.Failure -> ErrorView.Normal()
+        is Result.Success -> response.let { signedIn ->
             LaunchedEffect(signedIn) {
                 navigateToHomeScreen(signedIn.value)
             }
         }
     }
 }
+
 @Composable
 fun SignInButton(
     onClick: () -> Unit
@@ -201,16 +205,7 @@ fun SigninView(
 }
 
 
-@Composable
-fun ErrorView() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(text = stringResource(id = R.string.error))
-    }
-}
+
 
 
 fun navigateToBikesView(navController: NavController) {
