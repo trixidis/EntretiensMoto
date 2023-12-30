@@ -45,6 +45,12 @@ android {
 dependencies {
     implementation("com.google.firebase:firebase-auth-ktx:22.0.0")
     implementation("com.google.android.gms:play-services-auth:20.5.0")
+    testImplementation ("org.junit.jupiter:junit-jupiter:5.9.3")
+    testImplementation ("io.mockk:mockk:1.13.7")
+    testImplementation ("io.mockk:mockk-android:1.13.5")
+    testImplementation ("app.cash.turbine:turbine:1.0.0")
+    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.0")
+
     val compose_version = "1.4.0"
     val nav_version = "2.5.3"
     implementation(project(":domain"))

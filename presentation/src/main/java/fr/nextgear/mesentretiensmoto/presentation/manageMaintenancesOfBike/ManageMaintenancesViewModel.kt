@@ -12,11 +12,10 @@ import fr.nextgear.mesentretiensmoto.use_cases.AddMaintenanceForBikeUseCase
 import fr.nextgear.mesentretiensmoto.use_cases.GetMaintenancesForBikeUseCase
 import fr.nextgear.mesentretiensmoto.use_cases.RemoveMaintenanceUseCase
 import fr.nextgear.mesentretiensmoto.use_cases.UpdateMaintenanceToDoneUseCase
+import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -24,7 +23,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ManageMaintenancesViewModel @Inject constructor(
-    savedStateHandle : SavedStateHandle,
+    savedStateHandle: SavedStateHandle,
     private val getMaintenancesForBikeUseCase: GetMaintenancesForBikeUseCase,
     private val addMaintenanceForBikeUseCase: AddMaintenanceForBikeUseCase,
     private val removeMaintenanceUseCase: RemoveMaintenanceUseCase,
@@ -44,44 +43,36 @@ class ManageMaintenancesViewModel @Inject constructor(
 
 
     //region Attributes
-    val maintenances: MutableLiveData<ArrayList<MaintenanceDomain>> = MutableLiveData()
+    val maintenances: MutableLiveData<List<MaintenanceDomain>> = MutableLiveData(emptyList())
     var lastMaintenanceRemoved: MaintenanceDomain? = null
     //endregion
 
-    init {
-       getMaintenances()
-    }
-    private fun getMaintenances() {
+    fun getMaintenances() {
         viewModelScope.launch {
             _uiState.emit(ManageMaintenancesUiState.Loading)
-            getMaintenancesForBikeUseCase(poBike.id)
-                .onEach {result ->
-                    when (result) {
-                        is Result.Failure -> _uiState.emit(ManageMaintenancesUiState.GotError(result.error))
-                        is Result.Success -> _uiState.emit(ManageMaintenancesUiState.GotResults(result.value))
-                    }
-                }.stateIn(viewModelScope)
-                .collect()
+            when (val result = getMaintenancesForBikeUseCase(poBike.id).stateIn(viewModelScope).value) {
+                is Result.Failure -> _uiState.emit(ManageMaintenancesUiState.GotError(result.error))
+                is Result.Success -> {
+                    _uiState.emit(ManageMaintenancesUiState.GotResults(result.value))
+                }
+            }
         }
     }
 
 
     //region Public API
     fun addMaintenance(
-        poBike: BikeDomain,
-        psMaintenanceName: String,
-        pfNbHours: Float,
-        pbIsDone: Boolean
+        poMaintenance: MaintenanceDomain
     ) {
-        viewModelScope.launch {
-            when (val result = addMaintenanceForBikeUseCase.invoke(
-                poBike.id, MaintenanceDomain(psMaintenanceName, pfNbHours, pbIsDone)
-            )) {
+        viewModelScope.async {
+            when (addMaintenanceForBikeUseCase(bikeId, poMaintenance).stateIn(viewModelScope).value) {
                 is Result.Failure -> _uiEvents.send(ManageMaintenancesUiEvents.AddFailed)
-                is Result.Success -> _uiEvents.send(ManageMaintenancesUiEvents.AddSuccessful)
+                is Result.Success -> {
+                    _uiEvents.send(ManageMaintenancesUiEvents.AddSuccessful)
+
+                }
             }
         }
-
     }
 
     fun removeMaintenance(poMaintenanceToRemove: MaintenanceDomain) {

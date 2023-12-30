@@ -1,6 +1,5 @@
 package fr.nextgear.mesentretiensmoto.presentation.manageBikes
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,12 +32,8 @@ class ManageBikesViewModel @Inject constructor(
 
     //endregion
 
-    init {
-        getBikes()
-    }
-
     //region ViewModel Methods
-    private fun getBikes() {
+    fun getBikes() {
         viewModelScope.launch {
             _uiState.emit(BikesUiState.Loading)
             getBikesUseCase().onEach {
@@ -52,7 +47,7 @@ class ManageBikesViewModel @Inject constructor(
 
     fun addBike(psNameBike: String) {
         viewModelScope.launch {
-            when (val result = addBikesUseCase(BikeDomain(psNameBike))) {
+            when (addBikesUseCase(BikeDomain(psNameBike))) {
                 is Result.Failure -> _uiEvents.send(BikesUiEvents.AddBikeFailed)
                 is Result.Success -> _uiEvents.send(BikesUiEvents.AddBikeSuccessful)
             }

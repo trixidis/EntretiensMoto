@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -23,6 +22,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,7 +37,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import fr.nextgear.mesentretiensmoto.model.BikeDomain
 import fr.nextgear.mesentretiensmoto.presentation.R
 import fr.nextgear.mesentretiensmoto.presentation.components.LoadingView
@@ -48,6 +47,10 @@ import fr.nextgear.mesentretiensmoto.presentation.navigation.Routes
 @Composable
 fun ManageBikesView(navController: NavController,viewModel: ManageBikesViewModel = hiltViewModel()) {
 
+
+    LaunchedEffect(key1 = Unit) {
+        viewModel.getBikes()
+    }
     val uiState = viewModel.uiState.collectAsState()
     val showDialog = remember{
         mutableStateOf(false)

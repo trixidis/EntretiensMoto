@@ -1,5 +1,6 @@
 package fr.nextgear.mesentretiensmoto.data.repositories
 
+import android.util.Log
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.AuthCredential
@@ -31,14 +32,17 @@ class AuthRepositoryImpl @Inject constructor(
     override val isUserAuthenticatedInFirebase = auth.currentUser != null
 
     override suspend fun oneTapSignInWithGoogle(): OneTapSignInResponse {
+        Log.d("LOGIN","on se logge via la méthode oneTapSignInWithGoogle")
         return try {
             val signInResult = oneTapClient.beginSignIn(signInRequest).await()
             Result.Success(signInResult)
         } catch (e: Exception) {
+            Log.e("Login",e.toString())
             try {
                 val signUpResult = oneTapClient.beginSignIn(signUpRequest).await()
                 Result.Success(signUpResult)
             } catch (e: Exception) {
+                Log.e("Login",e.toString())
                 Result.Failure(e)
             }
         }
@@ -47,6 +51,7 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun firebaseSignInWithGoogle(
         googleCredential: AuthCredential
     ): SignInWithGoogleResponse {
+        Log.d("LOGIN","on se logge via la méthode firebaseSignInWithGoogle")
         return try {
             val authResult = auth.signInWithCredential(googleCredential).await()
             Result.Success(true)

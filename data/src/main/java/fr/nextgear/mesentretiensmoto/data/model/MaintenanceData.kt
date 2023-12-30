@@ -1,7 +1,6 @@
 package fr.nextgear.mesentretiensmoto.data.model
 
 import fr.nextgear.mesentretiensmoto.model.MaintenanceDomain
-import java.time.Instant
 import java.util.Date
 
 data class MaintenanceData(
@@ -17,3 +16,5 @@ data class MaintenanceData(
 fun MaintenanceData.toMaintenanceDomain() = MaintenanceDomain(
     nameMaintenance, nbHoursMaintenance, done, Date(dateMaintenance)
 )
+
+fun MaintenanceDomain.toMaintenanceData(reference: String): MaintenanceData = MaintenanceData(date.time,isDone,name,nbHours,reference)

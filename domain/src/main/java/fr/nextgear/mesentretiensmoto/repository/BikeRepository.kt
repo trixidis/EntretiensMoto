@@ -13,7 +13,7 @@ interface BikeRepository {
     suspend fun addMaintenanceForBike(
         bikeId: String,
         poMaintenanceDomain: MaintenanceDomain
-    ): Result<MaintenanceDomain>
+    ): Flow<Result<MaintenanceDomain>>
 
     suspend fun removeMaintenanceForBike(
         bikeId: String,

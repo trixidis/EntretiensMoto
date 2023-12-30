@@ -9,6 +9,7 @@ import fr.nextgear.mesentretiensmoto.data.model.BikeData
 import fr.nextgear.mesentretiensmoto.data.model.MaintenanceData
 import fr.nextgear.mesentretiensmoto.data.model.toBikeData
 import fr.nextgear.mesentretiensmoto.data.model.toBikeDomain
+import fr.nextgear.mesentretiensmoto.data.model.toMaintenanceData
 import fr.nextgear.mesentretiensmoto.data.model.toMaintenanceDomain
 import fr.nextgear.mesentretiensmoto.model.BikeDomain
 import fr.nextgear.mesentretiensmoto.model.MaintenanceDomain
@@ -18,15 +19,16 @@ import fr.nextgear.mesentretiensmoto.repository.BikeRepository
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 
 class BikeRepositoryImpl @Inject constructor(
     private val authRepository: AuthRepository, private val database: DatabaseReference
 ) : BikeRepository {
-    val bikes = mutableListOf<BikeDomain>(
-    )
 
+    val bikes = mutableListOf<BikeDomain>()
     val maintenances = mutableListOf<MaintenanceDomain>(MaintenanceDomain("piston", 150.00f, true))
+
     override suspend fun getBikes(): Flow<Result<List<BikeDomain>>> {
         return callbackFlow {
            val listener = object : ValueEventListener {
@@ -82,7 +84,7 @@ class BikeRepositoryImpl @Inject constructor(
                         Result.Success(
                             bikes.filterNotNull().map { it.toMaintenanceDomain() }.sortedByDescending { it.nbHours })
                     )
-                    close()
+                    //close()
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -109,8 +111,13 @@ class BikeRepositoryImpl @Inject constructor(
 
     override suspend fun addMaintenanceForBike(
         bikeId: String, poMaintenanceDomain: MaintenanceDomain
-    ): Result<MaintenanceDomain> {
-        TODO("Not yet implemented")
+    ): Flow<Result<MaintenanceDomain>> {
+        authRepository.currentUser()?.let {userId ->
+            val loReference = database.child("users").child(userId.uid).child("bikes").child(bikeId).child("maintenances").push().key!!
+            database.child("users").child(userId.uid).child("bikes").child(bikeId).child("maintenances").child(loReference).setValue(poMaintenanceDomain.toMaintenanceData(loReference))
+            maintenances.add(poMaintenanceDomain)
+        }
+        return flowOf(Result.Success(poMaintenanceDomain))
     }
 
     override suspend fun removeMaintenanceForBike(
